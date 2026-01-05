@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffdf66"/>
+      <stop offset="1" stop-color="#e4a700"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#0b132b"/>
+  <g transform="translate(256 256)">
+    <circle r="220" fill="#162447" stroke="#1f3b63" stroke-width="6"/>
+    <g transform="translate(-140,-120)">
+      <path d="M40 180c40-80 120-120 200-100 50 12 70 50 60 100-10 56-76 100-160 92-60-6-120-50-100-92z" fill="url(#g)" stroke="#b37b00" stroke-width="6" opacity="0.85"/>
+      <circle cx="220" cy="150" r="14" fill="#5b3a1a"/>
+      <circle cx="220" cy="150" r="7" fill="#fff"/>
+      <path d="M180 220c30-10 60-8 90 6" stroke="#d49c00" stroke-width="10" stroke-linecap="round"/>
+      <path d="M70 210c50-40 90-80 130-110" stroke="#ffd24a" stroke-width="10" stroke-linecap="round"/>
+      <path d="M120 300c40 20 160 20 200-10" stroke="#ffd24a" stroke-width="12" stroke-linecap="round" opacity="0.6"/>
+      <g transform="translate(260,60) rotate(-10)">
+        <path d="M0 0c60 0 60 80 0 80c-60 0-60-80 0-80z" fill="#5b3a1a"/>
+        <path d="M-10 20c30 0 30 40 0 40c-30 0-30-40 0-40z" fill="#fff" opacity="0.9"/>
+      </g>
+      <text x="140" y="360" fill="#ffd24a" font-size="42" font-family="Segoe UI, Arial" font-weight="700">疾风</text>
+    </g>
+  </g>
+</svg>
+
