@@ -24,13 +24,24 @@
             top: 0; 
             left: 0; 
             width: 100%; 
-            height: 250px; /* 进一步增高以容纳完整技能池 */
+            height: 340px; /* 增加高度以容纳完整技能池和赛季面板 */
             background: rgba(0,0,0,0.6); 
-            padding: 10px; 
+            padding: 6px; 
             box-sizing: border-box;
             z-index: 10;
             display: flex;
             flex-direction: column;
+            transition: height 0.3s ease; /* 添加过渡动画 */
+            overflow: hidden; /* 防止内容溢出 */
+        }
+        
+        /* 比赛模式下的样式折叠 */
+        .racing-mode #info-panel {
+            display: none;
+        }
+        .racing-mode #info-panel .stable-container,
+        .racing-mode #info-panel .season-panel {
+            display: none !important;
         }
 
         /* 玩家资产行 */
@@ -43,37 +54,212 @@
             margin-bottom: 5px;
             padding: 0 10px;
             flex-shrink: 0;
+            height: 30px; /* 固定高度 */
+            align-items: center;
         }
 
         /* 马厩容器 - 横向滚动 */
-        .stable-container {
-            flex: 1;
+        .user-panel {
+            background: #2c3e50;
+            border-radius: 12px;
+            margin: 0 0 6px 0;
+            padding: 7px 8px;
+            border: 1px solid rgba(52, 152, 219, 0.55);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .stable-panel {
+            border-radius: 12px;
+            margin: 0;
+            padding: 6px;
+            height: 170px;
+            border: 1px solid rgba(231, 76, 60, 0.45);
+            background: rgba(44, 62, 80, 0.9);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.35);
+            overflow: hidden;
             display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .stable-hint {
+            height: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.18);
+            overflow: hidden;
+        }
+        .stable-hint-track {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 8px;
             overflow-x: auto;
-            gap: 10px;
-            padding-bottom: 5px;
-            /* 隐藏滚动条但保留功能 */
-            scrollbar-width: none; 
+            scrollbar-width: none;
+        }
+        .stable-hint-track::-webkit-scrollbar { display: none; }
+        .hint-chip {
+            flex: 0 0 auto;
+            font-size: 10px;
+            line-height: 16px;
+            color: #ecf0f1;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(52, 152, 219, 0.15);
+            white-space: nowrap;
+        }
+        .stable-container {
+            display: flex;
+            align-items: stretch;
+            overflow-x: auto;
+            gap: 8px;
+            flex: 1;
+            height: auto;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: none;
+            transition: opacity 0.3s;
         }
         .stable-container::-webkit-scrollbar { display: none; }
 
         /* 马匹名牌卡片 */
         .horse-card {
-            min-width: 160px; /* 增加宽度以容纳5列技能 */
+            flex: 0 0 auto;
+            min-width: 284px;
+            height: 145px;
             background: #34495e;
             border-radius: 8px;
             padding: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr 96px;
+            grid-template-rows: 50px 1fr;
+            grid-template-areas:
+                "skills info"
+                "skills image";
             border: 1px solid #7f8c8d;
             position: relative;
+            box-sizing: border-box;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .card-skills {
+            grid-area: skills;
+            border-radius: 6px;
+            padding: 6px;
+            border: 1px solid rgba(46, 204, 113, 0.35);
+            background: rgba(46, 204, 113, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 4px;
+        }
+        .horse-name-input {
+            height: 20px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(0,0,0,0.18);
+            color: #ecf0f1;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 0 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .horse-name-input:focus {
+            border-color: rgba(52, 152, 219, 0.65);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.18);
+        }
+
+        .card-info {
+            grid-area: info;
+            border-radius: 6px;
+            padding: 4px 5px;
+            border: 1px solid rgba(241, 196, 15, 0.45);
+            background: rgba(241, 196, 15, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            overflow: hidden;
+        }
+
+        .card-image {
+            grid-area: image;
+            border-radius: 6px;
+            border: 1px solid rgba(231, 76, 60, 0.35);
+            background: #2c3e50;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding-top: 0;
+        }
+        .idle-avatar {
+            font-size: 34px;
+            transform: translateZ(0) scaleX(-1) scale(1.5);
+            opacity: 0.95;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.35));
+        }
+        .idle-horse {
+            width: 68px;
+            height: 68px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            --idle-scale: 1.5;
+            transform: translateZ(0) scaleX(-1) scale(var(--idle-scale));
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.35));
+        }
+        .market-idle-horse {
+            width: 78px;
+            height: 78px;
+        }
+        #market-panel .idle-horse {
+            width: 78px;
+            height: 78px;
+            --idle-scale: 1.5;
+        }
+        .idle-horse[data-sprite-set="horse"] {
+            --idle-scale: 1.65;
+        }
+        .idle-horse[data-sprite-set="rare"] {
+            --idle-scale: 1.98;
+        }
+        .idle-horse[data-sprite-set="legendary2"] {
+            --idle-scale: 1.32;
+        }
+
+        .horse-card .name {
+            font-size: 14px;
+            line-height: 18px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            text-align: right;
+        }
+        .horse-card .life {
+            font-size: 10px;
+            line-height: 14px;
+            color: #bdc3c7;
+            white-space: nowrap;
+            text-align: right;
+        }
+        .horse-card .blood {
+            font-size: 10px;
+            line-height: 14px;
+            color: #bdc3c7;
+            white-space: nowrap;
+            text-align: right;
         }
 
         /* 选中状态的马匹卡片 */
         .horse-card.selected {
             border: 2px solid #2ecc71;
-            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
             transform: scale(1.02); /* 稍微减小缩放防止模糊 */
         }
 
@@ -81,46 +267,74 @@
             transform: scale(0.98);
         }
         
-        /* 基因标签容器 */
+        .horse-card .gene-tags {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-auto-rows: 16px;
+            gap: 2px;
+            width: 100%;
+            flex: 1;
+            height: auto;
+            box-sizing: border-box;
+            border-radius: 4px;
+            align-content: start;
+            overflow: hidden;
+        }
+
         .gene-tags {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5列整齐排列 */
-            gap: 3px;
-            margin-top: 8px;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 24px;
+            gap: 6px;
             width: 100%;
-            padding: 2px;
             box-sizing: border-box;
-            background: rgba(0,0,0,0.2); /* 增加背景色区分 */
-            border-radius: 4px;
+            border-radius: 6px;
+            align-content: start;
         }
         
         .gene-tag {
-            font-size: 10px; /* 恢复字号清晰度 */
-            line-height: 14px;
-            padding: 2px 0;
-            border-radius: 2px;
-            color: #ecf0f1; /* 默认亮色文字 */
+            font-size: 9px;
+            line-height: 16px;
+            padding: 0 1px;
+            border-radius: 3px;
+            color: #ecf0f1;
             font-weight: normal;
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
-            /* 移除 ellipsis 以免只显示点点，依靠宽度足够显示 */
+            text-overflow: ellipsis; /* 增加省略号以防溢出 */
+            transform: none;
+            cursor: help; /* 增加鼠标手势 */
         }
         .gene-normal { background: #27ae60; color: #fff; } /* 已拥有普通-绿色 */
         .gene-rare { background: #f1c40f; color: #000; box-shadow: 0 0 5px rgba(241, 196, 15, 0.5); font-weight: bold; } /* 已拥有稀有-金色 */
+        .gene-epic { background: #9b59b6; color: #fff; box-shadow: 0 0 6px rgba(155, 89, 182, 0.6); font-weight: bold; border: 1px solid #8e44ad; } /* 史诗-紫色 */
+        .gene-legend { background: #e74c3c; color: #fff; box-shadow: 0 0 8px rgba(231, 76, 60, 0.8); font-weight: bold; border: 1px solid #c0392b; animation: pulse 2s infinite; } /* 神兽-红色 */
         .gene-locked { background: #2c3e50; color: #555; border: 1px solid #444; } /* 未解锁样式 */
         .gene-active { border: 2px solid #3498db; box-shadow: 0 0 6px rgba(52,152,219,0.6); }
         .gene-just { border: 2px solid #e74c3c !important; box-shadow: 0 0 6px rgba(231, 76, 60, 0.6); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
 
 
         /* 跑道层容器 */
         #track-container {
             position: absolute;
-            top: 250px; /* 避开顶部信息栏 */
+            top: 340px; /* 避开顶部信息栏 */
             bottom: 0;
             left: 0;
             width: 100%;
             overflow: hidden; 
+            transition: top 0.3s ease; /* 添加过渡动画 */
+        }
+        
+        /* 比赛模式下跑道上移 */
+        .racing-mode #track-container {
+            top: 0;
         }
 
         #track-layer {
@@ -166,6 +380,7 @@
             
             background-size: contain;
             background-repeat: no-repeat;
+            background-position: center;
             display: flex;
             align-items: flex-end; 
             justify-content: center; 
@@ -173,13 +388,16 @@
             font-weight: bold;
             color: #fff;
             text-shadow: 1px 1px 2px #000;
-            transition: left 0.1s linear; 
             z-index: 100; 
+            will-change: left, background-image, transform;
+            backface-visibility: hidden;
             
             background-image: url('assets/sprites/horse_run/1_horesrun.png'); 
             
             /* 镜像翻转：让马头朝右 */
-            transform: scaleX(-1); 
+            --race-scale: 1;
+            transform: translateZ(0) scaleX(-1) scale(var(--race-scale)); 
+            transform-origin: center;
         }
         .horse-ghost {
             position: absolute;
@@ -187,11 +405,33 @@
             height: 120px;
             background-size: contain;
             background-repeat: no-repeat;
+            background-position: center;
             pointer-events: none;
             opacity: 0.35;
-            filter: brightness(1.2);
+            filter: blur(0.6px) brightness(1.15) saturate(1.1);
             z-index: 90;
-            transform: scaleX(-1);
+            --race-scale: 1;
+            transform: translateZ(0) scaleX(-1) scale(var(--race-scale));
+            transform-origin: center;
+            will-change: opacity, transform;
+            backface-visibility: hidden;
+        }
+        .horse-burst {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            opacity: 0.9;
+            filter: blur(0.2px) brightness(1.2) saturate(1.25);
+            z-index: 95;
+            --race-scale: 1;
+            transform: translateZ(0) scaleX(-1) scale(var(--race-scale));
+            transform-origin: center;
+            will-change: opacity, transform, background-image;
+            backface-visibility: hidden;
         }
         
         /* 修正文字方向：因为父元素翻转了，文字也会翻转，需要把文字翻转回来 */
@@ -359,6 +599,17 @@
             justify-content: center;
         }
 
+        /* 选秀界面 */
+        #draft-panel {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 60;
+            display: none; align-items: center; justify-content: center; flex-direction: column;
+        }
+        .draft-container {
+            width: 85%; background: #2c3e50; border-radius: 12px; padding: 20px;
+            text-align: center; border: 1px solid #f1c40f; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
+        }
+
         .reforge-container {
             width: 90%;
             background: #2c3e50;
@@ -371,15 +622,19 @@
         .reforge-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .reforge-box {
-            width: 48%;
+            width: 50%;
             background: #34495e;
             padding: 10px;
             border-radius: 5px;
-            min-height: 150px;
+            min-height: 230px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .reforge-title {
@@ -395,6 +650,239 @@
             display: flex;
             justify-content: space-around;
             margin-top: 10px;
+        }
+
+        .reforge-split {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            overflow: hidden;
+        }
+        .reforge-skill-list {
+            width: 56px;
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: hidden;
+        }
+        .reforge-skill-item {
+            width: 100%;
+            height: 26px;
+            line-height: 26px;
+            padding: 0 4px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+        .reforge-skill-item.is-selected {
+            outline: 2px solid rgba(46, 204, 113, 0.95);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.35);
+        }
+        .reforge-skill-detail {
+            flex: 1;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(0,0,0,0.14);
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .reforge-effect-title {
+            color: #ecf0f1;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 18px;
+        }
+        .reforge-effect-badge {
+            color: #f1c40f;
+            font-size: 12px;
+            line-height: 16px;
+        }
+        .reforge-effect-text {
+            color: #bdc3c7;
+            font-size: 12px;
+            line-height: 16px;
+            overflow: hidden;
+        }
+        .reforge-effect-placeholder {
+            color: #7f8c8d;
+            font-size: 13px;
+            line-height: 18px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* 玩家头像与荣誉框 */
+        .avatar-wrapper {
+            position: relative;
+            width: 40px; height: 40px;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .avatar {
+            width: 100%; height: 100%;
+            background: #95a5a6;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            border: 2px solid #bdc3c7;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+        .avatar.has-img { color: transparent; }
+        .avatar-action {
+            background: none;
+            border: none;
+            color: #2ecc71;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+        }
+        #avatar-auth-modal,
+        #avatar-picker-modal {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.75);
+            z-index: 110;
+        }
+        .avatar-modal-box {
+            width: 86%;
+            max-width: 320px;
+            background: #2c3e50;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+            padding: 14px;
+            box-sizing: border-box;
+        }
+        .avatar-modal-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #ecf0f1;
+            margin-bottom: 8px;
+        }
+        .avatar-modal-desc {
+            font-size: 12px;
+            color: #bdc3c7;
+            line-height: 16px;
+            margin-bottom: 12px;
+        }
+        .avatar-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .avatar-picker-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 4px;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+        }
+        .avatar-pick {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(0,0,0,0.15);
+            overflow: hidden;
+            cursor: pointer;
+            padding: 0;
+        }
+        .avatar-pick img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        /* 冠军金框 */
+        .avatar-frame-gold {
+            position: absolute;
+            top: -5px; left: -5px;
+            width: 50px; height: 50px;
+            border: 3px solid #f1c40f;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #f1c40f, inset 0 0 5px #f1c40f;
+            pointer-events: none;
+            z-index: 2;
+        }
+        /* 荣誉皇冠 */
+        .honor-crown {
+            position: absolute;
+            top: -12px; left: 50%;
+            transform: translateX(-50%) rotate(-10deg);
+            font-size: 18px;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+            z-index: 3;
+            animation: floatCrown 2s ease-in-out infinite;
+        }
+        @keyframes floatCrown {
+            0%, 100% { transform: translateX(-50%) rotate(-10deg) translateY(0); }
+            50% { transform: translateX(-50%) rotate(-10deg) translateY(-3px); }
+        }
+        /* 比赛中马匹头顶信息 */
+        .horse-name-tag {
+            position: absolute;
+            background: rgba(0,0,0,0.5); /* 稍微降低透明度 */
+            padding: 2px 6px;
+            border-radius: 10px; /* 胶囊形状 */
+            color: #fff;
+            font-size: 10px;
+            text-align: center;
+            pointer-events: none; 
+            z-index: 101;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: row; /* 改为横向排列 */
+            align-items: center;
+            gap: 4px; /* 名字和技能之间的间距 */
+            /* 调整位置：
+               - translate(-50%, -100%)：基准点位于元素底部中心
+               - top: 0：定位到马匹容器的顶部
+               - z-index: 确保在马匹上方，但需要注意层级关系
+            */
+            transform: translate(-50%, -80%); /* 向上偏移，位于头顶 */
+            margin-top: 0; 
+            z-index: 200; /* 提高层级，防止被上方跑道的马匹遮挡 */
+        }
+        .horse-name-tag .name-row {
+            font-weight: bold;
+            text-shadow: 0 1px 1px #000;
+        }
+        .horse-name-tag.is-player .name-row {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        .horse-name-tag .skill-row {
+            display: flex;
+            gap: 1px;
+            justify-content: center;
+        }
+        .mini-gene-tag {
+            font-size: 8px; /* 进一步减小字体 */
+            padding: 0 2px;
+            border-radius: 2px;
+            line-height: 1.2;
         }
     </style>
 </head>
@@ -429,13 +917,33 @@
                     <button class="btn btn-green btn-small" style="width:60%; font-size:14px;" onclick="game.closeSkillModal()">关闭</button>
                 </div>
             </div>
+            <div id="avatar-auth-modal">
+                <div class="avatar-modal-box">
+                    <div class="avatar-modal-title">获取头像授权</div>
+                    <div class="avatar-modal-desc">登录后可获取微信头像用于展示。当前测试从本地目录加载：E:\\hores\\Test Friend Avatar</div>
+                    <div class="avatar-modal-actions">
+                        <button class="btn btn-green btn-small" style="width:45%;" onclick="game.grantAvatarConsent()">同意</button>
+                        <button class="btn btn-blue btn-small" style="width:45%; background:#7f8c8d; box-shadow:0 4px #666;" onclick="game.denyAvatarConsent()">拒绝</button>
+                    </div>
+                </div>
+            </div>
+            <div id="avatar-picker-modal">
+                <div class="avatar-modal-box">
+                    <div class="avatar-modal-title">更换头像</div>
+                    <div class="avatar-modal-desc">从本地目录选择一张图片作为头像（可在文件夹里替换/新增）。</div>
+                    <div id="avatar-picker-list" class="avatar-picker-list"></div>
+                    <div class="avatar-modal-actions">
+                        <button class="btn btn-blue btn-small" style="width:60%; background:#7f8c8d; box-shadow:0 4px #666;" onclick="game.closeAvatarPicker()">关闭</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <!-- 培育界面 -->
         <div id="breed-panel">
             <div class="breed-info">
                 <h2>马厩培育中心</h2>
-                <p>消耗 500 积分，为您当前的赛马寻找配偶。</p>
+                <p>消耗 500 积分和父本 10 点寿命，为您当前的赛马寻找配偶。</p>
                 <p id="breed-result" style="font-weight:bold; color:#e67e22;"></p>
                 <button class="btn btn-green" onclick="game.confirmBreed()">开始培育</button>
                 <button class="btn btn-blue" style="background:#7f8c8d" onclick="game.closeBreed()">返回大厅</button>
@@ -446,28 +954,172 @@
         <div id="reforge-panel">
             <div class="reforge-container">
                 <h2 style="text-align:center; margin-top:0; color:#e056fd">技能洗练中心</h2>
-                <p style="text-align:center; font-size:12px; color:#aaa">消耗 1 积分重置当前技能组合</p>
+                <p style="text-align:center; font-size:12px; color:#aaa">技能槽中每个稀有技能增加基础速度 3%</p>
                 
                 <div class="reforge-row">
                     <div class="reforge-box">
-                        <div class="reforge-title">当前属性</div>
-                        <div id="reforge-current-genes" class="gene-tags" style="grid-template-columns: repeat(3, 1fr);"></div>
+                        <div class="reforge-title" style="font-size:16px;">当前技能</div>
+                        <div class="reforge-split">
+                            <div id="reforge-current-list" class="reforge-skill-list"></div>
+                            <div id="reforge-current-detail" class="reforge-skill-detail">
+                                <div class="reforge-effect-placeholder">选择左侧技能查看效果</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="reforge-box">
-                        <div class="reforge-title">洗练预览</div>
-                        <div id="reforge-new-genes" class="gene-tags" style="grid-template-columns: repeat(3, 1fr);">
-                            <div style="grid-column:1/-1; text-align:center; color:#7f8c8d; margin-top:40px;">点击洗练生成</div>
+                        <div class="reforge-title" style="font-size:16px;">洗练预览</div>
+                        <div class="reforge-split">
+                            <div id="reforge-new-list" class="reforge-skill-list"></div>
+                            <div id="reforge-new-detail" class="reforge-skill-detail">
+                                <div class="reforge-effect-placeholder">点击洗练生成</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="reforge-actions">
-                    <button id="btn-do-reforge" class="btn btn-blue" style="width:40%; background:#8e44ad; font-size:14px;" onclick="game.doReforge()">洗练 (-1)</button>
+                    <button id="btn-do-reforge" class="btn btn-blue" style="width:40%; background:#8e44ad; font-size:14px;" onclick="game.doReforge()">洗练</button>
                     <button id="btn-save-reforge" class="btn btn-green" style="width:40%; display:none; font-size:14px;" onclick="game.saveReforge()">保存结果</button>
                     <button id="btn-discard-reforge" class="btn btn-blue" style="width:40%; display:none; background:#7f8c8d; font-size:14px;" onclick="game.discardReforge()">放弃</button>
                 </div>
                 <button class="btn btn-blue" style="background:#7f8c8d; margin-top:10px;" onclick="game.closeReforge()">关闭</button>
             </div>
+        </div>
+
+        <!-- 交易市场界面 -->
+        <div id="trade-panel" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:70; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:90%; background:#2c3e50; border-radius:12px; padding:15px; border:1px solid #f39c12; box-shadow:0 0 20px rgba(243,156,18,0.3);">
+                <h3 style="color:#f1c40f; text-align:center; margin-top:0;">🤝 选秀权交易市场</h3>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; padding:10px; background:#34495e; border-radius:6px;">
+                    <div style="text-align:center; width:45%;">
+                        <div style="color:#95a5a6; font-size:12px;">我的资产</div>
+                        <div style="color:#2ecc71; font-weight:bold;">💰 <span id="trade-my-points">0</span></div>
+                        <div style="color:#e67e22; font-weight:bold; margin-top:5px;">🎫 <span id="trade-my-tier">第 - 档</span></div>
+                    </div>
+                    <div style="display:flex; align-items:center; color:#bdc3c7;">VS</div>
+                    <div style="text-align:center; width:45%;">
+                        <div style="color:#95a5a6; font-size:12px;">目标</div>
+                        <div style="color:#3498db; font-weight:bold; margin-top:15px;">🏁 <span id="trade-target-tier">选择队伍</span></div>
+                    </div>
+                </div>
+
+                <div id="trade-list" style="height:150px; overflow-y:auto; background:#222; border-radius:6px; margin-bottom:10px;">
+                    <!-- JS 生成列表 -->
+                </div>
+
+                <div id="trade-action-area" style="display:none; text-align:center;">
+                    <div style="color:#ecf0f1; font-size:12px; margin-bottom:5px;">出价: <span id="trade-offer-val" style="color:#f1c40f;">0</span> 积分 + 我的选秀权</div>
+                    <input type="range" id="trade-slider" min="0" max="10000" step="100" style="width:80%;" oninput="game.updateTradeCalc()">
+                    <div id="trade-msg" style="font-size:12px; height:20px; margin:5px 0;"></div>
+                    <button class="btn btn-green" style="width:100%; margin-top:5px;" onclick="game.executeTrade()">确认交易</button>
+                </div>
+
+                <button class="btn btn-blue" style="background:#7f8c8d; margin-top:10px; width:100%;" onclick="game.closeTrade()">返回选秀大会</button>
+            </div>
+        </div>
+
+        <!-- 选秀界面 -->
+        <div id="draft-panel">
+            <div class="draft-container">
+                <h2 style="color:#f1c40f; margin-bottom:10px;">赛季选秀大会</h2>
+                <div id="draft-status" style="margin-bottom:20px; color:#ecf0f1;"></div>
+                
+                <!-- 新增交易入口 -->
+                <button id="btn-open-trade" class="btn btn-blue" style="background:#8e44ad; margin-bottom:10px; box-shadow: 0 4px #6c3483;" onclick="game.openTrade()">🤝 交易选秀权</button>
+
+                <div id="draft-result" style="display:none; margin:20px 0; padding:15px; background:#34495e; border-radius:8px; max-height: 400px; overflow-y: auto;">
+                    <div style="font-size:18px; color:#2ecc71; margin-bottom:10px;">🎉 获得 <span id="draft-pick-no" style="color:#f1c40f; font-weight:bold;"></span> 顺位选择权</div>
+                    <p style="font-size:12px; color:#bdc3c7;">请从下方待选新秀中选择一匹：</p>
+                    <div id="draft-pool-container" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div>
+                    
+                    <!-- 将操作按钮移动到展示区内部底部 -->
+                    <div style="margin-top: 20px; border-top: 1px solid #7f8c8d; padding-top: 15px;">
+                         <button id="btn-close-draft" class="btn btn-blue" style="display:none;" onclick="game.closeDraft()">开启新赛季</button>
+                         <button id="btn-trade-new-horse" class="btn btn-blue" style="display:none; background:#e67e22;" onclick="game.openHorseTrade()">💰 出售新马</button>
+                         <button id="btn-market-trade" class="btn btn-blue" style="display:none; background:#9b59b6;" onclick="game.openMarket()">🔄 球员交易市场</button>
+                    </div>
+                </div>
+                <button id="btn-start-draft" class="btn btn-green" onclick="game.startDraft()">开始抽签</button>
+            </div>
+        </div>
+        
+        <!-- Ticket Menu Modal -->
+        <div id="ticket-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center;">
+            <div style="background:#2c3e50; padding:20px; border-radius:10px; width:80%; max-width:300px; text-align:center; border:2px solid #f39c12; box-shadow: 0 0 20px rgba(0,0,0,0.8);">
+                <h3 style="color:#f1c40f; margin-top:0; border-bottom:1px solid #7f8c8d; padding-bottom:10px;">🎫 获取门票</h3>
+                <p style="color:#bdc3c7; font-size:14px; margin:20px 0;">当前拥有: <span id="ticket-modal-count" style="color:#2ecc71; font-weight:bold; font-size:18px;">0</span> 张</p>
+                
+                <button class="btn btn-blue" onclick="game.buyTicketWithPoints()">
+                    💰 消耗积分 (200分/张)
+                </button>
+                
+                <button id="btn-watch-ad-modal" class="btn btn-green" onclick="game.watchAdForTicket()" style="margin-top:10px;">
+                    📺 观看广告 (免费+5)
+                </button>
+                
+                <button class="btn" style="margin-top:20px; background:#95a5a6; padding:10px; font-size:14px;" onclick="game.closeTicketMenu()">关闭</button>
+            </div>
+        </div>
+
+        <!-- 球员交易市场界面 -->
+        <div id="market-panel" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:90; flex-direction:column; align-items:center;">
+             <div style="width:100%; height:40px; background:#2c3e50; display:flex; align-items:center; padding:0 10px; box-sizing:border-box; justify-content:space-between;">
+                 <span style="color:#f1c40f; font-weight:bold;">🔄 自由市场</span>
+                 <button class="btn btn-blue btn-small" style="background:#e74c3c; width:auto; padding:5px 10px;" onclick="game.closeMarket()">关闭</button>
+             </div>
+             
+             <div style="flex:1; width:100%; overflow-y:auto; padding:10px; box-sizing:border-box;">
+                 <!-- 交易区布局：上部分为 AI 马列表，下部分为我的筹码 -->
+                 
+                 <div style="margin-bottom:10px;">
+                     <div style="color:#bdc3c7; font-size:12px; margin-bottom:5px;">🎯 目标 (AI 的马)</div>
+                     <div id="market-ai-list" style="display:flex; overflow-x:auto; gap:10px; padding-bottom:10px;"></div>
+                 </div>
+                 
+                 <div style="margin-bottom:10px; border-top:1px solid #444; padding-top:10px;">
+                     <div style="color:#bdc3c7; font-size:12px; margin-bottom:5px;">💰 我的筹码 (勾选马匹 + 积分)</div>
+                     <div id="market-my-list" style="display:flex; overflow-x:auto; gap:10px; padding-bottom:10px;"></div>
+                 </div>
+                 
+                 <!-- 交易计算区 -->
+                 <div style="background:#34495e; padding:15px; border-radius:8px; text-align:center;">
+                    <div id="market-target-preview" style="display:flex; justify-content:center; margin-bottom:10px;"></div>
+                     <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
+                         <div style="text-align:center;">
+                             <div style="font-size:12px; color:#95a5a6;">对方价值</div>
+                             <div id="market-target-val" style="font-size:24px; color:#e74c3c; font-weight:bold;">0</div>
+                         </div>
+                         <div style="font-size:20px; color:#bdc3c7;">VS</div>
+                         <div style="text-align:center;">
+                             <div style="font-size:12px; color:#95a5a6;">我方价值</div>
+                             <div id="market-my-val" style="font-size:24px; color:#2ecc71; font-weight:bold;">0</div>
+                         </div>
+                     </div>
+                     
+                     <div style="margin-bottom:10px;">
+                        <span style="color:#ecf0f1; font-size:12px;">追加积分: <span id="market-points-val" style="color:#f1c40f;">0</span></span>
+                        <input type="range" id="market-points-slider" min="0" max="10000" step="100" style="width:100%;" oninput="game.updateMarketCalc()">
+                     </div>
+                     
+                     <div id="market-msg" style="font-size:12px; margin-bottom:10px; height:20px;"></div>
+                     
+                     <button class="btn btn-green" onclick="game.executeMarketTrade()">🤝 确认交易</button>
+                 </div>
+             </div>
+        </div>
+        
+        <!-- 马匹交易确认弹窗 -->
+        <div id="horse-trade-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:80; flex-direction:column; align-items:center; justify-content:center;">
+             <div style="background:#2c3e50; padding:20px; border-radius:10px; text-align:center; border:1px solid #f1c40f;">
+                 <h3 style="color:#f1c40f;">马匹交易中心</h3>
+                 <p style="color:#ecf0f1;">当前有人出价 <span id="horse-trade-price" style="color:#2ecc71; font-weight:bold;">0积分</span> 收购你的新秀马</p>
+                 <p style="font-size:12px; color:#bdc3c7;">(交易后马匹将离开马厩，无法撤销)</p>
+                 <div style="margin-top:20px;">
+                     <button class="btn btn-green" onclick="game.confirmHorseTrade()">确认出售</button>
+                     <button class="btn btn-blue" style="background:#7f8c8d" onclick="game.cancelHorseTrade()">取消</button>
+                 </div>
+             </div>
         </div>
     </div>
     <script type="module">
@@ -489,26 +1141,221 @@
             // 稀有/神兽类
             Destiny: '天命', Miracle: '奇迹', Shadow: '残影', Meteor: '流星', Legend: '传说'
         };
+
+        const SpriteSet = {
+            Horse: 'horse',
+            Base: 'g',
+            Rare: 'rare',
+            Rare2: 'rare2',
+            Epic: 'epic',
+            Legendary: 'legendary',
+            Legendary2: 'legendary2',
+            Legendary3: 'legendary3'
+        };
+
+        const SpriteAssets = {
+            [SpriteSet.Horse]: { dir: 'assets/sprites/horse_run', file: (i) => `${i}_horesrun.png` },
+            [SpriteSet.Base]: { dir: 'assets/sprites/g_hores_run', file: (i) => `g_hores_run_${String((Number(i) || 1) - 1).padStart(4, '0')}.png` },
+            [SpriteSet.Rare]: { dir: 'assets/sprites/2horse_run', file: (i) => `g_hores_run_${String((Number(i) || 1) - 1).padStart(4, '0')}.png` },
+            [SpriteSet.Rare2]: { dir: 'assets/sprites/2g_hores_run', file: (i) => `3horse_run_${String((Number(i) || 1) - 1).padStart(4, '0')}.png` },
+            [SpriteSet.Epic]: { dir: 'assets/sprites/3horse_run', file: (i) => `3horse_run_${String((Number(i) || 1) - 1).padStart(4, '0')}.png` },
+            [SpriteSet.Legendary]: { dir: 'assets/sprites/4horse_run', file: (i) => `2horse_run_${String((Number(i) || 1) - 1).padStart(4, '0')}.png` },
+            [SpriteSet.Legendary2]: { dir: 'assets/sprites/4g_horse_run/output', file: (i) => `4g_hores_run_${String((Number(i) || 1) - 1).padStart(4, '0')}.png` },
+            [SpriteSet.Legendary3]: { dir: 'assets/sprites/5g_horse_run', file: (i) => `3horse_run_${String((Number(i) || 1) - 1).padStart(4, '0')}.png` }
+        };
+
+        const RaceSpriteScale = {
+            [SpriteSet.Horse]: 1.1,
+            [SpriteSet.Rare]: 1.064,
+            [SpriteSet.Rare2]: 0.908,
+            [SpriteSet.Epic]: 0.911,
+            [SpriteSet.Legendary]: 0.966,
+            [SpriteSet.Legendary2]: 0.885,
+            [SpriteSet.Legendary3]: 0.971
+        };
+
+        const BurstAssets = {
+            dir: 'assets/effects/chixiao_burst',
+            frames: ['ef_001_p_gl_586.png', 'ef_001_p_gl_587.png', 'ef_001_p_gl_588.png']
+        };
+
+        const NewYearGreetings = [
+            '恭喜发财','新年快乐','万事如意','阖家幸福','心想事成','吉星高照','福星高照','财源广进','大吉大利','年年有余',
+            '步步高升','事业有成','龙马精神','一帆风顺','平安喜乐','福寿安康','吉祥如意','花开富贵','五福临门','四季平安',
+            '喜气盈门','鸿运当头','金玉满堂','喜乐安宁','春回大地','万象更新','瑞气盈门','财运亨通','福满人间','好事成双',
+            '迎春纳福','福运绵长','岁岁安康','福泽深厚','喜上眉梢','开门见喜','紫气东来','万福齐臻','春风得意','福来运转'
+        ];
+
+        const NewYearPrefixes = ['新春','迎春','恭喜','万事','阖家','五福','四季','财源','福星','吉星','鸿运','瑞气','喜气','金玉','花开','岁岁','福寿','平安'];
+        const NewYearSuffixes = ['纳福','进宝','如意','安康','临门','高照','盈门','满堂','顺遂','康泰','长久','吉祥','同庆','大吉','喜乐','团圆','昌盛','兴旺'];
+
+        const pickLegendarySpriteSet = () => {
+            const r = Math.random();
+            return r < 1/3 ? SpriteSet.Legendary : (r < 2/3 ? SpriteSet.Legendary2 : SpriteSet.Legendary3);
+        };
         
         const InitialPlayer = {
             integral: 2000,
             ticketsNormal: 30,
+            seasonNo: 1,
             horses: [{
                 id: 'h1', name: '赤兔', color: '#e63946', quality: '普通',
                 baseSpeed: 55, stamina: 70, accel: 0.8, temper: 0.9,
                 lifespan: 50, maxLifespan: 50, 
-                genes: [{type:'疾风', quality:'普通'}], // 初始只给一个基因
-                geneSlots: 6, // 初始解锁 6 个槽位 (最高稀有度)
+                genes: [{type:'疾风', quality:'普通'}], 
+                geneSlots: 6,
+                spriteSet: SpriteSet.Horse,
+                totalRaces: 0
+            }, {
+                id: 'g1', name: '小灰', color: '#74b9ff', quality: '普通',
+                baseSpeed: 52, stamina: 65, accel: 0.75, temper: 0.8,
+                lifespan: 50, maxLifespan: 50,
+                genes: [],
+                geneSlots: 6,
+                spriteSet: SpriteSet.Base,
                 totalRaces: 0
             }],
-            seasonWins: 0
+            seasonWins: 0,
+            seasonRaces: 0,
+            seasonBottoms: 0, // 新增：倒数排名（4-5名）累计次数
+            aiStable: [], // 新增 AI 马厩
+            trophies: 0, // 新增：赛季冠军奖杯
+            hasSeasonChampion: false // 新增：当前是否持有赛季冠军荣誉（持续一赛季）
         };
 
-        function generateAIHorse(i) {
+        // 初始化一些强力 AI 马
+        function initAIStable() {
+            // AI 马厩初始不放太强的，而是根据玩家初始马生成类似的
+            const stable = [];
+            // 生成4匹与玩家初始马质量相近的马
+            for (let i = 0; i < 4; i++) {
+                stable.push({
+                    id: 'ai_base_'+i, name: 'AI-G'+i, color: '#aaa',
+                    quality: '普通', // 初始默认普通，与玩家一致
+                    baseSpeed: 55, stamina: 70, accel: 0.8, lifespan: 999,
+                    genes: [], geneSlots: 6, // 初始与玩家一致
+                    spriteSet: Math.random() < 0.35 ? SpriteSet.Base : SpriteSet.Horse
+                });
+            }
+            return stable;
+        }
+        InitialPlayer.aiStable = initAIStable();
+
+        function generateAIHorse(i, player, playerHorseOrQuality = '普通') {
+            // 参数兼容：如果是字符串则为 quality，如果是对象则为 horse
+            let playerHorseQuality = '普通';
+            let playerBaseSpeed = 55;
+            
+            if (typeof playerHorseOrQuality === 'string') {
+                playerHorseQuality = playerHorseOrQuality;
+            } else if (playerHorseOrQuality && typeof playerHorseOrQuality === 'object') {
+                playerHorseQuality = playerHorseOrQuality.quality || '普通';
+                playerBaseSpeed = playerHorseOrQuality.baseSpeed || 55;
+            }
+
+            // 优先从 AI 马厩中选最强的出战
+            // 评分标准：基础速度 + 技能评分
+            const stable = player && player.aiStable ? player.aiStable : [];
+            
+            // 随着赛季进行，AI 强度动态提升
+            // 简单模拟：赛季场次越多，生成的临时 AI 越强
+            const seasonBonus = player ? (player.seasonRaces || 0) * 0.5 : 0;
+
+            if (stable.length > 0) {
+                 // 简单排序，选最好的
+                 stable.sort((a,b) => b.baseSpeed - a.baseSpeed);
+                 const best = stable[i % stable.length]; // 循环取，避免都取同一个
+                 
+                 // 如果是第一赛季前几场，强制将 AI 马的质量修正为与玩家一致，避免初始 AI 过强
+                 // 这里的逻辑是：如果 AI 马是初始生成的（id包含 ai_base），则动态调整其属性
+                 // 这样既保留了 AI 成长性（选秀截胡），又保证了初始公平
+                 
+                 let finalBaseSpeed = best.baseSpeed + seasonBonus;
+                 let finalGeneSlots = best.geneSlots;
+                 let finalQuality = best.quality;
+                 
+                 // 动态修正初始 AI
+                 if (best.id.startsWith('ai_base_')) {
+                     // 强制同步玩家等级
+                     finalQuality = playerHorseQuality;
+                     // 同步槽位
+                     const slotsMap = { '普通': 3, '中级': 4, '高级': 5, '稀有': 6, '神兽': 6 };
+                     // 注意：玩家初始马虽然是普通，但可能有6个槽（为了体验），所以这里 AI 也要对齐
+                     // 如果玩家是普通但有6个槽，AI 也应该有6个槽
+                     // 这里简化处理：直接读取玩家当前马的槽位数比较难（参数只传了 quality）
+                     // 但我们可以根据 quality 给一个标准值，或者直接用 best.geneSlots (初始化时已设为6)
+                     finalGeneSlots = 6; // 初始 AI 统一给 6 槽，与玩家一致
+                     
+                     // 修正速度：不能只看 quality，要参考玩家实际速度
+                     // 限制 AI 速度不能超过玩家太多 (例如 +5)
+                     const maxAllowed = playerBaseSpeed + 5;
+                     
+                     let baseSpd = 55;
+                     if (finalQuality === '中级') baseSpd = 60;
+                     else if (finalQuality === '高级') baseSpd = 65;
+                     else if (finalQuality === '稀有') baseSpd = 70;
+                     else if (finalQuality === '神兽') baseSpd = 75;
+                     
+                     // 应用软上限：确保 AI 成长是渐进的
+                     finalBaseSpeed = Math.min(baseSpd + seasonBonus, maxAllowed);
+                 }
+
+                 // 克隆一个出战对象，避免修改原数据
+                 return {
+                     ...best,
+                     id: 'ai_race_' + i + '_' + Date.now(),
+                     quality: finalQuality,
+                     geneSlots: finalGeneSlots,
+                     baseSpeed: finalBaseSpeed,
+                     spriteSet: finalQuality === '神兽'
+                        ? pickLegendarySpriteSet()
+                        : (finalQuality === '史诗'
+                            ? SpriteSet.Epic
+                            : (finalQuality === '稀有'
+                                ? (Math.random() < 0.5 ? SpriteSet.Rare : SpriteSet.Rare2)
+                                : (best.spriteSet || (Math.random() < 0.35 ? SpriteSet.Base : SpriteSet.Horse))))
+                 };
+            }
+            
+            // 如果马厩没马，生成临时的
+            // 动态匹配玩家马的质量：尽量生成同级或稍弱的马，偶尔生成更强的
+            const ladder = ['普通','中级','高级','稀有','神兽'];
+            let qIdx = ladder.indexOf(playerHorseQuality);
+            if (qIdx === -1) qIdx = 0;
+            
+            // 随机波动：-1 到 +1 之间，模拟匹配
+            let aiQIdx = qIdx + Math.floor(Math.random() * 3) - 1;
+            aiQIdx = Math.max(0, Math.min(ladder.length - 1, aiQIdx));
+            const aiQuality = ladder[aiQIdx];
+            
+            // 根据质量设定基础属性
+            let baseSpd = 55;
+            let slots = 3;
+            // 玩家初始马是普通但有6槽，为了公平，如果 AI 匹配到普通，也给它多点槽位
+            if (aiQuality === '普通') slots = 6; 
+            else if (aiQuality === '中级') { baseSpd = 60; slots = 4; }
+            else if (aiQuality === '高级') { baseSpd = 65; slots = 5; }
+            else if (aiQuality === '稀有') { baseSpd = 70; slots = 6; }
+            else if (aiQuality === '神兽') { baseSpd = 75; slots = 6; }
+            
+            // 限制 AI 速度上限：不超过玩家速度 + 5 + 赛季加成
+            // 这样即使随机到了高等级马，数值也不会太离谱
+            const cappedSpeed = Math.min(baseSpd, playerBaseSpeed + 5);
+            
             return {
-                id: 'ai_'+i, name: 'AI-'+i, color: ['#fff','#ccc','#888'][i%3],
-                // 下调 AI 基础速度，避免无基因 AI 过快
-                baseSpeed: 55 + Math.random()*5, accel: 0.5, lifespan: 50
+                id: 'ai_'+i, name: 'AI-'+i, 
+                color: aiQuality==='神兽'?'#e74c3c':(aiQuality==='史诗'?'#9b59b6':(aiQuality==='稀有'?'#f1c40f':'#ecf0f1')),
+                quality: aiQuality,
+                baseSpeed: cappedSpeed + Math.random()*5 + seasonBonus, 
+                accel: 0.5, lifespan: 50,
+                genes: [], geneSlots: slots,
+                spriteSet: aiQuality === '神兽'
+                    ? pickLegendarySpriteSet()
+                    : (aiQuality === '史诗'
+                        ? SpriteSet.Epic
+                        : (aiQuality === '稀有'
+                            ? (Math.random() < 0.5 ? SpriteSet.Rare : SpriteSet.Rare2)
+                            : (Math.random() < 0.35 ? SpriteSet.Base : SpriteSet.Horse)))
             };
         }
 
@@ -556,10 +1403,19 @@
                 
                 return {
                     id: 'bred_'+Date.now(), name,
-                    color: p1.color, quality,
+                    color: quality==='神兽'?'#e74c3c':(quality==='史诗'?'#9b59b6':(quality==='稀有'?'#f1c40f':'#ecf0f1')),
+                    quality,
                     baseSpeed: (p1.baseSpeed + p2.baseSpeed)/2 * 1.05,
                     stamina: 60, accel: 0.8, temper: 0.5,
-                    lifespan: 50, maxLifespan: 50, genes, geneSlots, totalRaces: 0
+                    lifespan: 50, maxLifespan: 50, genes, geneSlots,
+                    spriteSet: quality === '神兽'
+                        ? pickLegendarySpriteSet()
+                        : (quality === '史诗'
+                            ? SpriteSet.Epic
+                            : (quality === '稀有'
+                                ? (Math.random() < 0.5 ? SpriteSet.Rare : SpriteSet.Rare2)
+                                : (Math.random() < 0.5 ? (p1.spriteSet || SpriteSet.Horse) : (p2.spriteSet || SpriteSet.Horse)))),
+                    totalRaces: 0
                 };
             },
             
@@ -590,14 +1446,315 @@
                 this.horses = [];
                 this.racing = false;
                 this.stableCap = 5;
+                this.idleAnimTimer = null;
+                this.avatarDirPath = 'Test Friend Avatar';
+                this.avatarList = null;
+                this.horseRunFrameCss = null;
+                this.horseRunFramesReady = null;
+                this.horseRunImages = null;
+                this.burstFrameCss = null;
+                this.burstFramesReady = null;
+                this.burstImages = null;
+                this.stableIdleToken = 0;
+
+                const baseHorse = this.player.horses.find(h => h && h.id === 'g1');
+                if (baseHorse && (!Array.isArray(baseHorse.genes) || baseHorse.genes.length === 0)) {
+                    const allTypes = Object.values(GeneType);
+                    const type = allTypes[Math.floor(Math.random() * allTypes.length)];
+                    baseHorse.genes = [{ type, quality: '普通' }];
+                }
                 
                 // 初始化宿敌池 (4匹固定对手，减少数量以优化显示)
                 this.rivals = Array.from({length: 4}, (_, i) => generateAIHorse(i));
                 
+                this.horseRunFramesReady = this.preloadHorseRunFrames();
+                this.burstFramesReady = this.preloadBurstFrames();
                 this.updateUI();
+                this.initAvatarFlow();
                 
                 // 临时变量
                 this.tempReforgeGenes = null;
+            }
+
+            escapeHtml(value) {
+                return String(value ?? '')
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;')
+                    .replaceAll("'", '&#39;');
+            }
+
+            pickUniqueNewYearName(used) {
+                const usedSet = used instanceof Set ? used : new Set();
+                const pool = [...NewYearGreetings].sort(() => 0.5 - Math.random());
+                for (const n of pool) {
+                    if (!usedSet.has(n)) {
+                        usedSet.add(n);
+                        return n;
+                    }
+                }
+                for (let t = 0; t < 200; t++) {
+                    const n = NewYearPrefixes[Math.floor(Math.random() * NewYearPrefixes.length)] +
+                        NewYearSuffixes[Math.floor(Math.random() * NewYearSuffixes.length)];
+                    if (n.length === 4 && !usedSet.has(n)) {
+                        usedSet.add(n);
+                        return n;
+                    }
+                }
+                for (let i = 0; i < 9999; i++) {
+                    const n = '新春纳福';
+                    const cand = i === 0 ? n : (n.slice(0, 2) + String(i).padStart(2, '0').slice(-2));
+                    if (!usedSet.has(cand)) {
+                        usedSet.add(cand);
+                        return cand;
+                    }
+                }
+                return '新年快乐';
+            }
+
+            preloadHorseRunFrames() {
+                if (this.horseRunFrameCss && typeof this.horseRunFrameCss === 'object') return this.horseRunFramesReady || Promise.resolve(true);
+                const frameCount = 20;
+                const sets = {};
+                const images = {};
+                const decodes = [];
+
+                for (const [key, def] of Object.entries(SpriteAssets)) {
+                    const list = new Array(frameCount + 1);
+                    const imgList = new Array(frameCount + 1);
+                    for (let i = 1; i <= frameCount; i++) {
+                        const url = `${def.dir}/${def.file(i)}`;
+                        list[i] = `url('${url}')`;
+                        const img = new Image();
+                        img.decoding = 'async';
+                        img.loading = 'eager';
+                        const ready = new Promise(resolve => {
+                            img.onload = () => resolve(true);
+                            img.onerror = () => resolve(false);
+                        });
+                        img.src = url;
+                        imgList[i] = img;
+                        decodes.push(typeof img.decode === 'function' ? img.decode().then(() => true).catch(() => ready) : ready);
+                    }
+                    sets[key] = list;
+                    images[key] = imgList;
+                }
+
+                this.horseRunFrameCss = sets;
+                this.horseRunImages = images;
+                this.horseRunFramesReady = Promise.all(decodes).then(() => true);
+                return this.horseRunFramesReady;
+            }
+
+            preloadBurstFrames() {
+                if (this.burstFrameCss && typeof this.burstFrameCss === 'object') return this.burstFramesReady || Promise.resolve(true);
+                const frameCount = BurstAssets.frames.length;
+                const list = new Array(frameCount + 1);
+                const imgList = new Array(frameCount + 1);
+                const decodes = [];
+                for (let i = 1; i <= frameCount; i++) {
+                    const url = `${BurstAssets.dir}/${BurstAssets.frames[i - 1]}`;
+                    list[i] = `url('${url}')`;
+                    const img = new Image();
+                    img.decoding = 'async';
+                    img.loading = 'eager';
+                    const ready = new Promise(resolve => {
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                    });
+                    img.src = url;
+                    imgList[i] = img;
+                    decodes.push(typeof img.decode === 'function' ? img.decode().then(() => true).catch(() => ready) : ready);
+                }
+                this.burstFrameCss = { chixiao: list };
+                this.burstImages = { chixiao: imgList };
+                this.burstFramesReady = Promise.all(decodes).then(() => true);
+                return this.burstFramesReady;
+            }
+
+            horseRunFrame(i, spriteSetKey) {
+                const idx = Number(i) || 1;
+                const key = (spriteSetKey && this.horseRunFrameCss && this.horseRunFrameCss[spriteSetKey]) ? spriteSetKey : SpriteSet.Horse;
+                const list = this.horseRunFrameCss && this.horseRunFrameCss[key];
+                if (Array.isArray(list) && list[idx]) return list[idx];
+                const def = SpriteAssets[key] || SpriteAssets[SpriteSet.Horse];
+                return `url('${def.dir}/${def.file(idx)}')`;
+            }
+
+            async ensureHorseRunFramesReady() {
+                try {
+                    if (!this.horseRunFramesReady) this.horseRunFramesReady = this.preloadHorseRunFrames();
+                    await this.horseRunFramesReady;
+                } catch (_) {}
+            }
+
+            async ensureBurstFramesReady() {
+                try {
+                    if (!this.burstFramesReady) this.burstFramesReady = this.preloadBurstFrames();
+                    await this.burstFramesReady;
+                } catch (_) {}
+            }
+
+            truncateRaceName(name) {
+                const s = String(name ?? '');
+                const isAscii = /^[\x00-\x7F]*$/.test(s);
+                const maxLen = isAscii ? 6 : 4;
+                return s.length > maxLen ? s.slice(0, maxLen) : s;
+            }
+
+            setHorseName(horseId, nextName) {
+                const horse = this.player.horses.find(h => h.id === horseId);
+                if (!horse) return;
+                const raw = String(nextName ?? '');
+                const cleaned = raw.trim().slice(0, 12);
+                horse.name = cleaned || horse.name;
+            }
+
+            pushHint(message) {
+                if (!this.hints) this.hints = [];
+                const text = String(message ?? '').trim();
+                if (!text) return;
+                this.hints.push(text);
+                if (this.hints.length > 12) this.hints = this.hints.slice(-12);
+            }
+
+            renderHintsHtml() {
+                const list = Array.isArray(this.hints) && this.hints.length > 0
+                    ? this.hints
+                    : ['左右滑动查看马厩，点技能查看说明'];
+                return list.map(t => `<div class="hint-chip">${this.escapeHtml(t)}</div>`).join('');
+            }
+
+            getAvatarConsent() {
+                return localStorage.getItem('wechatAvatarConsent');
+            }
+
+            setAvatarConsent(value) {
+                localStorage.setItem('wechatAvatarConsent', value);
+            }
+
+            initAvatarFlow() {
+                const consent = this.getAvatarConsent();
+                if (consent === 'granted') {
+                    this.ensureAvatarLoaded();
+                    return;
+                }
+                if (consent === 'denied') return;
+                this.openAvatarAuthModal();
+            }
+
+            openAvatarAuthModal() {
+                const modal = document.getElementById('avatar-auth-modal');
+                if (modal) modal.style.display = 'flex';
+            }
+
+            closeAvatarAuthModal() {
+                const modal = document.getElementById('avatar-auth-modal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            async grantAvatarConsent() {
+                this.setAvatarConsent('granted');
+                this.closeAvatarAuthModal();
+                await this.ensureAvatarLoaded(true);
+                this.pushHint('✅ 已授权头像展示，可点击头像更换');
+                this.updateUI();
+            }
+
+            denyAvatarConsent() {
+                this.setAvatarConsent('denied');
+                this.closeAvatarAuthModal();
+                this.pushHint('ℹ️ 已拒绝头像授权，使用默认头像');
+                this.updateUI();
+            }
+
+            async loadAvatarListFromDirectory() {
+                const url = `/${encodeURIComponent(this.avatarDirPath)}/`;
+                const res = await fetch(url, { cache: 'no-store' });
+                if (!res.ok) return [];
+                const html = await res.text();
+                const hrefs = Array.from(html.matchAll(/href="([^"]+)"/g)).map(m => m[1] || '');
+                const files = hrefs
+                    .map(h => h.split('?')[0])
+                    .map(h => {
+                        const parts = h.split('/').filter(Boolean);
+                        return parts.length > 0 ? parts[parts.length - 1] : '';
+                    })
+                    .filter(h => h && h !== '..' && h !== '.')
+                    .map(h => decodeURIComponent(h))
+                    .filter(h => /\.(png|jpe?g|webp|gif)$/i.test(h));
+                return Array.from(new Set(files));
+            }
+
+            getAvatarFile() {
+                return localStorage.getItem('playerAvatarFile');
+            }
+
+            setAvatarFile(file) {
+                localStorage.setItem('playerAvatarFile', file);
+            }
+
+            buildAvatarUrl(file) {
+                const v = Date.now();
+                return `/${encodeURIComponent(this.avatarDirPath)}/${encodeURIComponent(file)}?v=${v}`;
+            }
+
+            async ensureAvatarLoaded(forceReloadList = false) {
+                if (forceReloadList || !Array.isArray(this.avatarList)) {
+                    this.avatarList = await this.loadAvatarListFromDirectory();
+                }
+                if (!this.avatarList || this.avatarList.length === 0) return;
+                const preferred = this.getAvatarFile();
+                const selected = preferred && this.avatarList.includes(preferred) ? preferred : this.avatarList[0];
+                await this.setAvatarByFile(selected);
+            }
+
+            async setAvatarByFile(file) {
+                if (!file) return;
+                const url = this.buildAvatarUrl(file);
+                const ok = await new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = () => resolve(true);
+                    img.onerror = () => resolve(false);
+                    img.src = url;
+                });
+                if (!ok) return;
+                this.player.avatarUrl = url;
+                this.setAvatarFile(file);
+            }
+
+            async openAvatarPicker() {
+                if (this.getAvatarConsent() !== 'granted') {
+                    this.openAvatarAuthModal();
+                    return;
+                }
+                await this.ensureAvatarLoaded(true);
+                const modal = document.getElementById('avatar-picker-modal');
+                const listEl = document.getElementById('avatar-picker-list');
+                if (!modal || !listEl) return;
+                const files = Array.isArray(this.avatarList) ? this.avatarList : [];
+                listEl.innerHTML = files.map(f => {
+                    const u = this.buildAvatarUrl(f);
+                    const encoded = encodeURIComponent(f);
+                    return `<button class="avatar-pick" onclick="game.pickAvatarEncoded('${encoded}')"><img src="${u}" alt="${this.escapeHtml(f)}"></button>`;
+                }).join('');
+                modal.style.display = 'flex';
+            }
+
+            closeAvatarPicker() {
+                const modal = document.getElementById('avatar-picker-modal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            async pickAvatarEncoded(encodedFile) {
+                if (this.getAvatarConsent() !== 'granted') return;
+                const realFile = decodeURIComponent(String(encodedFile ?? ''));
+                await this.setAvatarByFile(realFile);
+                this.updateUI();
+                const hintTrack = document.getElementById('stable-hint-track');
+                if (hintTrack) hintTrack.scrollLeft = hintTrack.scrollWidth;
+                this.closeAvatarPicker();
             }
             
             skillEffects() {
@@ -629,6 +1786,77 @@
                     '传说': '全属性提升，大幅增强综合能力。'
                 };
             }
+
+            skillEffectText(type) {
+                const effects = this.skillEffects();
+                return effects[type] || '暂无技能效果描述。';
+            }
+
+            renderReforgeSkillBox(which, genes, actives = []) {
+                const listEl = document.getElementById(`reforge-${which}-list`);
+                const detailEl = document.getElementById(`reforge-${which}-detail`);
+                if (!listEl || !detailEl) return;
+
+                const list = Array.isArray(genes) ? genes : [];
+                const activeSet = new Set((actives || []).map(a => a.type));
+
+                if (list.length === 0) {
+                    listEl.innerHTML = '';
+                    const placeholder = which === 'new' ? '点击洗练生成' : '暂无技能';
+                    detailEl.innerHTML = `<div class="reforge-effect-placeholder">${this.escapeHtml(placeholder)}</div>`;
+                    if (!this.reforgeSelected) this.reforgeSelected = { current: null, new: null };
+                    this.reforgeSelected[which] = null;
+                    return;
+                }
+
+                listEl.innerHTML = list.map(g => {
+                    let cls = 'gene-normal';
+                    if (g.quality === '稀有') cls = 'gene-rare';
+                    else if (g.quality === '史诗') cls = 'gene-epic';
+                    else if (g.quality === '神兽') cls = 'gene-legend';
+                    const activeCls = activeSet.has(g.type) ? ' gene-active' : '';
+                    const encoded = encodeURIComponent(g.type);
+                    return `<div class="gene-tag reforge-skill-item ${cls}${activeCls}" data-skill="${this.escapeHtml(g.type)}" onclick="game.selectReforgeSkillEncoded('${which}','${encoded}')">${this.escapeHtml(g.type)}</div>`;
+                }).join('');
+
+                if (!this.reforgeSelected) this.reforgeSelected = { current: null, new: null };
+                const saved = this.reforgeSelected[which];
+                const next = saved && list.some(g => g.type === saved) ? saved : list[0].type;
+                this.selectReforgeSkill(which, next);
+            }
+
+            selectReforgeSkillEncoded(which, encodedType) {
+                const w = String(which || '');
+                const type = decodeURIComponent(String(encodedType || ''));
+                this.selectReforgeSkill(w, type);
+            }
+
+            selectReforgeSkill(which, type) {
+                const w = which === 'current' ? 'current' : 'new';
+                const listEl = document.getElementById(`reforge-${w}-list`);
+                const detailEl = document.getElementById(`reforge-${w}-detail`);
+                if (!listEl || !detailEl) return;
+                const t = String(type || '').trim();
+                if (!t) return;
+
+                if (!this.reforgeSelected) this.reforgeSelected = { current: null, new: null };
+                this.reforgeSelected[w] = t;
+
+                const items = Array.from(listEl.querySelectorAll('.reforge-skill-item'));
+                for (const el of items) {
+                    const key = el.getAttribute('data-skill') || '';
+                    if (key === t) el.classList.add('is-selected');
+                    else el.classList.remove('is-selected');
+                }
+
+                const effect = this.skillEffectText(t);
+                const badge = (w === 'new' && this.tempReforgeQuality) ? `<div class="reforge-effect-badge">新稀有等级: ${this.escapeHtml(this.tempReforgeQuality)}</div>` : '';
+                detailEl.innerHTML = `
+                    <div class="reforge-effect-title">${this.escapeHtml(t)}</div>
+                    ${badge}
+                    <div class="reforge-effect-text">${this.escapeHtml(effect)}</div>
+                `;
+            }
             
             showSkillDetail(type) {
                 const titleEl = document.getElementById('skill-title');
@@ -645,10 +1873,14 @@
                 modal.style.display = 'none';
             }
             
-            // 计算速度：基于 activeGenes
-             computeSpeedWithGenes(baseSpeed, genes) {
+            // 计算速度：基于 activeGenes (genes)
+            // fullGenes：马匹已领悟的技能池，用于计算“领悟稀有技能”的基础速度加成
+             computeSpeedWithGenes(baseSpeed, genes, fullGenes = [], withJitter = true) {
+                 const active = Array.isArray(genes) ? genes : [];
+                 const pool = Array.isArray(fullGenes) && fullGenes.length > 0 ? fullGenes : active;
+
                  let m = 1.0;
-                 genes.forEach(g => {
+                 active.forEach(g => {
                      const t = g.type;
                     if (t === '疾风') m += 0.08;
                     else if (t === '爆冲') m += 0.15;
@@ -657,24 +1889,23 @@
                     else if (t === '稳健') m += 0.05;
                     else m += 0.03; // 其他技能也有微量加成
                 });
-                
-                // 稀有技能额外加成
-                genes.forEach(g => {
-                    if (g.quality === '稀有') m += 0.02;
-                });
 
-                if (genes.length === 0) m *= 0.98; 
-                const jitter = 1 + (Math.random() * 0.04 - 0.02); 
-                 return baseSpeed * m * jitter;
+                if (active.length === 0) m *= 0.98;
+                const rareSlots = active.reduce((n, g) => n + (g && g.quality === '稀有' ? 1 : 0), 0);
+                const rareSlotMult = 1 + rareSlots * 0.03;
+                return baseSpeed * m * rareSlotMult;
              }
             
             slotCountForHorse(h) {
+                // 优先使用显式指定的槽位数
+                if (h.geneSlots) return h.geneSlots;
+                
                 const q = h.quality;
                 if (q === '稀有') return 6;
                 if (q === '高级') return 5;
                 if (q === '中级') return 4;
                 if (q === '普通') return 3;
-                return h.geneSlots || 6;
+                return 6;
             }
             
             pickStartGenes(pool, slots) {
@@ -700,45 +1931,57 @@
                 h.lockedStartGenes = arr;
             }
 
-             createNameTag(h) {
-                  const nameTag = document.createElement('div');
-                  
-                  // 组装显示内容：名字 + 基因标签 (只显示 activeGenes)
-                 let geneHtml = '';
-                 if (h.activeGenes && h.activeGenes.length > 0) {
+            createNameTag(h) {
+                const nameTag = document.createElement('div');
+                nameTag.className = 'horse-name-tag'; // 使用新CSS类
+                
+                // 组装显示内容：名字 + 基因标签 (只显示 activeGenes)
+                let geneHtml = '';
+                if (h.activeGenes && h.activeGenes.length > 0) {
                     geneHtml = h.activeGenes.map(g => 
-                        `<span style="background:${g.quality==='普通'?'#bdc3c7':'#f1c40f'}; color:#000; padding:1px 2px; border-radius:2px; margin-left:2px; font-size:7px;">${g.type}</span>`
+                        // 使用 mini-gene-tag 类
+                        `<span class="mini-gene-tag" style="background:${g.quality==='普通'?'#bdc3c7':'#f1c40f'}; color:#000;">${g.type}</span>`
                     ).join('');
-                 }
-                 // 移除之前的默认随机显示，保持清爽
+                }
 
-                 nameTag.innerHTML = `${h.data.name}<br>${geneHtml}`;
-                 
-                 nameTag.style.transform = 'translate(-50%, -100%)'; 
-                 nameTag.style.width = 'auto'; 
-                 nameTag.style.textAlign = 'center';
-                 nameTag.style.position = 'absolute';
-                 nameTag.style.fontSize = '9px';
-                 nameTag.style.lineHeight = '11px';
-                 nameTag.style.whiteSpace = 'nowrap';
-                 nameTag.style.zIndex = '101'; 
-                 nameTag.style.background = 'rgba(0,0,0,0.45)';
-                 nameTag.style.color = '#ecf0f1';
-                 nameTag.style.padding = '3px 6px';
-                 nameTag.style.borderRadius = '4px';
-                 nameTag.style.border = '1px solid rgba(255,255,255,0.15)';
-                 nameTag.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
-                 
-                 document.getElementById('ui-layer').appendChild(nameTag);
-                 h.nameTag = nameTag;
+                // 设置 HTML：第一行是名字，第二行是技能小标签
+                // 修改：如果玩家马匹，名字用特殊颜色
+                // 注意：这里需要判断是否是玩家的马，而不是选中的马（虽然比赛中默认选中的就是玩家参赛的马）
+                // 更准确的逻辑是检查这匹马是否在玩家的 horses 列表里，但简单起见，h.id === this.selectedHorseId 通常有效，
+                // 因为 startRace 会把玩家选中的马作为参赛马。
+                // 不过为了支持多匹马参赛的情况（如果未来支持），最好直接判断是否是玩家控制的。
+                // 目前逻辑是玩家只能派一匹选中的马。
+                
+                const isPlayerHorse = h && h.data && h.data.id === this.selectedHorseId;
+                if (isPlayerHorse) nameTag.classList.add('is-player');
+                
+                nameTag.innerHTML = `
+                    <div class="name-row">${this.escapeHtml(this.truncateRaceName(h.data.name))}</div>
+                    <div class="skill-row">${geneHtml}</div>
+                `;
+                
+                document.getElementById('ui-layer').appendChild(nameTag);
+                h.nameTag = nameTag;
             }
 
              // 旧方法保留兼容 (或删除)
              computeFinalSpeed(data) { return this.computeSpeedWithGenes(data.baseSpeed, data.genes || []); }
 
             selectHorse(id) {
+                if (this.racing) return;
                 this.selectedHorseId = id;
                 this.updateUI();
+            }
+
+            promoteHorseToStableFront(horseId) {
+                const id = String(horseId ?? '');
+                if (!id) return;
+                const list = this.player && Array.isArray(this.player.horses) ? this.player.horses : null;
+                if (!list || list.length <= 1) return;
+                const idx = list.findIndex(h => h && h.id === id);
+                if (idx <= 0) return;
+                const [horse] = list.splice(idx, 1);
+                list.unshift(horse);
             }
             
             prevHorse() {
@@ -770,6 +2013,63 @@
                 container.scrollTo({ left: target, behavior: 'smooth' });
             }
 
+            retireHorse() {
+                const horse = this.player.horses.find(h => h.id === this.selectedHorseId);
+                if (!horse) return;
+                
+                if (this.player.horses.length <= 1) {
+                    alert("这是你最后一匹马，不能退役！");
+                    return;
+                }
+                
+                // 修改退役规则：按参赛场次返还，100/场
+                const races = horse.totalRaces || 0;
+                const refund = races * 100;
+                
+                if (confirm(`确定要让【${horse.name}】退役吗？\n生涯场次: ${races}\n返还积分: ${refund} (100/场)`)) {
+                    this.player.integral += refund;
+                    const idx = this.player.horses.indexOf(horse);
+                    this.player.horses.splice(idx, 1);
+                    this.selectedHorseId = this.player.horses[0].id;
+                    this.updateUI();
+                    alert(`退役成功！获得 ${refund} 积分。`);
+                }
+            }
+
+            startStableIdleAnim(rootEl) {
+                if (this.idleAnimTimer) {
+                    clearInterval(this.idleAnimTimer);
+                    this.idleAnimTimer = null;
+                }
+                if (this.racing) return;
+
+                const horses = Array.from((rootEl || document).querySelectorAll('.idle-horse'));
+                if (horses.length === 0) return;
+                this.stableIdleToken = (this.stableIdleToken || 0) + 1;
+                const token = this.stableIdleToken;
+
+                this.ensureHorseRunFramesReady().then(() => {
+                    if (token !== this.stableIdleToken) return;
+                    if (this.racing) return;
+                    if (this.idleAnimTimer) return;
+
+                    let frameIndex = 1;
+                    const applyFrame = () => {
+                        for (const el of horses) {
+                            const spriteSet = el && el.dataset ? el.dataset.spriteSet : null;
+                            el.style.backgroundImage = this.horseRunFrame(frameIndex, spriteSet);
+                        }
+                    };
+
+                    applyFrame();
+                    this.idleAnimTimer = setInterval(() => {
+                        frameIndex++;
+                        if (frameIndex > 20) frameIndex = 1;
+                        applyFrame();
+                    }, 80);
+                });
+            }
+            
             updateUI() {
                 const p = this.player;
                 const infoPanel = document.getElementById('info-panel');
@@ -779,9 +2079,10 @@
                 const prevContainer = infoPanel.querySelector('.stable-container');
                 if (prevContainer) prevScrollLeft = prevContainer.scrollLeft;
                 
-                // 清除寿命为0的马
-                const before = p.horses.length;
-                p.horses = p.horses.filter(h => (h.lifespan == null ? true : h.lifespan > 0));
+                // 清除寿命为0的马 (改为不自动清除，允许玩家手动退役或作为种马，除非是强制逻辑)
+                // 这里为了防止列表过长，还是保留自动清理寿命耗尽的逻辑，或者仅提示
+                // p.horses = p.horses.filter(h => (h.lifespan == null ? true : h.lifespan > 0));
+                
                 if (p.horses.length === 0) {
                     // 保底：如果清空了，恢复初始第一匹以避免UI空白
                     p.horses = JSON.parse(JSON.stringify(InitialPlayer.horses));
@@ -792,18 +2093,99 @@
                 }
                 
                 // 1. 生成资产行
+                const races = p.seasonRaces || 0;
+                const wins = p.seasonWins || 0;
+                const rate = races > 0 ? Math.floor((wins / races) * 100) : 0;
+                
+                // 判断是否获得“赛季第一”荣誉（持续一赛季）
+                // 使用 hasSeasonChampion 标记，而不是实时计算
+                const isChampion = p.hasSeasonChampion;
+                
+                // 奖杯逻辑：每10个奖杯合并为一个高级奖杯
+                const trophyCount = p.trophies || 0;
+                const bigTrophies = Math.floor(trophyCount / 10);
+                const smallTrophies = trophyCount % 10;
+                let trophyHtml = '';
+                if (bigTrophies > 0) trophyHtml += `<span style="color:#f1c40f;">🏆x${bigTrophies}(大)</span> `;
+                if (smallTrophies > 0) trophyHtml += `<span style="color:#bdc3c7;">🏆x${smallTrophies}</span>`;
+                if (trophyCount === 0) trophyHtml = `<span style="color:#7f8c8d; font-size:10px;">暂无奖杯</span>`;
+
+                const avatarUrl = p.avatarUrl || '';
+                const avatarCls = avatarUrl ? 'avatar has-img' : 'avatar';
+                const avatarStyle = avatarUrl ? `background-image:url('${avatarUrl}');` : '';
+                const avatarText = avatarUrl ? '' : '👤';
+
                 let html = `
-                    <div class="asset-row">
-                        <span>💰 积分: ${p.integral}</span>
-                        <span>🎫 门票: ${p.ticketsNormal}</span>
+                    <div class="user-panel">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                            <div style="display:flex; align-items:center;">
+                                <div class="avatar-wrapper" style="margin-right:10px;">
+                                    <div class="${avatarCls}" style="${avatarStyle}" onclick="game.openAvatarPicker()">${avatarText}</div>
+                                    ${isChampion ? `<div class="avatar-frame-gold"></div><div class="honor-crown">👑</div>` : ''}
+                                </div>
+                                <div>
+                                    <div style="font-weight:bold; color:#fff; font-size:16px; display:flex; align-items:center; gap:6px;">
+                                        马场主
+                                        ${isChampion ? '<span style="color:#f1c40f; font-size:10px; background:rgba(241,196,15,0.2); padding:2px 6px; border-radius:4px;">赛季第一</span>' : ''}
+                                    </div>
+                                    <div style="display:flex; gap:10px; font-size:12px; color:#bdc3c7; margin-top:3px;">
+                                        <span>💰 ${p.integral}</span>
+                                        <span>🎫 ${p.ticketsNormal} <button style="background:none; border:none; color:#2ecc71; font-weight:bold; cursor:pointer; font-size:14px; padding:0;" onclick="game.openTicketMenu()">➕</button></span>
+                                    </div>
+                                    <div style="font-size:10px; margin-top:2px; display:flex; gap:8px; align-items:center;">
+                                        <div>${trophyHtml}</div>
+                                        <button class="avatar-action" onclick="game.openAvatarPicker()">更换头像</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-blue" style="width:auto; height:28px; line-height:28px; font-size:12px; padding:0 12px; background:#c0392b; box-shadow:0 2px #922b21;" onclick="game.retireHorse()">退役当前马</button>
+                        </div>
+
+                        <div style="background:#34495e; padding:6px 10px; border-radius:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                                <span style="color:#f1c40f; font-weight:bold; font-size:12px;">🏆 S1 赛季</span>
+                                <span style="color:#ecf0f1; font-size:12px;">胜率: <span style="color:${rate>=40?'#2ecc71':'#e74c3c'}">${rate}%</span> <span style="color:#7f8c8d; margin-left:4px;">(已赛${races})</span></span>
+                            </div>
+                            <div style="height:6px; background:#2c3e50; border-radius:3px; overflow:hidden; border:1px solid #444;">
+                                <div style="width:${Math.min(100, (races/8)*100)}%; height:100%; background:linear-gradient(90deg, #f39c12, #f1c40f);"></div>
+                            </div>
+                            <div style="font-size:10px; color:#95a5a6; margin-top:3px; text-align:right;">
+                                ${races >= 8 ? '<span style="color:#2ecc71">✅ 已获选秀资格</span>' : `再赛 ${8-races} 场获选秀资格`}
+                            </div>
+                        </div>
+                        <div class="stable-hint" style="margin-top:6px;">
+                            <div class="stable-hint-track" id="stable-hint-track">${this.renderHintsHtml()}</div>
+                        </div>
                     </div>
-                    <div class="stable-container">
+
+                    <div class="stable-panel">
+                        <div class="stable-container">
                 `;
 
+                // 更新大厅按钮：如果满足选秀条件，添加选秀按钮
+                const lobby = document.getElementById('lobby-panel');
+                if (lobby) {
+                    // 移除旧的选秀按钮避免重复
+                    const oldBtn = document.getElementById('btn-open-draft');
+                    if (oldBtn) oldBtn.remove();
+                    
+                    if (races >= 8) {
+                        const btn = document.createElement('button');
+                        btn.id = 'btn-open-draft';
+                        btn.className = 'btn btn-blue';
+                        btn.style.background = '#e67e22';
+                        btn.style.boxShadow = '0 4px #d35400';
+                        btn.innerHTML = '参加选秀';
+                        btn.onclick = () => this.openDraft();
+                        lobby.prepend(btn);
+                    }
+                }
+
                 // 2. 生成马匹卡片
-                p.horses.slice(0, this.stableCap).forEach(h => {
+                // let html = ''; // 确保 html 变量被初始化 -- 修正：不能重置 html，应该追加到现有的 html 后面
+                // 上面的 html 变量已经在 "1. 生成资产行" 部分初始化过了，这里是追加
+                p.horses.forEach(h => {
                     this.ensureLockedStartGenes(h);
-                    let genesHtml = '';
                     
                     // 获取所有技能类型，用于展示技能池，并高亮比赛使用技能
                     const allTypes = Object.values(GeneType);
@@ -814,15 +2196,29 @@
                     const rawLearned = ([]).concat(h.learnedThisRace || [], (h.data && h.data.learnedThisRace) ? h.data.learnedThisRace : []);
                     const learnedSet = new Set(rawLearned.filter(t => !activeSet.has(t)));
                     
-                    genesHtml = allTypes.map(type => {
-                        const owned = h.genes && h.genes.find(g => g.type === type);
-                        if (owned) {
-                            const cls = owned.quality === '稀有' ? 'gene-rare' : 'gene-normal';
+                    const genesHtml2 = allTypes.map(type => {
+                        // 优先显示当前装备的技能 (active)，因为这决定了比赛能力
+                        const activeGene = (previewActives || []).find(g => g.type === type);
+                        const ownedGene = h.genes && h.genes.find(g => g.type === type);
+                        
+                        // 只要装备了或者拥有了，就显示
+                        if (activeGene || ownedGene) {
+                            // 优先使用装备的品质，其次是拥有的
+                            const displayGene = activeGene || ownedGene;
+                            
+                            let cls = 'gene-normal';
+                            if (displayGene.quality === '稀有') cls = 'gene-rare';
+                            else if (displayGene.quality === '史诗') cls = 'gene-epic';
+                            else if (displayGene.quality === '神兽') cls = 'gene-legend';
+                            
                             const activeCls = activeSet.has(type) ? ' gene-active' : '';
+                            // 如果是本次比赛新领悟的，也标记一下
                             const learnedCls = learnedSet.has(type) ? ' gene-just' : '';
-                            return `<span class="gene-tag ${cls}${activeCls}${learnedCls}" onclick="game.showSkillDetail('${type}')">${type}</span>`;
+                            
+                            // 这里添加 stopPropagation 防止点击技能时触发马匹选择
+                            return `<span class="gene-tag ${cls}${activeCls}${learnedCls}" onclick="event.stopPropagation(); game.showSkillDetail('${type}')">${type}</span>`;
                         } else {
-                            return `<span class="gene-tag gene-locked" onclick="game.showSkillDetail('${type}')">${type}</span>`;
+                            return `<span class="gene-tag gene-locked" onclick="event.stopPropagation(); game.showSkillDetail('${type}')">${type}</span>`;
                         }
                     }).join('');
 
@@ -832,15 +2228,27 @@
                     
                     html += `
                         <div class="horse-card ${selectedClass}" onclick="game.selectHorse('${h.id}')">
-                            <div class="name" style="color:${h.color}">${h.name}</div>
-                            <div class="life">寿命: ${h.lifespan}/${h.maxLifespan}</div>
-                            <div class="gene-tags">${genesHtml}</div>
+                            <div class="card-skills">
+                                <input class="horse-name-input" maxlength="12" value="${this.escapeHtml(h.name)}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation(); if(event.key==='Enter'){ this.blur(); }" oninput="game.setHorseName('${h.id}', this.value)" />
+                                <div class="gene-tags" onclick="event.stopPropagation()">${genesHtml2}</div>
+                            </div>
+                            <div class="card-info">
+                                <div class="life">寿命: ${h.lifespan}/${h.maxLifespan}</div>
+                                <div class="blood">稀有等级: ${h.quality}</div>
+                            <div class="blood">速度: ${Math.round(this.computeSpeedWithGenes(h.baseSpeed, previewActives, h.genes, false))}</div>
+                            </div>
+                            <div class="card-image">
+                                <div class="idle-horse" data-sprite-set="${this.escapeHtml(h.spriteSet || SpriteSet.Horse)}" data-idle-horse="1"></div>
+                            </div>
                         </div>
                     `;
                 });
 
-                html += `</div>`; // 闭合 stable-container
+                html += `</div></div>`;
                 infoPanel.innerHTML = html;
+                this.startStableIdleAnim(infoPanel);
+                const hintTrack = infoPanel.querySelector('#stable-hint-track');
+                if (hintTrack) hintTrack.scrollLeft = hintTrack.scrollWidth;
                 
                 // 比赛中恢复滚动位置
                 const newContainer = infoPanel.querySelector('.stable-container');
@@ -904,7 +2312,14 @@
                     return;
                 }
 
+                if (parent1.lifespan < 10) {
+                    alert("当前马匹寿命不足 10 点，无法进行培育！");
+                    return;
+                }
+
                 this.player.integral -= 500;
+                parent1.lifespan -= 10; // 扣除寿命
+                
                 const parent2 = generateAIHorse(999);
                 const foal = BreedingSystem.breedHorse(parent1, parent2);
                 this.player.horses.push(foal);
@@ -913,6 +2328,7 @@
                 this.selectedHorseId = foal.id;
                 
                 document.getElementById('breed-result').innerText = `培育成功！获得新马：${foal.name}`;
+                this.pushHint(`🎉 获得新马：${foal.name}`);
                 this.updateUI();
             }
 
@@ -932,10 +2348,8 @@
                 const currentLocked = Array.isArray(horse.lockedStartGenes) && horse.lockedStartGenes.length > 0
                     ? horse.lockedStartGenes.slice(0, currentSlots)
                     : this.pickStartGenes(horse.genes, currentSlots);
-                this.renderReforgeGenes(currentLocked, 'reforge-current-genes', currentLocked);
-                // 清空新技能预览
-                document.getElementById('reforge-new-genes').innerHTML = 
-                    `<div style="grid-column:1/-1; text-align:center; color:#7f8c8d; margin-top:40px;">点击洗练生成</div>`;
+                this.renderReforgeSkillBox('current', currentLocked, currentLocked);
+                this.renderReforgeSkillBox('new', null, null);
                 
                 // 按钮状态
                 document.getElementById('btn-do-reforge').style.display = 'block';
@@ -951,29 +2365,13 @@
             }
 
             renderReforgeGenes(genes, containerId, actives = []) {
-                const container = document.getElementById(containerId);
-                if (!genes) {
-                    container.innerHTML = '';
-                    return;
-                }
-                const activeSet = new Set((actives || []).map(a => a.type));
-                container.innerHTML = genes.map(g => {
-                     const cls = g.quality === '稀有' ? 'gene-rare' : 'gene-normal';
-                     const activeCls = activeSet.has(g.type) ? ' gene-active' : '';
-                     return `<span class="gene-tag ${cls}${activeCls}" style="font-size:7px;">${g.type}</span>`;
-                }).join('');
+                const id = String(containerId || '');
+                if (id.includes('current')) this.renderReforgeSkillBox('current', genes, actives);
+                else this.renderReforgeSkillBox('new', genes, actives);
             }
 
             doReforge() {
-                if (this.player.integral < 1) {
-                    alert("积分不足 (需要1000)！");
-                    return;
-                }
-                
                 const horse = this.player.horses.find(h => h.id === this.selectedHorseId);
-                // 扣费
-                this.player.integral -= 1;
-                this.updateUI(); // 刷新积分显示
                 
                 // 概率提升稀有等级：普通->中级->高级->稀有
                 const ladder = ['普通','中级','高级','稀有'];
@@ -986,22 +2384,64 @@
                 }
                 this.tempReforgeQuality = q;
                 
-                // 根据新等级的槽位，锁定比赛初始技能（不改变技能池）
-                const slots = this.slotCountForHorse({ quality: q, geneSlots: horse.geneSlots });
-                this.tempReforgeGenes = this.pickStartGenes(horse.genes, slots);
+                // 根据新等级的槽位，生成全新的技能组合
+                // 修改：洗练只能从已激活的技能池 (horse.genes) 中选择，不能凭空生成新技能
+                // 但洗练可以尝试提升已拥有技能的稀有度（或者保持原样，这里假设只改变组合，不改变池子里的稀有度）
+                // 需求是：只能洗出已经激活的技能。
+                // 那么逻辑是：从 horse.genes 里随机挑 slots 个出来。
+                // 如果 horse.genes 数量不够 slots，则重复选或者填满为止。
+                
+                const slots = (() => {
+                    // 计算新稀有度对应的槽位数
+                    // 如果发生了突破（稀有度提升），且当前槽位少于新稀有度的标准槽位，则增加槽位
+                    if (q !== horse.quality) {
+                        const standardSlots = this.slotCountForHorse({ quality: q }); // 不传 geneSlots 获取标准值
+                        if ((horse.geneSlots || 0) < standardSlots) {
+                            return standardSlots;
+                        }
+                    }
+                    return this.slotCountForHorse({ quality: q, geneSlots: horse.geneSlots });
+                })();
+                const pool = horse.genes || [];
+                
+                if (pool.length === 0) {
+                    alert("当前马匹没有已激活的技能，无法洗练！请先去比赛领悟技能。");
+                    // 恢复状态
+                    this.tempReforgeQuality = null;
+                    return;
+                }
+
+                const newGenes = [];
+                // 简单的随机抽取（允许重复选？通常不允许，除非池子太小）
+                // 假设池子不够时，只能选这么多
+                
+                // 深拷贝池子以供抽取
+                let available = JSON.parse(JSON.stringify(pool));
+                
+                // 如果池子比槽位小，直接全选，不够的部分空着（或者允许重复？游戏通常不允许重复装备同一技能）
+                // 这里我们逻辑是：如果池子小，就全上。
+                // 如果池子大，就随机选。
+                
+                // 为了增加洗练的意义，我们允许在这里“重随”技能的排列组合
+                // 至于稀有度：应该继承池子里的稀有度，还是允许洗练提升？
+                // 用户说“洗练只能洗出技能池里已经激活的技能”，通常暗示只是改变“装备配置”。
+                // 但之前的需求是“洗练能出神兽”，现在既然限制了池子，那神兽只能是池子里本来就有的。
+                // 所以这里严格遵循：只从池子里拿。
+                
+                // 乱序
+                available.sort(() => 0.5 - Math.random());
+                
+                // 取前 slots 个
+                for(let i=0; i<slots; i++) {
+                    if (i < available.length) {
+                        newGenes.push(available[i]);
+                    }
+                }
+                
+                this.tempReforgeGenes = newGenes;
                 
                 // 渲染新技能
-                this.renderReforgeGenes(this.tempReforgeGenes, 'reforge-new-genes', this.tempReforgeGenes);
-                // 在新预览区顶部显示新等级
-                const newBox = document.getElementById('reforge-new-genes');
-                const badge = document.createElement('div');
-                badge.style.gridColumn = '1/-1';
-                badge.style.textAlign = 'center';
-                badge.style.color = '#f1c40f';
-                badge.style.fontSize = '12px';
-                badge.style.marginBottom = '6px';
-                badge.innerText = `新稀有等级: ${this.tempReforgeQuality}`;
-                newBox.prepend(badge);
+                this.renderReforgeSkillBox('new', this.tempReforgeGenes, this.tempReforgeGenes);
                 
                 // 切换按钮
                 document.getElementById('btn-do-reforge').style.display = 'none';
@@ -1017,9 +2457,31 @@
                 horse.lockedStartGenes = this.tempReforgeGenes;
                 if (this.tempReforgeQuality) {
                     horse.quality = this.tempReforgeQuality;
-                    // 同步 geneSlots 可选（保持兼容）
-                    horse.geneSlots = this.slotCountForHorse(horse);
+                    // 同步 geneSlots：如果新稀有度支持更多槽位，则扩充
+                    const standardSlots = this.slotCountForHorse({ quality: horse.quality });
+                    if (!horse.geneSlots || horse.geneSlots < standardSlots) {
+                        horse.geneSlots = standardSlots;
+                    }
+                    
+                    // 修复：升级稀有度时，必须同步提升基础速度，否则无法跑赢同级 AI
+                    const speedMap = {'普通':55, '中级':60, '高级':65, '稀有':70, '神兽':75};
+                    if (speedMap[horse.quality] > horse.baseSpeed) {
+                        horse.baseSpeed = speedMap[horse.quality];
+                    }
                 }
+                
+                // 将洗练出的新技能合并入技能池 (可选：如果希望洗练也能拓充图鉴)
+                // 修改：只有领悟可以激活技能池，洗练技能只能替换比赛中默认技能
+                // 因此这里不再合并到 horse.genes
+                /* 
+                if (horse.genes) {
+                    this.tempReforgeGenes.forEach(newG => {
+                        // ...
+                    });
+                }
+                */
+                
+                this.ensureLockedStartGenes(horse);
                 this.ensureLockedStartGenes(horse);
                 alert("保存成功！");
                 this.closeReforge();
@@ -1029,19 +2491,89 @@
             discardReforge() {
                 // 放弃洗练：清空预览，恢复按钮
                 this.tempReforgeGenes = null;
-                const preview = document.getElementById('reforge-new-genes');
-                if (preview) {
-                    preview.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#7f8c8d; margin-top:40px;">点击洗练生成</div>`;
-                }
+                this.tempReforgeQuality = null;
+                this.renderReforgeSkillBox('new', null, null);
                 document.getElementById('btn-do-reforge').style.display = 'block';
                 document.getElementById('btn-save-reforge').style.display = 'none';
                 const discardBtn = document.getElementById('btn-discard-reforge');
                 if (discardBtn) discardBtn.style.display = 'none';
             }
 
-            startRace() {
+            openTicketMenu() {
+                const modal = document.getElementById('ticket-modal');
+                const count = document.getElementById('ticket-modal-count');
+                if (modal && count) {
+                    count.innerText = this.player.ticketsNormal;
+                    modal.style.display = 'flex';
+                }
+            }
+
+            closeTicketMenu() {
+                const modal = document.getElementById('ticket-modal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            buyTicketWithPoints() {
+                if (this.player.integral >= 200) {
+                    this.player.integral -= 200;
+                    this.player.ticketsNormal += 1;
+                    this.updateUI();
+                    // 更新弹窗内的数量
+                    const count = document.getElementById('ticket-modal-count');
+                    if (count) count.innerText = this.player.ticketsNormal;
+                    alert("购买成功！门票 +1 (消耗200积分)");
+                } else {
+                    alert("积分不足！需要 200 积分。");
+                }
+            }
+            
+            watchAdForTicket() {
+                 // 模拟看广告 3秒 (Modal版)
+                const btn = document.getElementById('btn-watch-ad-modal');
+                if (!btn) return;
+                
+                const originalText = "📺 观看广告 (免费+5)";
+                btn.disabled = true;
+                btn.innerText = "📺 观看中 (3s)...";
+                
+                setTimeout(() => {
+                    this.player.ticketsNormal += 5;
+                    this.updateUI();
+                    
+                    // 更新弹窗内的数量
+                    const count = document.getElementById('ticket-modal-count');
+                    if (count) count.innerText = this.player.ticketsNormal;
+                    
+                    alert("观看完毕！门票 +5");
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }, 3000);
+            }
+
+            watchAd() {
+                // 模拟看广告 3秒
+                const btn = document.getElementById('btn-watch-ad');
+                const originalText = btn.innerText;
+                btn.disabled = true;
+                btn.innerText = "📺 观看中 (3s)...";
+                
+                setTimeout(() => {
+                    this.player.ticketsNormal += 5;
+                    alert("观看完毕！门票 +5");
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    this.updateUI();
+                }, 3000);
+            }
+
+            async startRace() {
+                if (this.player.seasonRaces >= 8) {
+                    alert("本赛季已结束（8场）！请点击上方【参加选秀】进入选秀大会开启新赛季。");
+                    return;
+                }
+
                 if (this.player.ticketsNormal < 1) {
-                    alert("门票不足！");
+                    alert("门票不足！请观看广告获取。");
                     return;
                 }
                 
@@ -1053,21 +2585,65 @@
                     return;
                 }
 
+                await this.ensureHorseRunFramesReady();
+                await this.ensureBurstFramesReady();
+
+                // 切换到比赛模式
+                document.getElementById('game-container').classList.add('racing-mode');
+
                 this.player.ticketsNormal--;
                 myHorse.lifespan--;
                 this.updateUI();
 
+                this.currentRaceHorseId = myHorse.id;
+
                 document.getElementById('lobby-panel').style.display = 'none';
                 document.getElementById('status-label').style.display = 'none';
 
-                // 生成马匹：使用宿敌池中的马匹
-                this.horses = [];
+                // 生成马匹：一共3组，每组6匹，共18匹
+                this.allGroups = [];
+                this.horses = []; // 仅存储当前视觉展示组（玩家所在组）
                 
-                // 简单的洗牌宿敌，或者直接全部上场 (如果是5匹的话)
-                // 这里我们直接用固定的5匹宿敌作为对手
-                const rivals = this.rivals;
+                // 1. 准备所有参赛马匹 (1 Player + 17 AI)
+                const allParticipants = [myHorse];
+                for(let i=0; i<17; i++) {
+                    allParticipants.push(generateAIHorse(i, this.player, myHorse));
+                }
                 
-                const raceData = [myHorse, ...rivals];
+                // 2. 随机打乱并分组
+                // Fisher-Yates Shuffle
+                for (let i = allParticipants.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allParticipants[i], allParticipants[j]] = [allParticipants[j], allParticipants[i]];
+                }
+                
+                // 分3组，每组6匹
+                const groupNames = ['A', 'B', 'C'];
+                for(let g=0; g<3; g++) {
+                    const groupHorses = allParticipants.slice(g*6, (g+1)*6);
+                    this.allGroups.push({
+                        name: groupNames[g] + ' 组',
+                        data: groupHorses
+                    });
+                }
+                
+                // 3. 找到玩家所在的组，作为视觉展示组
+                let playerGroupIndex = this.allGroups.findIndex(g => g.data.some(h => h.id === myHorse.id));
+                const visualGroupData = this.allGroups[playerGroupIndex].data;
+                this.playerGroupIndex = playerGroupIndex;
+                
+                // 显示分组信息提示
+                const groupMsg = document.createElement('div');
+                groupMsg.style.cssText = 'position:absolute; top:60px; left:50%; transform:translateX(-50%); color:#f1c40f; font-weight:bold; font-size:24px; text-shadow:0 0 5px #000; z-index:100; pointer-events:none; opacity:0; transition:opacity 0.5s;';
+                groupMsg.innerText = `当前进行: ${this.allGroups[playerGroupIndex].name}`;
+                document.getElementById('game-container').appendChild(groupMsg);
+                
+                // 动画显示
+                requestAnimationFrame(() => groupMsg.style.opacity = '1');
+                setTimeout(() => {
+                    groupMsg.style.opacity = '0';
+                    setTimeout(() => groupMsg.remove(), 500);
+                }, 2000);
                 
                 const track = document.getElementById('track-layer'); // 修复：重新定义 track 变量
                 
@@ -1076,12 +2652,36 @@
                 // 跑道总高度约 667 - 250 = 417px
                 // 5条跑道，每条约 80px
                 
-                // 初始化马匹比赛数据
-                 raceData.forEach((data, i) => {
-                     this.ensureLockedStartGenes(data);
-                     const el = document.createElement('div');
-                     el.className = 'horse';
-                    el.style.top = (i * 80 + 10) + 'px'; 
+                // 初始化马匹比赛数据 (仅初始化玩家所在组)
+                visualGroupData.forEach((data, i) => {
+                    // 如果是 AI 马（id以ai_开头），需要根据当前赛季场次，适当加强一点（模拟 AI 也在成长）
+                    // 已经在 generateAIHorse 里做了一部分，这里确保 AI 也能带上技能
+                    if (data.id.startsWith('ai_')) {
+                        // AI 自动配技能：根据玩家当前马匹的技能数量动态调整
+                        // 确保 AI 技能数量不超过玩家
+                        const slots = this.slotCountForHorse(data);
+                        const playerSkillCount = myHorse.genes ? myHorse.genes.length : 0;
+                        
+                        if (!data.genes || data.genes.length === 0) {
+                            const pool = Object.values(GeneType).map(t => ({type:t, quality:'普通'}));
+                            // 限制 AI 技能数：直接对齐玩家技能数，且不能超过自身槽位
+                            let count = Math.min(playerSkillCount, slots);
+                            data.genes = this.pickStartGenes(pool, count);
+                        }
+                    }
+
+                    this.ensureLockedStartGenes(data);
+                    const el = document.createElement('div');
+                    el.className = 'horse';
+                    el.dataset.spriteSet = data.spriteSet || SpriteSet.Horse;
+                    const raceScale = RaceSpriteScale[el.dataset.spriteSet] || 1;
+                    el.style.setProperty('--race-scale', String(raceScale));
+                    const startFrame = ((i * 4) % 20) + 1;
+                    el.style.backgroundImage = this.horseRunFrame(startFrame, data.spriteSet);
+                    // 调整赛马垂直位置：增加间距，整体下移
+                    // 改为6匹马，间距调整为 90px，起始 40px
+                    const baseTop = i * 90 + 40;
+                    el.style.top = baseTop + 'px'; 
                     el.style.left = '50px';
                     track.appendChild(el);
                      
@@ -1098,13 +2698,19 @@
                          data, // 引用原始数据 (用于赛后保存)
                          activeGenes, // 当局生效的技能 (6个基础 + 1个领悟)
                          distance: 0, 
-                         // 使用 activeGenes 计算初始速度
-                         speed: this.computeSpeedWithGenes(data.baseSpeed, activeGenes), 
-                         frameIndex: 1, 
-                        frameTimer: 0,
-                        baseTop: (i * 80 + 10),
+                         // 使用 activeGenes 计算初始速度，传入完整技能池以计算稀有加成
+                         speed: this.computeSpeedWithGenes(data.baseSpeed, activeGenes, data.genes), 
+                         frameIndex: startFrame,
+                        frameTimer: (i % 4),
+                        baseTop: baseTop,
                         _learned: false, 
-                        boostTimer: 0
+                        boostTimer: 0,
+                        afterimageTimer: 0,
+                        burstCooldown: 0,
+                        ghostCooldown: 0,
+                        _prevSpeed: null,
+                        debuffTimer: 0,
+                        raceScale
                      });
                  });
 
@@ -1121,22 +2727,64 @@
                 requestAnimationFrame(this.loop.bind(this));
             }
 
-            spawnGhost(h) {
+            spawnGhost(h, intensity = 1) {
                 const track = document.getElementById('track-layer');
                 const ghost = document.createElement('div');
                 ghost.className = 'horse-ghost';
                 ghost.style.top = h.baseTop + 'px';
-                ghost.style.left = (50 + h.distance - 20) + 'px';
+                ghost.style.left = (Math.round(50 + h.distance) - 20) + 'px';
                 ghost.style.backgroundImage = h.el.style.backgroundImage;
+                ghost.dataset.spriteSet = h.data?.spriteSet || SpriteSet.Horse;
+                const raceScale = h.raceScale || RaceSpriteScale[ghost.dataset.spriteSet] || 1;
+                ghost.style.setProperty('--race-scale', String(raceScale));
+                const baseOpacity = 0.26 * Math.max(0.4, Math.min(1.6, intensity));
                 track.appendChild(ghost);
-                let op = 0.35, dx = 0;
+                let op = baseOpacity, dx = 0;
                 const anim = () => {
                     dx += 1.5;
-                    op -= 0.03;
-                    ghost.style.transform = `scaleX(-1) translateX(-${dx}px)`;
+                    op -= 0.04;
+                    ghost.style.transform = `translateZ(0) scaleX(-1) scale(${raceScale}) translateX(-${dx}px)`;
                     ghost.style.opacity = String(op);
                     if (op > 0) requestAnimationFrame(anim);
                     else if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+                };
+                requestAnimationFrame(anim);
+            }
+
+            spawnBurst(h, intensity = 1) {
+                const list = this.burstFrameCss && this.burstFrameCss.chixiao;
+                const imgs = this.burstImages && this.burstImages.chixiao;
+                if (!Array.isArray(list) || list.length < 2) return;
+
+                const track = document.getElementById('track-layer');
+                const burst = document.createElement('div');
+                burst.className = 'horse-burst';
+                burst.style.top = (h.baseTop - 20) + 'px';
+                burst.style.left = (Math.round(50 + h.distance) - 70) + 'px';
+                burst.style.setProperty('--race-scale', String(h.raceScale || 1));
+                burst.style.backgroundImage = list[1];
+                track.appendChild(burst);
+
+                let op = 0.9 * Math.max(0.6, Math.min(1.4, intensity));
+                let frame = 1;
+                let tick = 0;
+                let dx = 0;
+                const anim = () => {
+                    tick++;
+                    dx += 1.8;
+                    op -= 0.06;
+                    if (tick % 2 === 0) {
+                        const next = frame >= 3 ? 3 : (frame + 1);
+                        const img = imgs && imgs[next];
+                        if (img && img.complete && img.naturalWidth > 0) {
+                            frame = next;
+                            burst.style.backgroundImage = list[frame];
+                        }
+                    }
+                    burst.style.opacity = String(Math.max(0, op));
+                    burst.style.transform = `translateZ(0) scaleX(-1) scale(${h.raceScale || 1}) translateX(-${dx}px)`;
+                    if (op > 0) requestAnimationFrame(anim);
+                    else if (burst.parentNode) burst.parentNode.removeChild(burst);
                 };
                 requestAnimationFrame(anim);
             }
@@ -1149,21 +2797,62 @@
                 const uiLayer = document.getElementById('ui-layer');
                 
                 this.horses.forEach(h => {
+                    const prevSpeed = h._prevSpeed ?? h.speed;
+                    const prevDist = h.distance;
+
                     // 更新动画帧
                     h.frameTimer++;
                     if (h.frameTimer > 3) { 
-                        h.frameIndex++;
-                        if (h.frameIndex > 20) h.frameIndex = 1; 
+                        const nextFrame = (h.frameIndex >= 20 ? 1 : (h.frameIndex + 1));
+                        const spriteSetKey = (h.data && h.data.spriteSet) ? h.data.spriteSet : SpriteSet.Horse;
+                        const key = (spriteSetKey && this.horseRunFrameCss && this.horseRunFrameCss[spriteSetKey]) ? spriteSetKey : SpriteSet.Horse;
+                        const img = this.horseRunImages && this.horseRunImages[key] && this.horseRunImages[key][nextFrame];
+                        if (img && img.complete && img.naturalWidth > 0) {
+                            h.frameIndex = nextFrame;
+                            h.el.style.backgroundImage = this.horseRunFrameCss[key][nextFrame];
+                        }
                         h.frameTimer = 0;
-                        h.el.style.backgroundImage = `url('assets/sprites/horse_run/${h.frameIndex}_horesrun.png')`;
-                        if (h.boostTimer && h.boostTimer > 0) this.spawnGhost(h);
                     }
 
+                    // 即使已经到达终点，也要继续播放动画，直到比赛彻底结束
                     if (h.distance < 2000) { 
                         h.distance += h.speed * 0.05; 
-                        h.el.style.left = (50 + h.distance) + 'px'; // 横向移动
+                        h.el.style.left = Math.round(50 + h.distance) + 'px'; // 横向移动
                     } else {
+                        // 到达终点后，可以继续跑一段，或者保持原地跑动动画
                         finishedCount++;
+                    }
+
+                    if (h.boostTimer && h.boostTimer > 0) {
+                        h.boostTimer--;
+                        h.afterimageTimer = Math.max(h.afterimageTimer || 0, 18);
+                    }
+
+                    const accelUp = h.speed > prevSpeed * 1.015;
+                    if (accelUp) {
+                        h.afterimageTimer = Math.max(h.afterimageTimer || 0, 22);
+                    }
+                    h._prevSpeed = h.speed;
+
+                    if (h.burstCooldown && h.burstCooldown > 0) h.burstCooldown--;
+                    const q = h.data && h.data.quality;
+                    const isRarePlus = q === '稀有' || q === '史诗' || q === '神兽';
+                    if (isRarePlus && h.distance < 2000 && h.burstCooldown <= 0 && (h.boostTimer > 0 || accelUp)) {
+                        const intensity = 1 + (h.boostTimer ? Math.min(0.6, h.boostTimer / 100) : 0);
+                        this.spawnBurst(h, intensity);
+                        h.burstCooldown = 10;
+                    }
+
+                    if (h.afterimageTimer && h.afterimageTimer > 0) {
+                        h.afterimageTimer--;
+                        h.ghostCooldown = Math.max(0, (h.ghostCooldown || 0) - 1);
+                        if (h.ghostCooldown <= 0 && h.distance < 2000 && (h.distance - prevDist) > 0) {
+                            const intensity = Math.min(1.6, 0.8 + (h.afterimageTimer / 22));
+                            this.spawnGhost(h, intensity);
+                            h.ghostCooldown = 3;
+                        }
+                    } else {
+                        h.ghostCooldown = Math.max(0, (h.ghostCooldown || 0) - 1);
                     }
 
                     // 赛中领悟逻辑：所有马匹都有机会
@@ -1178,15 +2867,33 @@
                              // 计算可领悟的非重复技能 OR 可升级的稀有技能
                             const existing = Array.isArray(h.data.genes) ? h.data.genes : [];
                             const allTypes = Object.values(GeneType);
-                            const isRare = Math.random() < 0.1; // 10% 概率稀有
+                            
+                            // 动态概率：稀有度越高，领悟稀有技能概率越高
+                            let rareProb = 0.1; // 默认普通马 10%
+                            if (h.data.quality === '中级') rareProb = 0.15;
+                            else if (h.data.quality === '高级') rareProb = 0.2;
+                            else if (h.data.quality === '稀有') rareProb = 0.3;
+                            else if (h.data.quality === '神兽') rareProb = 0.5;
+                            
+                            const isRare = Math.random() < rareProb; 
                             
                             // 候选列表 (全技能池)
                             const candidates = allTypes.filter(t => {
-                                // 排除当局已经拥有的技能 (避免重复领悟)
-                                const existGene = h.activeGenes.find(g => g.type === t);
-                                if (!existGene) return true; // 未拥有
-                                if (isRare && existGene.quality === '普通') return true; // 可升级
-                                return false;
+                                // 检查已拥有的最高等级 (包括当前携带 activeGenes 和仓库 data.genes)
+                                const activeG = h.activeGenes.find(g => g.type === t);
+                                const permG = (h.data.genes || []).find(g => g.type === t);
+                                
+                                const qMap = {'普通':0, '中级':1, '高级':2, '稀有':3, '史诗':4, '神兽':5};
+                                const newQVal = qMap[isRare ? '稀有' : '普通'];
+                                
+                                let maxOwnedVal = -1;
+                                if (activeG) maxOwnedVal = Math.max(maxOwnedVal, qMap[activeG.quality] || 0);
+                                if (permG) maxOwnedVal = Math.max(maxOwnedVal, qMap[permG.quality] || 0);
+                                
+                                // 如果已拥有的等级 >= 新领悟的等级，则不再领悟
+                                if (maxOwnedVal >= newQVal) return false;
+                                
+                                return true;
                             });
 
                             // 只要没学过，就能学
@@ -1205,6 +2912,10 @@
                                     if (isUpgrade) {
                                         const upgradeIdx = h.activeGenes.findIndex(g => g.type === type);
                                         if (upgradeIdx !== -1) h.activeGenes[upgradeIdx] = newGene;
+                                        if (Array.isArray(h.data.lockedStartGenes)) {
+                                            const lIdx = h.data.lockedStartGenes.findIndex(g => g.type === type);
+                                            if (lIdx !== -1) h.data.lockedStartGenes[lIdx] = newGene;
+                                        }
                                     } else {
                                         const limit = slots + 1; // 选中技能 + 1个新领悟
                                         const existsActive = h.activeGenes.some(g => g.type === type);
@@ -1255,24 +2966,25 @@
                                 op -= 0.02;
                                 float.style.transform = `translateY(-${y}px)`;
                                 float.style.opacity = String(op);
-                                if (op > 0) requestAnimationFrame(anim);
-                                else if (float.parentNode) {
-                                    float.parentNode.removeChild(float);
-                                    // 动画结束后刷新 UI，确保大厅里的技能池显示最新状态
-                                    if (window.game) window.game.updateUI();
-                                }
+                                    if (op > 0) requestAnimationFrame(anim);
+                                    else if (float.parentNode) {
+                                        float.parentNode.removeChild(float);
+                                        if (window.game) window.game._pendingRaceUiRefresh = true;
+                                    }
                             };
                             requestAnimationFrame(anim);
                                 
-                                // 刷新名牌 (重新生成)
+                                // 刷新名牌
                                 if (h.nameTag) {
                                     let geneHtml = '';
                                     if (h.activeGenes && h.activeGenes.length > 0) {
                                         geneHtml = h.activeGenes.map(g => 
-                                            `<span style="background:${g.quality==='普通'?'#bdc3c7':'#f1c40f'}; color:#000; padding:1px 2px; border-radius:2px; margin-left:2px; font-size:7px;">${g.type}</span>`
+                                            `<span class="mini-gene-tag" style="background:${g.quality==='普通'?'#bdc3c7':'#f1c40f'}; color:#000;">${g.type}</span>`
                                         ).join('');
                                     }
-                                    h.nameTag.innerHTML = `${h.data.name}<br>${geneHtml}`;
+                                    if (h.data && h.data.id === this.selectedHorseId) h.nameTag.classList.add('is-player');
+                                    else h.nameTag.classList.remove('is-player');
+                                    h.nameTag.innerHTML = `<div class="name-row">${this.escapeHtml(this.truncateRaceName(h.data.name))}</div><div class="skill-row">${geneHtml}</div>`;
                                 }
                                 
                                 // 领悟后稍微加速
@@ -1283,48 +2995,26 @@
                     }
                 }
 
-                    // 更新名牌位置 (UI 层)
-                    // 名牌 x = 马匹当前距离 - 玩家跑过的距离 + 屏幕偏移(150)
-                    // 因为镜头是跟随玩家的，所以屏幕上的 x 坐标 = 马匹绝对x - 跑道偏移x
-                    // 跑道偏移 = -playerHorse.distance
-                    // 所以 屏幕x = (50 + h.distance) - playerHorse.distance + 150
-                    // 等等，trackLayer 被 transform 移动了。
-                    // 屏幕 x = (50 + h.distance) - playerHorse.distance + 150 - 50 (因为 150 是 targetX)
-                    
-                    // 更简单的算法：名牌跟随马匹在屏幕上的位置
-                    // 马匹的屏幕 X = 初始Left(50) + h.distance + trackLayer的translateX
-                    // trackLayer的translateX = -playerHorse.distance
-                    const screenX = 50 + h.distance - playerHorse.distance + 150 - 50; 
-                    // 解释：trackLayer 移动了 -playerDistance，也就是往左移了。
-                    // 但实际上我们是用 transform 移动的 trackLayer。
-                    // 马匹在 trackLayer 里的 left 是 50 + h.distance。
-                    // 所以马匹相对于视口的 left 是 (50 + h.distance) - playerHorse.distance + 150 - 50 ... 不对
-                    
-                    // 重新理一下：
-                    // 我们的镜头逻辑是：trackLayer.style.transform = `translateX(${-playerHorse.distance}px)`;
-                    // 这意味着，trackLayer 的原点 (0,0) 现在在屏幕的 (-playerHorse.distance, 0) 位置（假设不考虑 targetX 偏移）。
-                    // 但我们实际上是想让 playerHorse 在屏幕的 150px 处。
-                    // 所以 trackLayer 的 translateX 应该是 150 - (50 + playerHorse.distance)。
-                    // 之前的代码是 translateX(-playerHorse.distance)，这会导致 playerHorse 在屏幕的 50px 处。
-                    
-                    // 修正镜头逻辑：
-                    const cameraOffset = 150 - (50 + playerHorse.distance);
-                    const trackLayer = document.getElementById('track-layer');
-                    trackLayer.style.transform = `translateX(${cameraOffset}px)`;
-                    
-                    const laneHeight = 120;
-                    const trackTop = 180;
-                    const horseLeftBase = 50;
-                    const horseWidth = 120;
-                    const horseVisualTopOffset = 20;
-                    const nameLeft = horseLeftBase + h.distance + cameraOffset + (horseWidth / 2); 
-                    const nameTop = trackTop + h.baseTop + horseVisualTopOffset + laneHeight + 10;
-                    
-                    if (h.nameTag) {
-                        h.nameTag.style.left = nameLeft + 'px'; 
-                        h.nameTag.style.top = nameTop + 'px';
-                        h.nameTag.style.transform = 'translate(-50%, -100%)'; 
-                    }
+                });
+
+                const leader = this.horses.reduce((prev, curr) => (curr.distance > prev.distance) ? curr : prev, this.horses[0]);
+                const cameraX = Math.max(0, 50 + leader.distance - 200);
+                const trackLayer = document.getElementById('track-layer');
+                trackLayer.style.transform = `translateX(${-cameraX}px)`;
+
+                const trackContainer = document.getElementById('track-container');
+                const trackContainerTop = trackContainer ? trackContainer.offsetTop : 0;
+                const horseLeftBase = 50;
+                const horseWidth = 120;
+                this.horses.forEach(h => {
+                    if (!h.nameTag) return;
+                    const nameLeft = horseLeftBase + h.distance - cameraX + (horseWidth / 2);
+                    const nameTop = trackContainerTop + h.baseTop;
+                    h.nameTag.style.left = nameLeft + 'px';
+                    h.nameTag.style.top = nameTop + 'px';
+                    h.nameTag.style.transform = 'translate(-50%, -100%)';
+                    if (h.data && h.data.id === this.selectedHorseId) h.nameTag.classList.add('is-player');
+                    else h.nameTag.classList.remove('is-player');
                 });
 
                 // 镜头跟随逻辑 (已整合到上面循环中)
@@ -1341,22 +3031,81 @@
             }
 
             endRace() {
-                // 简单判定：谁先到终点（这里简化为谁跑得远，实际上大家都跑完了）
-                // 在这个简化版里，速度快的肯定先到。
+                // 1. 结算当前视觉组 (Player Group)
                 this.horses.sort((a, b) => b.speed - a.speed);
-                const winner = this.horses[0];
-                const isWin = winner.data.id === this.selectedHorseId;
+                const visualWinner = this.horses[0];
+                const raceHorseId = this.currentRaceHorseId || this.selectedHorseId;
+                const myHorseRankInGroup = this.horses.findIndex(h => h.data.id === raceHorseId) + 1;
                 
-                let msg = `冠军: ${winner.data.name}`;
-                if (isWin) {
-                    msg += "\n你赢了！积分 +100";
-                    this.player.integral += 100;
-                } else {
-                    msg += "\n遗憾落败。";
+                // 2. 模拟其他组的比赛结果
+                // 我们不需要真的跑，只需要根据属性计算一个“模拟速度”并排序
+                const allGroupResults = [];
+                
+                this.allGroups.forEach((group, gIdx) => {
+                    let groupRankings = [];
+                    if (gIdx === this.playerGroupIndex) {
+                        // 玩家组使用实际跑完的结果
+                        groupRankings = this.horses.map(h => h.data);
+                    } else {
+                        // 其他组模拟：计算速度并排序
+                        // 简单模拟速度：baseSpeed + 技能加成
+                        groupRankings = group.data.map(h => {
+                            // 临时计算一个速度
+                            const active = (h.lockedStartGenes||[]).slice(0, this.slotCountForHorse(h));
+                            const speed = this.computeSpeedWithGenes(h.baseSpeed, active, h.genes, false);
+                            return { horse: h, speed: speed };
+                        }).sort((a,b) => b.speed - a.speed).map(o => o.horse);
+                    }
+                    allGroupResults.push({ name: group.name, rankings: groupRankings });
+                });
+                
+                // 3. 记录数据和发放奖励 (仅基于玩家在自己组的排名)
+                this.player.seasonRaces = (this.player.seasonRaces || 0) + 1;
+                let reward = 0;
+                // 奖励规则：1st=300, 2nd=250, 3rd=200, 4th=150, 5th=100, 6th=50
+                const rewards = [300, 250, 200, 150, 100, 50];
+                reward = rewards[myHorseRankInGroup - 1] || 10;
+                
+                this.player.integral += reward;
+                
+                if (myHorseRankInGroup === 1) {
+                    this.player.seasonWins = (this.player.seasonWins || 0) + 1;
+                    // 找到玩家马数据更新胜场
+                    const myH = this.player.horses.find(h => h.id === raceHorseId);
+                    if(myH) myH.wins = (myH.wins || 0) + 1;
                 }
                 
+                if (myHorseRankInGroup >= 4) {
+                    this.player.seasonBottoms = (this.player.seasonBottoms || 0) + 1;
+                }
+                
+                const myHorse = this.player.horses.find(h => h.id === raceHorseId);
+                if (myHorse) {
+                    myHorse.totalRaces = (myHorse.totalRaces || 0) + 1;
+                }
+
+                this.promoteHorseToStableFront(raceHorseId);
+                
+                // 4. 构建结算面板信息 (显示所有组的前3名)
+                let msg = `<div style="font-size:16px; color:#f1c40f; margin-bottom:10px;">${this.allGroups[this.playerGroupIndex].name} 排名: 第 ${myHorseRankInGroup} (奖励 ${reward})</div>`;
+                
+                msg += `<div style="display:flex; gap:10px; justify-content:center; text-align:left; font-size:10px;">`;
+                allGroupResults.forEach(res => {
+                    msg += `<div style="background:#34495e; padding:5px; border-radius:4px;">`;
+                    msg += `<div style="color:#bdc3c7; border-bottom:1px solid #555; margin-bottom:3px;">${res.name}</div>`;
+                    res.rankings.slice(0, 6).forEach((h, i) => {
+                        const isMe = h.id === raceHorseId;
+                        const color = isMe ? '#2ecc71' : (i===0 ? '#f1c40f' : '#ecf0f1');
+                        msg += `<div style="color:${color};">${i+1}. ${h.name}</div>`;
+                    });
+                    msg += `</div>`;
+                });
+                msg += `</div>`;
+                
                 this.updateUI();
-                this.showResultPanel(msg);
+                this._pendingRaceUiRefresh = false;
+                this.showResultPanel(msg); // 这里传入的是 HTML，需要修改 showResultPanel 支持 HTML
+                this.currentRaceHorseId = null;
 
                 // 移除所有跟随名牌
                 this.horses.forEach(h => {
@@ -1368,6 +3117,852 @@
                 // 清空跑道内容，但不立刻返回大厅，交由结算面板处理返回逻辑
                 document.getElementById('track-layer').innerHTML = '';
                 document.getElementById('track-layer').style.transform = 'translateX(0)';
+            }
+
+            openDraft() {
+                const races = this.player.seasonRaces || 0;
+                const wins = this.player.seasonWins || 0;
+                const bottoms = this.player.seasonBottoms || 0; // 倒数排名次数
+                if (races < 8) {
+                    alert("本赛季未结束（需完成 8 场比赛）才可进入选秀。");
+                    return;
+                }
+                
+                // 确定种子顺位 (1-14)
+                if (!this.player.heldDraftPick || this.player.heldDraftPick.seasonNo !== this.player.seasonNo) {
+                    // 基于倒数排名次数判定种子顺位
+                    // 倒数次数 >= 6: 种子 1-3 (并列倒数第一，均等概率)
+                    // 倒数次数 5: 种子 4
+                    // ...
+                    let seed = 14;
+                    if (bottoms >= 6) seed = Math.floor(Math.random() * 3) + 1; // 1, 2, 3
+                    else if (bottoms === 5) seed = 4;
+                    else if (bottoms === 4) seed = 5;
+                    else if (bottoms === 3) seed = 6;
+                    else if (bottoms === 2) seed = 7;
+                    else if (bottoms === 1) seed = Math.floor(Math.random() * 3) + 8; // 8-10
+                    else seed = Math.floor(Math.random() * 4) + 11; // 11-14
+                    
+                    this.player.heldDraftPick = { 
+                        seed: seed, 
+                        isTraded: false,
+                        originalOwner: '玩家',
+                        seasonNo: this.player.seasonNo,
+                        seasonStats: { races, wins, bottoms }
+                    };
+                }
+                
+                const seed = this.player.heldDraftPick.seed;
+                // 简单的胜率描述
+                const odds = seed <= 3 ? "14.0%" : (seed === 4 ? "12.5%" : "低");
+                
+                const statusHtml = `
+                    <p>本赛季战绩: ${wins}胜 / ${races}场 (倒数排名: ${bottoms}次)</p>
+                    <p>获得乐透种子: <span style="color:#e74c3c; font-weight:bold; font-size:20px;">第 ${seed} 号</span> ${this.player.heldDraftPick.isTraded ? '(已交易)' : ''}</p>
+                    <p style="font-size:12px; color:#95a5a6;">(状元概率: ${odds}，将通过14球乒乓球摇号决定归属)</p>
+                `;
+                document.getElementById('draft-status').innerHTML = statusHtml;
+                document.getElementById('draft-result').style.display = 'none';
+                document.getElementById('btn-start-draft').style.display = 'block';
+                document.getElementById('btn-close-draft').style.display = 'none';
+                document.getElementById('btn-open-trade').style.display = 'block';
+                document.getElementById('draft-panel').style.display = 'flex';
+                
+                this.currentDraftSeed = seed;
+            }
+
+            openTrade() {
+                document.getElementById('draft-panel').style.display = 'none';
+                document.getElementById('trade-panel').style.display = 'flex';
+                this.updateTradeUI();
+            }
+
+            closeTrade() {
+                document.getElementById('trade-panel').style.display = 'none';
+                document.getElementById('draft-panel').style.display = 'flex';
+                this.openDraft();
+            }
+
+            updateTradeUI() {
+                document.getElementById('trade-my-points').innerText = this.player.integral;
+                document.getElementById('trade-my-tier').innerText = `种子 ${this.player.heldDraftPick.seed}`;
+                document.getElementById('trade-target-tier').innerText = '请选择';
+                document.getElementById('trade-action-area').style.display = 'none';
+                
+                const list = document.getElementById('trade-list');
+                list.innerHTML = '';
+                
+                // 生成 14 个 AI 对手 (对应种子 1-14)
+                const aiTeams = [];
+                for (let s = 1; s <= 14; s++) {
+                    let name = `AI 队伍 ${s}`;
+                    let desc = `种子 ${s}`;
+                    if (s <= 3) {
+                        name = `⚡ 摆烂大队 ${s}`;
+                        desc = `状元热门 (14.0%)`;
+                    } else if (s <= 6) {
+                        name = `🛡️ 重建军团 ${s}`;
+                        desc = `中游球队`;
+                    } else if (s <= 10) {
+                        name = `⚔️ 季后赛边缘 ${s}`;
+                        desc = `冲击顺位`;
+                    } else {
+                        name = `🌪️ 夺冠热门 ${s}`;
+                        desc = `强队 (0.5%状元)`;
+                    }
+                    
+                    aiTeams.push({ name: name, seed: s, desc: desc });
+                }
+                
+                aiTeams.forEach((ai, idx) => {
+                    const item = document.createElement('div');
+                    item.style.padding = '10px';
+                    item.style.borderBottom = '1px solid #333';
+                    item.style.display = 'flex';
+                    item.style.justifyContent = 'space-between';
+                    item.style.alignItems = 'center';
+                    item.style.cursor = 'pointer';
+                    item.innerHTML = `
+                        <div>
+                            <div style="color:#ecf0f1; font-weight:bold;">${ai.name}</div>
+                            <div style="font-size:10px; color:#7f8c8d;">${ai.desc}</div>
+                        </div>
+                        <div style="color:#f1c40f; font-weight:bold;">种子 ${ai.seed}</div>
+                    `;
+                    item.onclick = () => this.selectTradeTarget(ai);
+                    list.appendChild(item);
+                });
+            }
+
+            selectTradeTarget(ai) {
+                this.selectedTradeTarget = ai;
+                document.getElementById('trade-target-tier').innerText = `种子 ${ai.seed}`;
+                document.getElementById('trade-action-area').style.display = 'block';
+                document.getElementById('trade-slider').value = 0;
+                this.updateTradeCalc();
+            }
+
+            updateTradeCalc() {
+                const addPoints = parseInt(document.getElementById('trade-slider').value);
+                document.getElementById('trade-offer-val').innerText = addPoints;
+                
+                const mySeed = this.player.heldDraftPick.seed;
+                const targetSeed = this.selectedTradeTarget.seed;
+                
+                // 价值估算: 种子越小越值钱
+                // 种子1: 5000, 种子14: 100
+                const getValue = (s) => Math.floor(5000 / Math.pow(1.2, s-1));
+                const myVal = getValue(mySeed);
+                const targetVal = getValue(targetSeed);
+                
+                const totalOffer = myVal + addPoints;
+                const reqVal = targetVal * 1.1; 
+                
+                const msg = document.getElementById('trade-msg');
+                if (totalOffer >= reqVal) {
+                    msg.innerHTML = '<span style="color:#2ecc71">✅ 对方看起来很感兴趣</span>';
+                    this.canTrade = true;
+                } else {
+                    const diff = reqVal - totalOffer;
+                    msg.innerHTML = `<span style="color:#e74c3c">❌ 对方觉得筹码不够 (差约${Math.ceil(diff)})</span>`;
+                    this.canTrade = false;
+                }
+            }
+
+            executeTrade() {
+                if (!this.canTrade) {
+                    alert("对方拒绝了你的报价！请增加筹码。");
+                    return;
+                }
+                const points = parseInt(document.getElementById('trade-slider').value);
+                if (this.player.integral < points) {
+                    alert("你的积分不足！");
+                    return;
+                }
+                
+                this.player.integral -= points;
+                this.player.heldDraftPick.seed = this.selectedTradeTarget.seed;
+                this.player.heldDraftPick.isTraded = true;
+                
+                alert(`交易成功！你获得了【${this.selectedTradeTarget.name}】的第 ${this.selectedTradeTarget.seed} 号种子！`);
+                this.closeTrade();
+            }
+
+            startDraft() {
+                // 模拟抽签动画
+                const btn = document.getElementById('btn-start-draft');
+                btn.style.display = 'none';
+                // 抽签开始后，禁用/隐藏交易入口，防止作弊
+                document.getElementById('btn-open-trade').style.display = 'none';
+                
+                const status = document.getElementById('draft-status');
+                status.innerHTML = "🎲 正在进行乐透抽签...";
+                
+                setTimeout(() => {
+                    this.performDraft();
+                }, 1500);
+            }
+
+            performDraft() {
+                const playerSeed = this.currentDraftSeed;
+                const statusEl = document.getElementById('draft-status');
+                
+                // 14个球抽4个的乐透逻辑
+                statusEl.innerHTML = "🎲 正在抽取 4 个乒乓球组合...";
+                
+                // 定义各种子队的组合数 (总共1000)
+                const seedCombos = {
+                    1: 140, 2: 140, 3: 140,
+                    4: 125, 5: 105, 6: 90, 7: 75,
+                    8: 60, 9: 45, 10: 30,
+                    11: 20, 12: 15, 13: 10, 14: 5
+                };
+                
+                // 模拟抽签过程
+                // 实际上我们不需要真的生成组合，只需要按概率抽取
+                // 抽 Top 4
+                const lotteryResults = [];
+                const remainingSeeds = new Set([1,2,3,4,5,6,7,8,9,10,11,12,13,14]);
+                
+                for (let pick = 1; pick <= 4; pick++) {
+                    let totalPool = 0;
+                    remainingSeeds.forEach(s => totalPool += seedCombos[s]);
+                    
+                    let rnd = Math.random() * totalPool;
+                    let winner = -1;
+                    
+                    for (let s of remainingSeeds) {
+                        if (rnd < seedCombos[s]) {
+                            winner = s;
+                            break;
+                        }
+                        rnd -= seedCombos[s];
+                    }
+                    
+                    lotteryResults.push(winner);
+                    remainingSeeds.delete(winner);
+                }
+                
+                // 剩下的按种子顺位排序 (种子号小的排前面)
+                const rest = Array.from(remainingSeeds).sort((a,b) => a - b);
+                const finalOrder = lotteryResults.concat(rest);
+                
+                // 找到玩家的最终顺位
+                // finalOrder 的索引+1 即为顺位
+                const playerPick = finalOrder.indexOf(playerSeed) + 1;
+                
+                this.currentPick = playerPick;
+                
+                setTimeout(() => {
+                    const lotteryInfo = `
+                        <div style="font-size:12px; color:#bdc3c7; text-align:left; margin:10px auto; width:80%;">
+                            <div>第1顺位: 种子${lotteryResults[0]} (中签)</div>
+                            <div>第2顺位: 种子${lotteryResults[1]} (中签)</div>
+                            <div>第3顺位: 种子${lotteryResults[2]} (中签)</div>
+                            <div>第4顺位: 种子${lotteryResults[3]} (中签)</div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('draft-pick-no').innerText = `第 ${playerPick}`;
+                    statusEl.innerHTML = `
+                        ${lotteryInfo}
+                        <div style="margin-top:10px;">你的种子: ${playerSeed}</div>
+                        <div style="color:#f1c40f; font-size:20px; font-weight:bold;">最终获得: 第 ${playerPick} 顺位</div>
+                    `;
+                    
+                    this.generateDraftPool();
+                    document.getElementById('draft-result').style.display = 'block';
+                    document.getElementById('btn-close-draft').style.display = 'none';
+                    this.updateUI();
+                }, 1000);
+            }
+            
+            generateDraftPool() {
+                const container = document.getElementById('draft-pool-container');
+                container.innerHTML = '';
+                this.draftPool = [];
+                
+                let hasMythical = false; // 标记是否已经生成过神兽
+                const usedNames = new Set();
+                (this.player.horses || []).forEach(h => { if (h && h.name) usedNames.add(String(h.name)); });
+                (this.player.aiStable || []).forEach(h => { if (h && h.name) usedNames.add(String(h.name)); });
+
+                // 生成 14 匹马作为候选 (对应14个乐透签)
+                for (let i = 1; i <= 14; i++) {
+                    // 只有顺位1有机会出神兽，前3出史诗，其他普通
+                    // 这里的逻辑是：池子里什么马都有，但是能不能选到看顺位
+                    
+                    let quality = '普通';
+                    
+                    // 修正：确保只有一只神兽
+                    if (i === 1) {
+                         // 30% 概率出神兽
+                        if (Math.random() < 0.3) {
+                            quality = '神兽';
+                            hasMythical = true;
+                        } else {
+                            quality = '稀有'; // 没出神兽，保底稀有（原逻辑是史诗或稀有，这里简化）
+                        }
+                    } 
+                    // 兜底：如果前面没出神兽，后面也不允许出了
+                    else if (i <= 3) quality = Math.random() < 0.5 ? '史诗' : '稀有';
+                    else if (i <= 6) quality = Math.random() < 0.4 ? '高级' : '中级';
+                    else quality = '普通';
+                    
+                    const name = this.pickUniqueNewYearName(usedNames);
+                    // 生成马匹数据
+                    const horse = {
+                        id: 'pool_' + i,
+                        name: name,
+                        color: quality==='神兽'?'#e74c3c':(quality==='史诗'?'#9b59b6':(quality==='稀有'?'#f1c40f':'#ecf0f1')),
+                        quality: quality,
+                        // 评级逻辑：基于排名区间
+                        rating: this.getRatingByRank(i, quality),
+                        data: this.createDraftHorseData(quality, name)
+                    };
+                    this.draftPool.push(horse);
+                }
+                
+                // 如果当前是玩家顺位(currentPick)，前面的马已经被AI选走了
+                // 简单模拟：如果玩家是第3顺位，那么池子里最好的2匹马已经被移除了
+                // 我们直接移除前 (pick-1) 个高质量的马
+                // 先按真实质量排序
+                const sortedPool = [...this.draftPool].sort((a,b) => {
+                    const qMap = {'神兽':5, '稀有':4, '史诗':3, '高级':2, '中级':1, '普通':0};
+                    return qMap[b.quality] - qMap[a.quality];
+                });
+                
+                // 玩家顺位
+                const playerPick = this.currentPick || parseInt(document.getElementById('draft-pick-no').innerText) || 14;
+
+                // AI 选走前 (currentPick - 1) 个
+                const available = sortedPool.slice(playerPick - 1);
+                
+                // 模拟：被 AI 选走的马，真正加入 AI 马厩
+                const aiPicked = sortedPool.slice(0, playerPick - 1);
+                aiPicked.forEach(h => {
+                    // AI 得到这匹马
+                    if (!this.player.aiStable) this.player.aiStable = [];
+                    this.player.aiStable.push(h.data);
+                });
+
+                // 确保 AI 马厩里的神兽数量也受到限制
+                // 遍历 aiStable，如果有超过1只神兽，把多余的降级为史诗或稀有
+                if (this.player.aiStable) {
+                    const mythicals = this.player.aiStable.filter(h => h.quality === '神兽');
+                    if (mythicals.length > 1) {
+                        // 保留最新的一只，其他的降级
+                        // 从第二个开始降级
+                        for (let i = 1; i < mythicals.length; i++) {
+                            mythicals[i].quality = '史诗';
+                            mythicals[i].color = '#9b59b6';
+                            mythicals[i].name = mythicals[i].name.replace('神兽', '史诗'); // 改名
+                        }
+                    }
+                }
+
+                // 打乱顺序显示，不让玩家直接看出哪个最好（虽然评级能看出来）
+                const displayList = available.sort(() => 0.5 - Math.random());
+                
+                displayList.forEach(h => {
+                    const div = document.createElement('div');
+                    div.className = 'draft-card';
+                    div.style.cssText = `
+                        width: 90px; height: 110px;
+                        background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('assets/icon.png');
+                        background-position: center;
+                        background-size: cover;
+                        background-repeat: no-repeat;
+                        border: 1px solid #555;
+                        border-radius: 6px; display: flex; flex-direction: column;
+                        align-items: center; justify-content: flex-start; cursor: pointer;
+                        transition: transform 0.1s;
+                        padding-top: 10px;
+                    `;
+                    const spMin = (h.data && typeof h.data.speedRangeMin === 'number') ? h.data.speedRangeMin : '';
+                    const spMax = (h.data && typeof h.data.speedRangeMax === 'number') ? h.data.speedRangeMax : '';
+                    const skillCount = (h.data && Array.isArray(h.data.genes)) ? h.data.genes.length : 0;
+                    div.innerHTML = `
+                        <div style="font-size:12px; margin-top:28px; color:#f1c40f; font-weight:800; text-shadow:0 1px 2px rgba(0,0,0,0.9), 0 0 6px rgba(241,196,15,0.35);">${h.name}</div>
+                        <div style="font-size:14px; color:#f1c40f; font-weight:bold;">${h.rating}</div>
+                        <div style="font-size:10px; color:#ecf0f1; text-shadow:0 1px 2px rgba(0,0,0,0.9);">速度: ${spMin}-${spMax}</div>
+                        <div style="font-size:10px; color:#ecf0f1; text-shadow:0 1px 2px rgba(0,0,0,0.9);">技能池数量: ${skillCount}</div>
+                    `;
+                    div.onclick = () => this.selectDraftHorse(h, div);
+                    container.appendChild(div);
+                });
+            }
+            
+            getRatingByRank(rank, realQuality) {
+                // 基于排名区间的评级逻辑
+                // 1-5名: 显示 S
+                // 6-10名: 显示 A
+                // 11-15名: 显示 B (实际上我们只生成10个，所以是 6-10=A)
+                // 但这里我们只有10个池子，所以调整一下：
+                // 1-3: S
+                // 4-7: A
+                // 8-10: B
+                
+                let rating = 'B';
+                if (rank <= 3) rating = 'S';
+                else if (rank <= 7) rating = 'A';
+                
+                // 增加迷惑性：有概率显示不准
+                // 比如把 S 显示成 A (被低估)，或者 B 显示成 A (被高估)
+                const rnd = Math.random();
+                if (rnd < 0.2) {
+                    if (rating === 'S') rating = 'A';
+                    else if (rating === 'A') rating = Math.random()<0.5 ? 'S' : 'B';
+                    else if (rating === 'B') rating = 'A';
+                }
+                
+                return rating;
+            }
+            
+            getRatingByQuality(q) {
+                // 废弃，改用 getRatingByRank
+                return 'C';
+            }
+            
+            createDraftHorseData(quality, nameOverride) {
+                 // 修复：确保 ID 唯一性，避免多只神兽马因随机数碰撞或逻辑复制导致 ID 相同
+                 // 虽然 Date.now() 很快，但循环中可能相同，加个大的随机数
+                 const id = 'draft_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+                 const lifespan = quality==='神兽'?80 : (quality==='史诗'?70 : 60);
+                 const horse = {
+                    id: id,
+                    name: String(nameOverride || (quality + '新秀')),
+                    color: quality==='神兽'?'#e74c3c':(quality==='史诗'?'#9b59b6':(quality==='稀有'?'#f1c40f':'#ecf0f1')),
+                    quality: quality,
+                    baseSpeed: 60 + Math.random() * 10,
+                    stamina: 70,
+                    accel: 0.8,
+                    temper: 0.5,
+                    lifespan: lifespan,
+                    maxLifespan: lifespan,
+                    genes: [],
+                    geneSlots: Math.max(5, this.slotCountForHorse({quality})), // 选秀马至少5个槽
+                    totalRaces: 0,
+                    lockedStartGenes: [],
+                    spriteSet: quality === '神兽'
+                        ? pickLegendarySpriteSet()
+                        : (quality === '史诗'
+                            ? SpriteSet.Epic
+                            : (quality === '稀有'
+                                ? (Math.random() < 0.5 ? SpriteSet.Rare : SpriteSet.Rare2)
+                                : (Math.random() < 0.35 ? SpriteSet.Base : SpriteSet.Horse)))
+                };
+                // 随机给点技能 (选秀马至少激活5个技能)
+                const slots = horse.geneSlots;
+                const pool = Object.values(GeneType).map(t => ({type:t, quality:'普通'}));
+                // 确保激活数量不超槽位数，且至少5个(因为上面强制slots>=5了)
+                horse.genes = this.pickStartGenes(pool, Math.min(slots, Math.max(5, Math.floor(slots/2))));
+                if (quality === '神兽' || quality === '稀有') {
+                    if (horse.genes.length > 0) horse.genes[0].quality = '稀有';
+                }
+                this.ensureLockedStartGenes(horse);
+                const speedSlots = this.slotCountForHorse(horse);
+                const active = (horse.lockedStartGenes || []).slice(0, speedSlots);
+                const actual = Math.round(this.computeSpeedWithGenes(horse.baseSpeed, active, horse.genes, false));
+                const down = 3 + Math.floor(Math.random() * 3);
+                const up = 3 + Math.floor(Math.random() * 3);
+                horse.speedRangeMin = Math.max(1, actual - down);
+                horse.speedRangeMax = Math.max(horse.speedRangeMin + 1, actual + up);
+                return horse;
+            }
+            
+            selectDraftHorse(horseObj, el) {
+                if (this.hasDrafted) return;
+                
+                // 选中视觉反馈
+                const cards = document.querySelectorAll('.draft-card');
+                cards.forEach(c => c.style.border = '1px solid #555');
+                el.style.border = '2px solid #2ecc71';
+                
+                if (confirm(`确定选择评级为【${horseObj.rating}】的马匹吗？\n(技能将在入队后揭晓)`)) {
+                    this.hasDrafted = true;
+                    
+                    // 深度克隆：防止引用同一对象导致数据互通
+                    // 选秀池里的 horseObj.data 是原始对象，如果不克隆，
+                    // 可能会出现 AI 马厩和玩家马厩引用同一个对象的情况（如果逻辑有漏洞）
+                    // 尤其是当洗练修改属性时，必须确保是独立对象
+                    const newHorse = JSON.parse(JSON.stringify(horseObj.data));
+                    
+                    // 再次确保 ID 唯一：虽然 createDraftHorseData 已经随机了，但入队时再刷新一次最稳妥
+                    newHorse.id = 'h_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+                    
+                    this.draftedHorse = newHorse;
+                    
+                    // 加入马厩
+                    this.player.horses.push(newHorse);
+                    
+                    // 自动选中新马
+                    this.selectedHorseId = newHorse.id;
+                    this.pushHint(`🎉 签约新马：${newHorse.name}`);
+                    this.updateUI();
+                    
+                    // 显示结果
+                    document.getElementById('draft-pool-container').innerHTML = `
+                        <div style="text-align:center;">
+                            <h3 style="color:#2ecc71">🎉 签约成功！</h3>
+                            <p>真实资质: <span style="color:#f1c40f; font-weight:bold;">${newHorse.quality}</span></p>
+                            <p>已加入马厩，可在大厅查看详细属性。</p>
+                        </div>
+                    `;
+                    
+                    // 显示下一步按钮
+                    document.getElementById('btn-close-draft').style.display = 'inline-block';
+                    document.getElementById('btn-trade-new-horse').style.display = 'inline-block';
+                    document.getElementById('btn-market-trade').style.display = 'inline-block';
+                    
+                    // 将剩余的选秀马匹加入 AI 马厩，使其可交易
+                    this.draftPool.forEach(poolHorse => {
+                        // 跳过玩家选中的马（通过原始ID判断，或者直接根据引用）
+                        // 注意：这里 poolHorse.data 还是原始对象，而我们刚才克隆了 newHorse
+                        // 所以要对比 poolHorse.data.id 和 horseObj.data.id
+                        if (poolHorse.data.id === horseObj.data.id) return;
+                        
+                        // 同样深度克隆 AI 的马，防止任何潜在引用关联
+                        const aiHorse = JSON.parse(JSON.stringify(poolHorse.data));
+                        
+                        // 确保 AI 马匹有名字 (去掉 "新秀-" 前缀，或者随机个名字)
+                        // ... (原有 AI 命名逻辑)
+                        // 确保 AI 马厩里的神兽数量也受到限制
+                        // ...
+                        
+                        // 这里需要把之前的 AI 入队逻辑搬过来，并应用到 clone 的对象上
+                         if (!this.player.aiStable) this.player.aiStable = [];
+                         
+                         if (aiHorse.quality === '神兽') {
+                             const suffixes = ['天命', '传奇', '无双', '至尊', '幻影', '霸主', '星辰'];
+                             const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+                             aiHorse.name = "AI-神兽·" + suffix;
+                             // AI 神兽再次刷新 ID
+                             aiHorse.id = 'ai_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+                         } else {
+                             aiHorse.name = 'AI-' + aiHorse.name;
+                         }
+                         
+                         // 赋予随机技能 (模拟 AI 领悟)
+                        if (!aiHorse.genes || aiHorse.genes.length === 0) {
+                            const slots = this.slotCountForHorse(aiHorse);
+                            const pool = Object.values(GeneType).map(t => ({type:t, quality:'普通'}));
+                            aiHorse.genes = this.pickStartGenes(pool, Math.floor(Math.random() * slots));
+                        }
+                         
+                         this.player.aiStable.push(aiHorse);
+                    });
+                    
+                    // AI 马厩神兽去重逻辑 (同上)
+                    if (this.player.aiStable) {
+                        const mythicals = this.player.aiStable.filter(h => h.quality === '神兽');
+                        if (mythicals.length > 1) {
+                            for (let i = 1; i < mythicals.length; i++) {
+                                mythicals[i].quality = '史诗';
+                                mythicals[i].color = '#9b59b6';
+                                mythicals[i].name = mythicals[i].name.replace('神兽', '史诗');
+                            }
+                        }
+                    }
+                    
+                    // 简单的 AI 马厩清理 (保留最新的 30 匹，避免无限膨胀)
+                    if (this.player.aiStable.length > 30) {
+                        // 按价值排序，保留价值高的
+                        this.player.aiStable.sort((a,b) => this.calculateHorseValue(b) - this.calculateHorseValue(a));
+                        this.player.aiStable = this.player.aiStable.slice(0, 30);
+                    }
+                    
+                    if (this.player.horses.length > this.stableCap) {
+                        alert("马厩爆满！请尽快清理旧马。");
+                    }
+                }
+            }
+            
+            openHorseTrade() {
+                if (!this.draftedHorse) return;
+                
+                // 计算交易价格：基于资质动态定价
+                const quality = this.draftedHorse.quality;
+                // 神兽=4000, 稀有=3000, 史诗=2500, 高级=2000, 中级=1500, 普通=1000
+                const priceMap = {'神兽':4000, '稀有':3000, '史诗':2500, '高级':2000, '中级':1500, '普通':1000};
+                this.currentTradePrice = priceMap[quality] || 1000;
+                
+                document.getElementById('horse-trade-price').innerText = this.currentTradePrice + '积分';
+                document.getElementById('horse-trade-modal').style.display = 'flex';
+            }
+            
+            cancelHorseTrade() {
+                document.getElementById('horse-trade-modal').style.display = 'none';
+            }
+            
+            confirmHorseTrade() {
+                // 卖掉刚选的马
+                const idx = this.player.horses.findIndex(h => h.id === this.draftedHorse.id);
+                if (idx !== -1) {
+                    this.player.horses.splice(idx, 1);
+                    this.player.integral += this.currentTradePrice;
+                    alert(`交易成功！获得 ${this.currentTradePrice} 积分。`);
+                }
+                this.cancelHorseTrade();
+                this.closeDraft();
+            }
+
+            closeDraft() {
+                this.hasDrafted = false;
+                this.draftedHorse = null;
+                document.getElementById('draft-panel').style.display = 'none';
+                document.getElementById('btn-trade-new-horse').style.display = 'none'; // 隐藏按钮
+                document.getElementById('btn-market-trade').style.display = 'none'; // 隐藏按钮
+                
+                // --- 新增：奖杯结算逻辑 ---
+                // 赛季结算：按总胜率判断，模拟和其他AI对比
+                // 假设：如果胜率 >= 40% 且 场次 >= 8，算作赛季第一（简化逻辑）
+                const races = this.player.seasonRaces || 0;
+                const wins = this.player.seasonWins || 0;
+                const rate = races > 0 ? (wins / races) * 100 : 0;
+                
+                // 重置荣誉状态
+                this.player.hasSeasonChampion = false;
+
+                if (races >= 8 && rate >= 40) {
+                    this.player.trophies = (this.player.trophies || 0) + 1;
+                    this.player.hasSeasonChampion = true; // 获得下赛季的荣誉显示
+                    
+                    // 检查是否合并高级奖杯
+                    const total = this.player.trophies;
+                    if (total % 10 === 0) {
+                        alert(`🏆 恭喜！你获得了第 ${total} 个奖杯，已自动合成高级荣誉！\n(本赛季胜率: ${rate.toFixed(1)}%)`);
+                    } else {
+                        alert(`🏆 赛季结算：恭喜获得赛季第一！\n奖杯 +1 (当前: ${total})\n(本赛季胜率: ${rate.toFixed(1)}%)`);
+                    }
+                } else if (races >= 8) {
+                    alert(`赛季结束。\n胜率: ${rate.toFixed(1)}% (未达到冠军标准 40%)\n继续加油！`);
+                }
+                // -------------------------
+
+                // 重置赛季
+                this.player.seasonRaces = 0;
+                this.player.seasonWins = 0;
+                this.player.seasonBottoms = 0;
+                // 重置选秀权，确保新赛季重新根据胜率计算
+                this.player.heldDraftPick = null;
+                this.player.seasonNo = (this.player.seasonNo || 1) + 1;
+                
+                this.updateUI();
+                alert("新赛季已开启！");
+            }
+            
+            // --- 球员交易市场逻辑 ---
+            openMarket() {
+                document.getElementById('market-panel').style.display = 'flex';
+                this.selectedMarketTarget = null;
+                this.selectedMarketChips = new Set();
+                this.renderMarket();
+                this.updateMarketCalc();
+            }
+            
+            closeMarket() {
+                document.getElementById('market-panel').style.display = 'none';
+            }
+            
+            renderMarket() {
+                // 1. 渲染 AI 马列表 (只显示 player.aiStable 里的)
+                const aiList = document.getElementById('market-ai-list');
+                aiList.innerHTML = '';
+                const aiStable = this.player.aiStable || [];
+                
+                if (aiStable.length === 0) {
+                    aiList.innerHTML = '<div style="color:#7f8c8d; padding:10px;">AI 暂无可交易马匹</div>';
+                } else {
+                    aiStable.forEach(h => {
+                        const val = this.calculateHorseValue(h);
+                        const card = document.createElement('div');
+                        card.style.cssText = `min-width:100px; background:#2c3e50; border:1px solid #7f8c8d; border-radius:6px; padding:5px; text-align:center; cursor:pointer; position:relative;`;
+                        card.innerHTML = `
+                            <div style="font-size:12px; font-weight:bold; color:${h.quality==='神兽'?'#e74c3c':(h.quality==='史诗'?'#9b59b6':(h.quality==='稀有'?'#f1c40f':'#ecf0f1'))}">${h.name}</div>
+                            <div style="font-size:10px; color:#bdc3c7;">${h.quality}</div>
+                            <div style="font-size:10px; color:#f1c40f;">评分: ${val}</div>
+                        `;
+                        card.onclick = () => {
+                            // 单选
+                            this.selectedMarketTarget = h;
+                            Array.from(aiList.children).forEach(c => c.style.border = '1px solid #7f8c8d');
+                            card.style.border = '2px solid #e74c3c';
+                            this.updateMarketCalc();
+                        };
+                        aiList.appendChild(card);
+                    });
+                }
+                
+                // 2. 渲染我的筹码 (显示所有马匹，包括刚选的)
+                const myList = document.getElementById('market-my-list');
+                myList.innerHTML = '';
+                this.player.horses.forEach(h => {
+                    const val = this.calculateHorseValue(h);
+                    const card = document.createElement('div');
+                    card.style.cssText = `min-width:100px; background:#2c3e50; border:1px solid #7f8c8d; border-radius:6px; padding:5px; text-align:center; cursor:pointer;`;
+                    card.innerHTML = `
+                        <div style="font-size:12px; font-weight:bold; color:${h.color}">${h.name}</div>
+                        <div style="font-size:10px; color:#bdc3c7;">${h.quality}</div>
+                        <div style="font-size:10px; color:#2ecc71;">评分: ${val}</div>
+                    `;
+                    card.onclick = () => {
+                        // 多选
+                        if (this.selectedMarketChips.has(h)) {
+                            this.selectedMarketChips.delete(h);
+                            card.style.border = '1px solid #7f8c8d';
+                        } else {
+                            this.selectedMarketChips.add(h);
+                            card.style.border = '2px solid #2ecc71';
+                        }
+                        this.updateMarketCalc();
+                    };
+                    myList.appendChild(card);
+                });
+            }
+            
+            calculateHorseValue(h) {
+                // 简单的价值评估公式
+                const qMap = {'神兽':5000, '史诗':3000, '稀有':2000, '高级':1200, '中级':800, '普通':500};
+                let val = qMap[h.quality] || 500;
+                
+                // 速度加成
+                val += Math.floor((h.baseSpeed - 55) * 50);
+                
+                // 技能加成 (永久技能)
+                if (h.genes) {
+                    h.genes.forEach(g => {
+                        if (g.quality === '神兽') val += 800;
+                        else if (g.quality === '史诗') val += 500;
+                        else if (g.quality === '稀有') val += 300;
+                        else val += 50;
+                    });
+                }
+                return Math.floor(val);
+            }
+            
+            updateMarketCalc() {
+                const targetVal = this.selectedMarketTarget ? this.calculateHorseValue(this.selectedMarketTarget) : 0;
+                document.getElementById('market-target-val').innerText = targetVal;
+
+                const targetPreview = document.getElementById('market-target-preview');
+                if (targetPreview) {
+                    if (this.selectedMarketTarget) {
+                        const spriteSet = this.selectedMarketTarget.spriteSet || SpriteSet.Horse;
+                        targetPreview.innerHTML = `
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="idle-horse market-idle-horse" data-sprite-set="${this.escapeHtml(spriteSet)}" data-idle-horse="1"></div>
+                                <div style="text-align:left;">
+                                    <div style="font-size:12px; font-weight:bold; color:${this.selectedMarketTarget.quality==='神兽'?'#e74c3c':(this.selectedMarketTarget.quality==='史诗'?'#9b59b6':(this.selectedMarketTarget.quality==='稀有'?'#f1c40f':'#ecf0f1'))}">${this.escapeHtml(this.selectedMarketTarget.name)}</div>
+                                    <div style="font-size:10px; color:#bdc3c7;">${this.escapeHtml(this.selectedMarketTarget.quality)}</div>
+                                </div>
+                            </div>
+                        `;
+                        this.startStableIdleAnim(targetPreview);
+                    } else {
+                        targetPreview.innerHTML = '<div style="color:#95a5a6; font-size:12px;">未选择目标马</div>';
+                    }
+                }
+                
+                let myVal = 0;
+                this.selectedMarketChips.forEach(h => {
+                    myVal += this.calculateHorseValue(h);
+                });
+                
+                const points = parseInt(document.getElementById('market-points-slider').value);
+                // 积分折算价值：1积分 = 1价值 (或者打折)
+                myVal += points;
+                
+                document.getElementById('market-my-val').innerText = myVal;
+                document.getElementById('market-points-val').innerText = points;
+                
+                const msg = document.getElementById('market-msg');
+                
+                if (!this.selectedMarketTarget) {
+                    msg.innerHTML = '<span style="color:#bdc3c7">请选择目标马匹</span>';
+                    return;
+                }
+                
+                // 交易门槛：需要溢价 10%
+                const reqVal = Math.floor(targetVal * 1.1);
+                
+                if (myVal >= reqVal) {
+                    msg.innerHTML = '<span style="color:#2ecc71">✅ 交易可行</span>';
+                } else {
+                    msg.innerHTML = `<span style="color:#e74c3c">❌ 筹码不足 (差值: ${reqVal - myVal})</span>`;
+                }
+            }
+            
+            executeMarketTrade() {
+                if (!this.selectedMarketTarget) {
+                    alert("请先选择要交易的目标马匹！");
+                    return;
+                }
+                
+                const targetVal = this.calculateHorseValue(this.selectedMarketTarget);
+                let myVal = 0;
+                this.selectedMarketChips.forEach(h => myVal += this.calculateHorseValue(h));
+                const points = parseInt(document.getElementById('market-points-slider').value);
+                myVal += points;
+                
+                const reqVal = Math.floor(targetVal * 1.1);
+                
+                if (myVal < reqVal) {
+                    alert(`对方认为您的筹码不足！\n目标价值(含溢价): ${reqVal}\n当前价值: ${myVal}`);
+                    return;
+                }
+                
+                if (this.player.integral < points) {
+                    alert("您的积分不足！");
+                    return;
+                }
+                
+                // 检查马厩容量
+                // 逻辑：失去 N 匹，得到 1 匹。容量变化 = 1 - N
+                // 如果 N=0 (纯积分买)，则容量+1，需检查上限
+                const chipsCount = this.selectedMarketChips.size;
+                const newCount = this.player.horses.length - chipsCount + 1;
+                
+                // 这里允许暂时超上限？或者严格限制
+                if (newCount > this.stableCap) {
+                    alert(`交易后马厩将超员 (${newCount}/${this.stableCap})！请增加筹码马匹数量。`);
+                    return;
+                }
+                
+                if (confirm(`确定执行交易吗？\n将失去: ${chipsCount}匹马 + ${points}积分\n获得: ${this.selectedMarketTarget.name}`)) {
+                    // 扣除积分
+                    this.player.integral -= points;
+                    
+                    // 移除筹码马匹
+                    this.selectedMarketChips.forEach(chip => {
+                        const idx = this.player.horses.indexOf(chip);
+                        if (idx !== -1) this.player.horses.splice(idx, 1);
+                    });
+                    
+                    // 获得目标马匹
+                    const target = this.selectedMarketTarget;
+                    // 从 AI 马厩移除
+                    const aiIdx = this.player.aiStable.indexOf(target);
+                    if (aiIdx !== -1) this.player.aiStable.splice(aiIdx, 1);
+                    
+                    // 改个名归我
+                    if (target.name.startsWith('AI-')) target.name = target.name.replace('AI-', '');
+                    this.player.horses.push(target);
+                    
+                    // 筹码马匹给 AI (可选，这里直接移除也就是退役/流放)
+                    
+                    alert("交易成功！");
+                    this.closeMarket();
+                    this.updateUI();
+                    
+                    // 刷新 Draft 界面按钮状态 (如果卖掉了 draftedHorse，按钮要处理吗？)
+                    // 如果把 draftedHorse 卖了，draftedHorse 变量还在引用它吗？
+                    // 最好重置 draftedHorse
+                    if (this.selectedMarketChips.has(this.draftedHorse)) {
+                        this.draftedHorse = null;
+                        document.getElementById('btn-trade-new-horse').style.display = 'none';
+                    }
+                }
             }
         }
 
@@ -1382,10 +3977,10 @@
             const btnBack = document.getElementById('btn-back-lobby');
             
             titleEl.innerText = "比赛结算";
-            descEl.innerText = text;
+            descEl.innerHTML = text; // 允许 HTML
             panel.style.display = 'flex';
             
-            let left = 3;
+            let left = 5; // 延长到5秒
             cdEl.innerText = `自动返回 (${left}s)`;
             
             let timer = setInterval(() => {
@@ -1408,6 +4003,9 @@
             panel.style.display = 'none';
             document.getElementById('lobby-panel').style.display = 'block';
             document.getElementById('status-label').style.display = 'none';
+            
+            // 退出比赛模式，恢复UI
+            document.getElementById('game-container').classList.remove('racing-mode');
         };
     </script>
 </body>

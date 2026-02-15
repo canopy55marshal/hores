@@ -1,1 +1,5 @@
 hores/
+.trae/
+*.docx
+assets/sprites/**/_backup_*/
+assets/sprites/**/*.tmp
