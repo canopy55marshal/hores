@@ -433,6 +433,57 @@
             will-change: opacity, transform, background-image;
             backface-visibility: hidden;
         }
+        .horse-jifeng {
+            position: absolute;
+            width: 170px;
+            height: 170px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            opacity: 0.95;
+            filter: brightness(1.05) saturate(1.2);
+            z-index: 94;
+            --race-scale: 1;
+            transform: translateZ(0) scaleX(-1) scale(var(--race-scale));
+            transform-origin: center;
+            will-change: transform, background-image;
+            backface-visibility: hidden;
+        }
+        .horse-lanying {
+            position: absolute;
+            width: 170px;
+            height: 170px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            opacity: 0.9;
+            filter: brightness(1.05) saturate(1.1);
+            z-index: 93;
+            --race-scale: 1;
+            transform: translateZ(0) scaleX(-1) scale(var(--race-scale));
+            transform-origin: center;
+            will-change: transform, background-image;
+            backface-visibility: hidden;
+        }
+        .horse-lieyan {
+            position: absolute;
+            width: 175px;
+            height: 175px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            opacity: 0.92;
+            filter: brightness(1.1) saturate(1.2);
+            z-index: 92;
+            --race-scale: 1;
+            transform: translateZ(0) scaleX(-1) scale(var(--race-scale));
+            transform-origin: center;
+            will-change: transform, background-image;
+            backface-visibility: hidden;
+        }
         
         /* 修正文字方向：因为父元素翻转了，文字也会翻转，需要把文字翻转回来 */
         /* 但由于我们把文字直接写在 .horse 里，处理起来比较麻烦 */
@@ -898,6 +949,7 @@
                 <button class="btn btn-green" onclick="game.startRace()">开始比赛 (-1门票)</button>
                 <button class="btn btn-blue" onclick="game.openBreed()">基因培育 (-500积分)</button>
                 <button class="btn btn-blue" style="background:#8e44ad; box-shadow: 0 4px #6c3483;" onclick="game.openReforge()">技能洗练</button>
+                <button class="btn btn-blue" style="background:#16a085; box-shadow: 0 4px #0e6655;" onclick="game.openCodex()">造型图鉴</button>
             </div>
             <div id="status-label" class="panel" style="top: 40%; display: none;"></div>
             <div id="result-panel">
@@ -915,6 +967,13 @@
                     <div id="skill-title" class="skill-title"></div>
                     <div id="skill-desc" class="skill-desc"></div>
                     <button class="btn btn-green btn-small" style="width:60%; font-size:14px;" onclick="game.closeSkillModal()">关闭</button>
+                </div>
+            </div>
+            <div id="codex-panel" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:65; align-items:center; justify-content:center;">
+                <div style="width:90%; background:#2c3e50; border-radius:12px; padding:15px; border:1px solid #f1c40f; box-shadow:0 0 20px rgba(0,0,0,0.6);">
+                    <h3 style="color:#f1c40f; text-align:center; margin-top:0;">📖 造型图鉴</h3>
+                    <div id="codex-list" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-height:420px; overflow-y:auto;"></div>
+                    <button class="btn btn-blue" style="background:#7f8c8d; margin-top:10px; width:100%;" onclick="game.closeCodex()">关闭</button>
                 </div>
             </div>
             <div id="avatar-auth-modal">
@@ -1178,6 +1237,28 @@
             dir: 'assets/effects/chixiao_burst',
             frames: ['ef_001_p_gl_586.png', 'ef_001_p_gl_587.png', 'ef_001_p_gl_588.png']
         };
+        const JifengAssets = {
+            dir: 'assets/effects/18',
+            frames: [
+                'battleAttackSkill_20001.png', 'battleAttackSkill_20002.png', 'battleAttackSkill_20003.png', 'battleAttackSkill_20004.png'
+            ]
+        };
+        const LanyingAssets = {
+            dir: 'assets/effects/55',
+            frames: [
+                'battleBufferEffect9_10001.png', 'battleBufferEffect9_10002.png', 'battleBufferEffect9_10003.png',
+                'battleBufferEffect9_10004.png', 'battleBufferEffect9_10005.png', 'battleBufferEffect9_10006.png',
+                'battleBufferEffect9_10007.png', 'battleBufferEffect9_10008.png', 'battleBufferEffect9_10009.png',
+                'battleBufferEffect9_10010.png'
+            ]
+        };
+        const LieyanAssets = {
+            dir: 'assets/effects/lieyan_burst',
+            frames: [
+                'battleAttack_60001.png', 'battleAttack_60002.png', 'battleAttack_60003.png',
+                'battleAttack_60004.png', 'battleAttack_60005.png', 'battleAttack_60006.png'
+            ]
+        };
 
         const NewYearGreetings = [
             '恭喜发财','新年快乐','万事如意','阖家幸福','心想事成','吉星高照','福星高照','财源广进','大吉大利','年年有余',
@@ -1198,6 +1279,7 @@
             integral: 2000,
             ticketsNormal: 30,
             seasonNo: 1,
+            spriteCodex: {},
             horses: [{
                 id: 'h1', name: '赤兔', color: '#e63946', quality: '普通',
                 baseSpeed: 55, stamina: 70, accel: 0.8, temper: 0.9,
@@ -1455,7 +1537,18 @@
                 this.burstFrameCss = null;
                 this.burstFramesReady = null;
                 this.burstImages = null;
+                this.jifengFrameCss = null;
+                this.jifengFramesReady = null;
+                this.jifengImages = null;
+                this.lanyingFrameCss = null;
+                this.lanyingFramesReady = null;
+                this.lanyingImages = null;
+                this.lieyanFrameCss = null;
+                this.lieyanFramesReady = null;
+                this.lieyanImages = null;
                 this.stableIdleToken = 0;
+
+                if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
 
                 const baseHorse = this.player.horses.find(h => h && h.id === 'g1');
                 if (baseHorse && (!Array.isArray(baseHorse.genes) || baseHorse.genes.length === 0)) {
@@ -1469,6 +1562,9 @@
                 
                 this.horseRunFramesReady = this.preloadHorseRunFrames();
                 this.burstFramesReady = this.preloadBurstFrames();
+                this.jifengFramesReady = this.preloadJifengFrames();
+                this.lanyingFramesReady = this.preloadLanyingFrames();
+                this.lieyanFramesReady = this.preloadLieyanFrames();
                 this.updateUI();
                 this.initAvatarFlow();
                 
@@ -1573,6 +1669,84 @@
                 return this.burstFramesReady;
             }
 
+            preloadJifengFrames() {
+                if (this.jifengFrameCss && typeof this.jifengFrameCss === 'object') return this.jifengFramesReady || Promise.resolve(true);
+                const frameCount = JifengAssets.frames.length;
+                const list = new Array(frameCount + 1);
+                const imgList = new Array(frameCount + 1);
+                const decodes = [];
+                for (let i = 1; i <= frameCount; i++) {
+                    const url = `${JifengAssets.dir}/${JifengAssets.frames[i - 1]}`;
+                    list[i] = `url('${url}')`;
+                    const img = new Image();
+                    img.decoding = 'async';
+                    img.loading = 'eager';
+                    const ready = new Promise(resolve => {
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                    });
+                    img.src = url;
+                    imgList[i] = img;
+                    decodes.push(typeof img.decode === 'function' ? img.decode().then(() => true).catch(() => ready) : ready);
+                }
+                this.jifengFrameCss = { jifeng: list };
+                this.jifengImages = { jifeng: imgList };
+                this.jifengFramesReady = Promise.all(decodes).then(() => true);
+                return this.jifengFramesReady;
+            }
+
+            preloadLanyingFrames() {
+                if (this.lanyingFrameCss && typeof this.lanyingFrameCss === 'object') return this.lanyingFramesReady || Promise.resolve(true);
+                const frameCount = LanyingAssets.frames.length;
+                const list = new Array(frameCount + 1);
+                const imgList = new Array(frameCount + 1);
+                const decodes = [];
+                for (let i = 1; i <= frameCount; i++) {
+                    const url = `${LanyingAssets.dir}/${LanyingAssets.frames[i - 1]}`;
+                    list[i] = `url('${url}')`;
+                    const img = new Image();
+                    img.decoding = 'async';
+                    img.loading = 'eager';
+                    const ready = new Promise(resolve => {
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                    });
+                    img.src = url;
+                    imgList[i] = img;
+                    decodes.push(typeof img.decode === 'function' ? img.decode().then(() => true).catch(() => ready) : ready);
+                }
+                this.lanyingFrameCss = { lanying: list };
+                this.lanyingImages = { lanying: imgList };
+                this.lanyingFramesReady = Promise.all(decodes).then(() => true);
+                return this.lanyingFramesReady;
+            }
+
+            preloadLieyanFrames() {
+                if (this.lieyanFrameCss && typeof this.lieyanFrameCss === 'object') return this.lieyanFramesReady || Promise.resolve(true);
+                const frameCount = LieyanAssets.frames.length;
+                const list = new Array(frameCount + 1);
+                const imgList = new Array(frameCount + 1);
+                const decodes = [];
+                for (let i = 1; i <= frameCount; i++) {
+                    const url = `${LieyanAssets.dir}/${LieyanAssets.frames[i - 1]}`;
+                    list[i] = `url('${url}')`;
+                    const img = new Image();
+                    img.decoding = 'async';
+                    img.loading = 'eager';
+                    const ready = new Promise(resolve => {
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                    });
+                    img.src = url;
+                    imgList[i] = img;
+                    decodes.push(typeof img.decode === 'function' ? img.decode().then(() => true).catch(() => ready) : ready);
+                }
+                this.lieyanFrameCss = { lieyan: list };
+                this.lieyanImages = { lieyan: imgList };
+                this.lieyanFramesReady = Promise.all(decodes).then(() => true);
+                return this.lieyanFramesReady;
+            }
+
             horseRunFrame(i, spriteSetKey) {
                 const idx = Number(i) || 1;
                 const key = (spriteSetKey && this.horseRunFrameCss && this.horseRunFrameCss[spriteSetKey]) ? spriteSetKey : SpriteSet.Horse;
@@ -1593,6 +1767,27 @@
                 try {
                     if (!this.burstFramesReady) this.burstFramesReady = this.preloadBurstFrames();
                     await this.burstFramesReady;
+                } catch (_) {}
+            }
+
+            async ensureJifengFramesReady() {
+                try {
+                    if (!this.jifengFramesReady) this.jifengFramesReady = this.preloadJifengFrames();
+                    await this.jifengFramesReady;
+                } catch (_) {}
+            }
+
+            async ensureLanyingFramesReady() {
+                try {
+                    if (!this.lanyingFramesReady) this.lanyingFramesReady = this.preloadLanyingFrames();
+                    await this.lanyingFramesReady;
+                } catch (_) {}
+            }
+
+            async ensureLieyanFramesReady() {
+                try {
+                    if (!this.lieyanFramesReady) this.lieyanFramesReady = this.preloadLieyanFrames();
+                    await this.lieyanFramesReady;
                 } catch (_) {}
             }
 
@@ -1872,12 +2067,56 @@
                 const modal = document.getElementById('skill-modal');
                 modal.style.display = 'none';
             }
+
+            openCodex() {
+                const panel = document.getElementById('codex-panel');
+                if (panel) panel.style.display = 'flex';
+                this.renderCodex();
+            }
+
+            closeCodex() {
+                const panel = document.getElementById('codex-panel');
+                if (panel) panel.style.display = 'none';
+            }
+
+            renderCodex() {
+                const listEl = document.getElementById('codex-list');
+                if (!listEl) return;
+                if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
+                listEl.innerHTML = '';
+                const sets = Object.values(SpriteSet);
+                sets.forEach(spriteSet => {
+                    const stars = Number(this.player.spriteCodex[spriteSet]) || 0;
+                    const bonus = stars * 3;
+                    const card = document.createElement('div');
+                    card.style.cssText = 'width:135px; background:#34495e; border:1px solid #555; border-radius:10px; padding:10px; display:flex; gap:10px; align-items:center;';
+                    card.innerHTML = `
+                        <div class="idle-horse" style="width:54px; height:54px; --idle-scale:1.2;" data-sprite-set="${this.escapeHtml(spriteSet)}" data-idle-horse="1"></div>
+                        <div style="text-align:left; flex:1; min-width:0;">
+                            <div style="font-size:12px; color:#ecf0f1; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${this.escapeHtml(spriteSet)}</div>
+                            <div style="font-size:10px; color:#f1c40f;">星级: ${stars}</div>
+                            <div style="font-size:10px; color:#bdc3c7;">速度加成: +${bonus}%</div>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+                const panel = document.getElementById('codex-panel');
+                if (panel) this.startStableIdleAnim(panel);
+            }
             
             // 计算速度：基于 activeGenes (genes)
             // fullGenes：马匹已领悟的技能池，用于计算“领悟稀有技能”的基础速度加成
-             computeSpeedWithGenes(baseSpeed, genes, fullGenes = [], withJitter = true) {
+             computeSpeedWithGenes(baseSpeed, genes, fullGenes = [], withJitter = true, options = null) {
                  const active = Array.isArray(genes) ? genes : [];
-                 const pool = Array.isArray(fullGenes) && fullGenes.length > 0 ? fullGenes : active;
+                 const spriteSet = options && options.spriteSet ? options.spriteSet : null;
+                 const applyCodex = options && options.applyCodex === true;
+                 let base = Number(baseSpeed) || 0;
+                 if (applyCodex) {
+                    if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
+                    const key = spriteSet || SpriteSet.Horse;
+                    const stars = Number(this.player.spriteCodex[key]) || 0;
+                    if (stars > 0) base *= (1 + stars * 0.03);
+                 }
 
                  let m = 1.0;
                  active.forEach(g => {
@@ -1893,7 +2132,7 @@
                 if (active.length === 0) m *= 0.98;
                 const rareSlots = active.reduce((n, g) => n + (g && g.quality === '稀有' ? 1 : 0), 0);
                 const rareSlotMult = 1 + rareSlots * 0.03;
-                return baseSpeed * m * rareSlotMult;
+                return base * m * rareSlotMult;
              }
             
             slotCountForHorse(h) {
@@ -1965,7 +2204,7 @@
             }
 
              // 旧方法保留兼容 (或删除)
-             computeFinalSpeed(data) { return this.computeSpeedWithGenes(data.baseSpeed, data.genes || []); }
+             computeFinalSpeed(data) { return this.computeSpeedWithGenes(data.baseSpeed, data.genes || [], data.genes || [], true, { spriteSet: data && data.spriteSet, applyCodex: true }); }
 
             selectHorse(id) {
                 if (this.racing) return;
@@ -2022,17 +2261,20 @@
                     return;
                 }
                 
-                // 修改退役规则：按参赛场次返还，100/场
                 const races = horse.totalRaces || 0;
                 const refund = races * 100;
                 
                 if (confirm(`确定要让【${horse.name}】退役吗？\n生涯场次: ${races}\n返还积分: ${refund} (100/场)`)) {
+                    if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
+                    const spriteSet = horse.spriteSet || SpriteSet.Horse;
+                    const nextStar = (Number(this.player.spriteCodex[spriteSet]) || 0) + 1;
+                    this.player.spriteCodex[spriteSet] = nextStar;
                     this.player.integral += refund;
                     const idx = this.player.horses.indexOf(horse);
                     this.player.horses.splice(idx, 1);
                     this.selectedHorseId = this.player.horses[0].id;
                     this.updateUI();
-                    alert(`退役成功！获得 ${refund} 积分。`);
+                    alert(`退役成功！获得 ${refund} 积分。\n造型图鉴：${spriteSet} 星级 +1 (当前 ${nextStar} 星)`);
                 }
             }
 
@@ -2235,7 +2477,7 @@
                             <div class="card-info">
                                 <div class="life">寿命: ${h.lifespan}/${h.maxLifespan}</div>
                                 <div class="blood">稀有等级: ${h.quality}</div>
-                            <div class="blood">速度: ${Math.round(this.computeSpeedWithGenes(h.baseSpeed, previewActives, h.genes, false))}</div>
+                            <div class="blood">速度: ${Math.round(this.computeSpeedWithGenes(h.baseSpeed, previewActives, h.genes, false, { spriteSet: (h.spriteSet || SpriteSet.Horse), applyCodex: true }))}</div>
                             </div>
                             <div class="card-image">
                                 <div class="idle-horse" data-sprite-set="${this.escapeHtml(h.spriteSet || SpriteSet.Horse)}" data-idle-horse="1"></div>
@@ -2587,6 +2829,9 @@
 
                 await this.ensureHorseRunFramesReady();
                 await this.ensureBurstFramesReady();
+                await this.ensureJifengFramesReady();
+                await this.ensureLanyingFramesReady();
+                await this.ensureLieyanFramesReady();
 
                 // 切换到比赛模式
                 document.getElementById('game-container').classList.add('racing-mode');
@@ -2684,6 +2929,48 @@
                     el.style.top = baseTop + 'px'; 
                     el.style.left = '50px';
                     track.appendChild(el);
+
+                    const isMythicalLegendary = data && data.quality === '神兽' && (data.spriteSet || SpriteSet.Horse) === SpriteSet.Legendary;
+                    let jifengEl = null;
+                    if (isMythicalLegendary) {
+                        const fx = document.createElement('div');
+                        fx.className = 'horse-jifeng';
+                        fx.style.top = Math.round((baseTop + 74) - (170 / 2)) + 'px';
+                        fx.style.left = '-9999px';
+                        fx.style.setProperty('--race-scale', String(raceScale));
+                        const list = this.jifengFrameCss && this.jifengFrameCss.jifeng;
+                        if (Array.isArray(list) && list[1]) fx.style.backgroundImage = list[1];
+                        track.appendChild(fx);
+                        jifengEl = fx;
+                    }
+
+                    const isMythicalLegendary2 = data && data.quality === '神兽' && (data.spriteSet || SpriteSet.Horse) === SpriteSet.Legendary2;
+                    let lanyingEl = null;
+                    if (isMythicalLegendary2) {
+                        const fx = document.createElement('div');
+                        fx.className = 'horse-lanying';
+                        fx.style.top = Math.round((baseTop + 74) - (170 / 2)) + 'px';
+                        fx.style.left = '-9999px';
+                        fx.style.setProperty('--race-scale', String(raceScale));
+                        const list = this.lanyingFrameCss && this.lanyingFrameCss.lanying;
+                        if (Array.isArray(list) && list[1]) fx.style.backgroundImage = list[1];
+                        track.appendChild(fx);
+                        lanyingEl = fx;
+                    }
+
+                    const isMythicalLegendary3 = data && data.quality === '神兽' && (data.spriteSet || SpriteSet.Horse) === SpriteSet.Legendary3;
+                    let lieyanEl = null;
+                    if (isMythicalLegendary3) {
+                        const fx = document.createElement('div');
+                        fx.className = 'horse-lieyan';
+                        fx.style.top = Math.round((baseTop + 74) - (175 / 2)) + 'px';
+                        fx.style.left = '-9999px';
+                        fx.style.setProperty('--race-scale', String(raceScale));
+                        const list = this.lieyanFrameCss && this.lieyanFrameCss.lieyan;
+                        if (Array.isArray(list) && list[1]) fx.style.backgroundImage = list[1];
+                        track.appendChild(fx);
+                        lieyanEl = fx;
+                    }
                      
                      // 比赛初始技能：根据稀有等级的槽位数，从技能池锁定
                      // 清空当局的“新领悟”标记
@@ -2691,6 +2978,7 @@
                      const slots = this.slotCountForHorse(data);
                      const activeGenes = (data.lockedStartGenes || []).slice(0, slots);
                      data.activeGenes = activeGenes;
+                     const isPlayerOwned = Array.isArray(this.player.horses) && this.player.horses.some(h => h && h.id === data.id);
 
                      this.horses.push({ 
                          el, 
@@ -2699,7 +2987,7 @@
                          activeGenes, // 当局生效的技能 (6个基础 + 1个领悟)
                          distance: 0, 
                          // 使用 activeGenes 计算初始速度，传入完整技能池以计算稀有加成
-                         speed: this.computeSpeedWithGenes(data.baseSpeed, activeGenes, data.genes), 
+                        speed: this.computeSpeedWithGenes(data.baseSpeed, activeGenes, data.genes, true, { spriteSet: (data.spriteSet || SpriteSet.Horse), applyCodex: isPlayerOwned }), 
                          frameIndex: startFrame,
                         frameTimer: (i % 4),
                         baseTop: baseTop,
@@ -2707,6 +2995,15 @@
                         boostTimer: 0,
                         afterimageTimer: 0,
                         burstCooldown: 0,
+                        jifengEl,
+                        jifengFrameIndex: 1,
+                        jifengFrameTimer: (i % 4),
+                        lanyingEl,
+                        lanyingFrameIndex: 1,
+                        lanyingFrameTimer: (i % 4),
+                        lieyanEl,
+                        lieyanFrameIndex: 1,
+                        lieyanFrameTimer: (i % 4),
                         ghostCooldown: 0,
                         _prevSpeed: null,
                         debuffTimer: 0,
@@ -2799,6 +3096,66 @@
                 this.horses.forEach(h => {
                     const prevSpeed = h._prevSpeed ?? h.speed;
                     const prevDist = h.distance;
+
+                    if (h.jifengEl) {
+                        const anchorX = 50 + h.distance + 60;
+                        const anchorY = h.baseTop + 74;
+                        h.jifengEl.style.left = Math.round(anchorX - (170 / 2)) + 'px';
+                        h.jifengEl.style.top = Math.round(anchorY - (170 / 2)) + 'px';
+                        h.jifengFrameTimer++;
+                        if (h.jifengFrameTimer > 2) {
+                            const frameCount = Math.max(1, ((this.jifengFrameCss && this.jifengFrameCss.jifeng) ? (this.jifengFrameCss.jifeng.length - 1) : 1));
+                            const next = (h.jifengFrameIndex >= frameCount ? 1 : (h.jifengFrameIndex + 1));
+                            const imgs = this.jifengImages && this.jifengImages.jifeng;
+                            const list = this.jifengFrameCss && this.jifengFrameCss.jifeng;
+                            const img = imgs && imgs[next];
+                            if (img && img.complete && img.naturalWidth > 0 && list && list[next]) {
+                                h.jifengFrameIndex = next;
+                                h.jifengEl.style.backgroundImage = list[next];
+                            }
+                            h.jifengFrameTimer = 0;
+                        }
+                    }
+
+                    if (h.lanyingEl) {
+                        const anchorX = 50 + h.distance + 60;
+                        const anchorY = h.baseTop + 74;
+                        h.lanyingEl.style.left = Math.round(anchorX - (170 / 2)) + 'px';
+                        h.lanyingEl.style.top = Math.round(anchorY - (170 / 2)) + 'px';
+                        h.lanyingFrameTimer++;
+                        if (h.lanyingFrameTimer > 2) {
+                            const frameCount = Math.max(1, ((this.lanyingFrameCss && this.lanyingFrameCss.lanying) ? (this.lanyingFrameCss.lanying.length - 1) : 1));
+                            const next = (h.lanyingFrameIndex >= frameCount ? 1 : (h.lanyingFrameIndex + 1));
+                            const imgs = this.lanyingImages && this.lanyingImages.lanying;
+                            const list = this.lanyingFrameCss && this.lanyingFrameCss.lanying;
+                            const img = imgs && imgs[next];
+                            if (img && img.complete && img.naturalWidth > 0 && list && list[next]) {
+                                h.lanyingFrameIndex = next;
+                                h.lanyingEl.style.backgroundImage = list[next];
+                            }
+                            h.lanyingFrameTimer = 0;
+                        }
+                    }
+
+                    if (h.lieyanEl) {
+                        const anchorX = 50 + h.distance + 60;
+                        const anchorY = h.baseTop + 74;
+                        h.lieyanEl.style.left = Math.round(anchorX - (175 / 2)) + 'px';
+                        h.lieyanEl.style.top = Math.round(anchorY - (175 / 2)) + 'px';
+                        h.lieyanFrameTimer++;
+                        if (h.lieyanFrameTimer > 2) {
+                            const frameCount = Math.max(1, ((this.lieyanFrameCss && this.lieyanFrameCss.lieyan) ? (this.lieyanFrameCss.lieyan.length - 1) : 1));
+                            const next = (h.lieyanFrameIndex >= frameCount ? 1 : (h.lieyanFrameIndex + 1));
+                            const imgs = this.lieyanImages && this.lieyanImages.lieyan;
+                            const list = this.lieyanFrameCss && this.lieyanFrameCss.lieyan;
+                            const img = imgs && imgs[next];
+                            if (img && img.complete && img.naturalWidth > 0 && list && list[next]) {
+                                h.lieyanFrameIndex = next;
+                                h.lieyanEl.style.backgroundImage = list[next];
+                            }
+                            h.lieyanFrameTimer = 0;
+                        }
+                    }
 
                     // 更新动画帧
                     h.frameTimer++;
