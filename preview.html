@@ -24,7 +24,7 @@
             top: 0; 
             left: 0; 
             width: 100%; 
-            height: 340px; /* 增加高度以容纳完整技能池和赛季面板 */
+            height: 300px;
             background: rgba(0,0,0,0.6); 
             padding: 6px; 
             box-sizing: border-box;
@@ -34,6 +34,46 @@
             transition: height 0.3s ease; /* 添加过渡动画 */
             overflow: hidden; /* 防止内容溢出 */
         }
+
+        .season-mini {
+            width: 160px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(0,0,0,0.18);
+            padding: 6px 8px;
+            box-sizing: border-box;
+            text-align: right;
+        }
+        .season-mini .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #ecf0f1;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .season-mini .row .season {
+            color: #f1c40f;
+            font-weight: 800;
+        }
+        .season-mini .bar {
+            height: 6px;
+            background: rgba(44, 62, 80, 0.9);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .season-mini .bar > div {
+            height: 100%;
+            background: linear-gradient(90deg, #f39c12, #f1c40f);
+        }
+        .season-mini .hint {
+            font-size: 10px;
+            color: #95a5a6;
+            margin-top: 4px;
+        }
         
         /* 比赛模式下的样式折叠 */
         .racing-mode #info-panel {
@@ -41,6 +81,9 @@
         }
         .racing-mode #info-panel .stable-container,
         .racing-mode #info-panel .season-panel {
+            display: none !important;
+        }
+        .racing-mode #stable-roster-panel {
             display: none !important;
         }
 
@@ -131,11 +174,10 @@
             border-radius: 8px;
             padding: 8px;
             display: grid;
-            grid-template-columns: 1fr 96px;
-            grid-template-rows: 50px 1fr;
+            grid-template-columns: 1fr 120px;
+            grid-template-rows: 1fr;
             grid-template-areas:
-                "skills info"
-                "skills image";
+                "skills side";
             border: 1px solid #7f8c8d;
             position: relative;
             box-sizing: border-box;
@@ -194,6 +236,48 @@
             justify-content: center;
             overflow: hidden;
             padding-top: 0;
+        }
+        .card-side {
+            grid-area: side;
+            border-radius: 10px;
+            border: 1px solid rgba(241, 196, 15, 0.4);
+            background: rgba(44, 62, 80, 0.92);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.35);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-stats {
+            padding: 6px 7px 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            font-size: 10px;
+            line-height: 14px;
+            color: #bdc3c7;
+            white-space: nowrap;
+        }
+        .stat-line strong {
+            color: #ecf0f1;
+            font-weight: 800;
+        }
+        .card-portrait {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .card-portrait .idle-horse {
+            width: 64px;
+            height: 64px;
+            --idle-scale: 1.35;
         }
         .idle-avatar {
             font-size: 34px;
@@ -324,7 +408,7 @@
         /* 跑道层容器 */
         #track-container {
             position: absolute;
-            top: 340px; /* 避开顶部信息栏 */
+            top: 300px;
             bottom: 0;
             left: 0;
             width: 100%;
@@ -557,6 +641,170 @@
             text-align: center; 
             width: 100%;
         }
+
+        #lobby-panel {
+            left: 0;
+            right: 0;
+            top: auto;
+            bottom: 14px;
+            transform: none;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 0 16px;
+            box-sizing: border-box;
+            align-content: end;
+            overflow: hidden;
+            z-index: 15;
+        }
+        #lobby-panel .lobby-btn {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border-radius: 14px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            line-height: 1.1;
+        }
+        #lobby-panel .lobby-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        #lobby-panel .lobby-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: #ecf0f1;
+        }
+
+        #stable-roster-panel {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 300px;
+            bottom: 112px;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            z-index: 12;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .roster-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2px;
+        }
+        .roster-cap {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ecf0f1;
+        }
+        .roster-grid {
+            flex: 1;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(0,0,0,0.12);
+            padding: 10px 74px 10px 10px;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: 92px;
+            gap: 12px;
+            align-content: start;
+            overflow: hidden;
+            scrollbar-width: none;
+        }
+        .roster-grid::-webkit-scrollbar { display: none; }
+        .roster-item {
+            width: 100%;
+            height: 92px;
+            border-radius: 12px;
+            background: rgba(44, 62, 80, 0.82);
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            box-sizing: border-box;
+            cursor: pointer;
+            user-select: none;
+        }
+        .roster-item.empty {
+            cursor: default;
+            background: rgba(44, 62, 80, 0.35);
+            border-style: dashed;
+            opacity: 0.7;
+        }
+        .roster-item.selected {
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 12px rgba(46, 204, 113, 0.35);
+        }
+        .roster-item .idle-horse {
+            width: 58px;
+            height: 58px;
+            --idle-scale: 1.35;
+        }
+        .roster-meta {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .roster-name {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ecf0f1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .roster-sub {
+            font-size: 10px;
+            color: #bdc3c7;
+            white-space: nowrap;
+        }
+        .roster-actions {
+            position: absolute;
+            right: 10px;
+            top: 92px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2;
+        }
+        .roster-actions .btn {
+            width: 58px;
+            margin: 0;
+            padding: 10px 0;
+            font-size: 12px;
+            border-radius: 12px;
+            line-height: 1.1;
+        }
+        .roster-actions .btn .sub {
+            display: block;
+            font-size: 10px;
+            color: rgba(255,255,255,0.82);
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        #horse-detail-wrap .horse-card {
+            min-width: 100%;
+        }
         
         .btn { 
             display: block;
@@ -575,6 +823,8 @@
         
         .btn-blue { background: #2980b9; box-shadow: 0 4px #2c3e50; }
         .btn-blue:active { transform: translateY(2px); box-shadow: 0 2px #2c3e50; }
+        .btn-orange { background: #ff7a00; box-shadow: 0 4px #cc5a00; }
+        .btn-orange:active { transform: translateY(2px); box-shadow: 0 2px #cc5a00; }
 
         /* 技能说明弹窗 */
         #skill-modal {
@@ -657,9 +907,93 @@
             display: none; align-items: center; justify-content: center; flex-direction: column;
         }
         .draft-container {
-            width: 85%; background: #2c3e50; border-radius: 12px; padding: 20px;
+            width: min(520px, 92%);
+            max-height: 92%;
+            background: #2c3e50;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             text-align: center; border: 1px solid #f1c40f; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
+            box-sizing: border-box;
         }
+        #draft-panel .draft-container > h2 { margin: 0 0 2px 0; }
+        #draft-status {
+            text-align: left;
+            background: rgba(0,0,0,0.14);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #draft-result.draft-result {
+            display: none;
+            flex: 1;
+            min-height: 0;
+            margin: 0;
+            padding: 12px;
+            background: #34495e;
+            border-radius: 12px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        #draft-result.draft-result::-webkit-scrollbar { display: none; }
+        .draft-seed-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+        .draft-seed-line .seed {
+            color: #e74c3c;
+            font-weight: 900;
+            font-size: 18px;
+        }
+        .draft-pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-start;
+            margin-top: 8px;
+        }
+        .draft-pill {
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(0,0,0,0.12);
+            white-space: nowrap;
+            font-size: 11px;
+            color: #ecf0f1;
+        }
+        .draft-pill.is-top4 {
+            border-color: rgba(241,196,15,0.42);
+            background: rgba(241,196,15,0.16);
+        }
+        .draft-map {
+            margin-top: 8px;
+        }
+        .draft-map summary {
+            cursor: pointer;
+            user-select: none;
+            font-size: 11px;
+            color: #95a5a6;
+            list-style: none;
+        }
+        .draft-map summary::-webkit-details-marker { display: none; }
+        .draft-map-grid {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            max-height: 120px;
+            overflow: auto;
+            padding-right: 4px;
+            scrollbar-width: none;
+        }
+        .draft-map-grid::-webkit-scrollbar { display: none; }
 
         .reforge-container {
             width: 90%;
@@ -945,11 +1279,24 @@
         </div>
         <div id="ui-layer">
             <div id="info-panel"></div>
+            <div id="stable-roster-panel" style="display:none;"></div>
             <div id="lobby-panel" class="panel">
-                <button class="btn btn-green" onclick="game.startRace()">开始比赛 (-1门票)</button>
-                <button class="btn btn-blue" onclick="game.openBreed()">基因培育 (-500积分)</button>
-                <button class="btn btn-blue" style="background:#8e44ad; box-shadow: 0 4px #6c3483;" onclick="game.openReforge()">技能洗练</button>
-                <button class="btn btn-blue" style="background:#16a085; box-shadow: 0 4px #0e6655;" onclick="game.openCodex()">造型图鉴</button>
+                <button id="btn-primary-action" class="btn btn-blue lobby-btn" onclick="game.startRace()">
+                    <div class="lobby-icon">🏠</div>
+                    <div class="lobby-text">开始比赛</div>
+                </button>
+                <button class="btn btn-blue lobby-btn" onclick="game.openBreed()">
+                    <div class="lobby-icon">⬆️</div>
+                    <div class="lobby-text">基因培育</div>
+                </button>
+                <button class="btn btn-blue lobby-btn" onclick="game.openReforge()">
+                    <div class="lobby-icon">💎</div>
+                    <div class="lobby-text">技能洗练</div>
+                </button>
+                <button class="btn btn-blue lobby-btn" onclick="game.openCodex()">
+                    <div class="lobby-icon">➕</div>
+                    <div class="lobby-text">造型图鉴</div>
+                </button>
             </div>
             <div id="status-label" class="panel" style="top: 40%; display: none;"></div>
             <div id="result-panel">
@@ -1081,13 +1428,13 @@
         <!-- 选秀界面 -->
         <div id="draft-panel">
             <div class="draft-container">
-                <h2 style="color:#f1c40f; margin-bottom:10px;">赛季选秀大会</h2>
-                <div id="draft-status" style="margin-bottom:20px; color:#ecf0f1;"></div>
+                <h2 style="color:#f1c40f;">赛季选秀大会</h2>
+                <div id="draft-status"></div>
                 
                 <!-- 新增交易入口 -->
                 <button id="btn-open-trade" class="btn btn-blue" style="background:#8e44ad; margin-bottom:10px; box-shadow: 0 4px #6c3483;" onclick="game.openTrade()">🤝 交易选秀权</button>
 
-                <div id="draft-result" style="display:none; margin:20px 0; padding:15px; background:#34495e; border-radius:8px; max-height: 400px; overflow-y: auto;">
+                <div id="draft-result" class="draft-result">
                     <div style="font-size:18px; color:#2ecc71; margin-bottom:10px;">🎉 获得 <span id="draft-pick-no" style="color:#f1c40f; font-weight:bold;"></span> 顺位选择权</div>
                     <p style="font-size:12px; color:#bdc3c7;">请从下方待选新秀中选择一匹：</p>
                     <div id="draft-pool-container" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div>
@@ -1270,6 +1617,23 @@
         const NewYearPrefixes = ['新春','迎春','恭喜','万事','阖家','五福','四季','财源','福星','吉星','鸿运','瑞气','喜气','金玉','花开','岁岁','福寿','平安'];
         const NewYearSuffixes = ['纳福','进宝','如意','安康','临门','高照','盈门','满堂','顺遂','康泰','长久','吉祥','同庆','大吉','喜乐','团圆','昌盛','兴旺'];
 
+        const QualityStats = {
+            '普通': { baseSpeedMin: 52, baseSpeedMax: 58, stamina: 70, endurance: 1.00, accel: 0.78 },
+            '中级': { baseSpeedMin: 56, baseSpeedMax: 62, stamina: 74, endurance: 1.08, accel: 0.82 },
+            '高级': { baseSpeedMin: 60, baseSpeedMax: 68, stamina: 80, endurance: 1.16, accel: 0.86 },
+            '稀有': { baseSpeedMin: 65, baseSpeedMax: 73, stamina: 88, endurance: 1.28, accel: 0.92 },
+            '史诗': { baseSpeedMin: 70, baseSpeedMax: 80, stamina: 96, endurance: 1.40, accel: 0.97 },
+            '神兽': { baseSpeedMin: 76, baseSpeedMax: 86, stamina: 105, endurance: 1.60, accel: 1.02 }
+        };
+        const getQualityStats = (quality) => QualityStats[quality] || QualityStats['普通'];
+        const rollInt = (min, max) => {
+            const a = Number(min) || 0;
+            const b = Number(max) || 0;
+            const lo = Math.min(a, b);
+            const hi = Math.max(a, b);
+            return Math.floor(lo + Math.random() * (hi - lo + 1));
+        };
+
         const pickLegendarySpriteSet = () => {
             const r = Math.random();
             return r < 1/3 ? SpriteSet.Legendary : (r < 2/3 ? SpriteSet.Legendary2 : SpriteSet.Legendary3);
@@ -1283,6 +1647,7 @@
             horses: [{
                 id: 'h1', name: '赤兔', color: '#e63946', quality: '普通',
                 baseSpeed: 55, stamina: 70, accel: 0.8, temper: 0.9,
+                endurance: 1.0,
                 lifespan: 50, maxLifespan: 50, 
                 genes: [{type:'疾风', quality:'普通'}], 
                 geneSlots: 6,
@@ -1291,6 +1656,7 @@
             }, {
                 id: 'g1', name: '小灰', color: '#74b9ff', quality: '普通',
                 baseSpeed: 52, stamina: 65, accel: 0.75, temper: 0.8,
+                endurance: 1.0,
                 lifespan: 50, maxLifespan: 50,
                 genes: [],
                 geneSlots: 6,
@@ -1315,6 +1681,7 @@
                     id: 'ai_base_'+i, name: 'AI-G'+i, color: '#aaa',
                     quality: '普通', // 初始默认普通，与玩家一致
                     baseSpeed: 55, stamina: 70, accel: 0.8, lifespan: 999,
+                    endurance: 1.0,
                     genes: [], geneSlots: 6, // 初始与玩家一致
                     spriteSet: Math.random() < 0.35 ? SpriteSet.Base : SpriteSet.Horse
                 });
@@ -1389,6 +1756,9 @@
                      quality: finalQuality,
                      geneSlots: finalGeneSlots,
                      baseSpeed: finalBaseSpeed,
+                     stamina: (typeof best.stamina === 'number' ? best.stamina : getQualityStats(finalQuality).stamina),
+                     endurance: (typeof best.endurance === 'number' ? best.endurance : getQualityStats(finalQuality).endurance),
+                     accel: (typeof best.accel === 'number' ? best.accel : getQualityStats(finalQuality).accel),
                      spriteSet: finalQuality === '神兽'
                         ? pickLegendarySpriteSet()
                         : (finalQuality === '史诗'
@@ -1411,14 +1781,15 @@
             const aiQuality = ladder[aiQIdx];
             
             // 根据质量设定基础属性
-            let baseSpd = 55;
+            const qs = getQualityStats(aiQuality);
+            let baseSpd = rollInt(qs.baseSpeedMin, qs.baseSpeedMax);
             let slots = 3;
             // 玩家初始马是普通但有6槽，为了公平，如果 AI 匹配到普通，也给它多点槽位
             if (aiQuality === '普通') slots = 6; 
-            else if (aiQuality === '中级') { baseSpd = 60; slots = 4; }
-            else if (aiQuality === '高级') { baseSpd = 65; slots = 5; }
-            else if (aiQuality === '稀有') { baseSpd = 70; slots = 6; }
-            else if (aiQuality === '神兽') { baseSpd = 75; slots = 6; }
+            else if (aiQuality === '中级') { slots = 4; }
+            else if (aiQuality === '高级') { slots = 5; }
+            else if (aiQuality === '稀有') { slots = 6; }
+            else if (aiQuality === '神兽') { slots = 6; }
             
             // 限制 AI 速度上限：不超过玩家速度 + 5 + 赛季加成
             // 这样即使随机到了高等级马，数值也不会太离谱
@@ -1428,8 +1799,10 @@
                 id: 'ai_'+i, name: 'AI-'+i, 
                 color: aiQuality==='神兽'?'#e74c3c':(aiQuality==='史诗'?'#9b59b6':(aiQuality==='稀有'?'#f1c40f':'#ecf0f1')),
                 quality: aiQuality,
-                baseSpeed: cappedSpeed + Math.random()*5 + seasonBonus, 
-                accel: 0.5, lifespan: 50,
+                baseSpeed: Math.round(cappedSpeed + Math.random() * 5 + seasonBonus), 
+                stamina: qs.stamina,
+                endurance: qs.endurance,
+                accel: qs.accel, lifespan: 50,
                 genes: [], geneSlots: slots,
                 spriteSet: aiQuality === '神兽'
                     ? pickLegendarySpriteSet()
@@ -1447,6 +1820,8 @@
                 const name = p1.name[0] + p2.name[p2.name.length-1] + '驹';
                 const ladder = ['普通','中级','高级','稀有'];
                 const quality = ladder[Math.floor(Math.random() * ladder.length)];
+                const qs = getQualityStats(quality);
+                const qMid = (qs.baseSpeedMin + qs.baseSpeedMax) / 2;
                 const slotsMap = { '普通': 3, '中级': 4, '高级': 5, '稀有': 6 };
                 const geneSlots = slotsMap[quality] || 3;
                 
@@ -1487,8 +1862,11 @@
                     id: 'bred_'+Date.now(), name,
                     color: quality==='神兽'?'#e74c3c':(quality==='史诗'?'#9b59b6':(quality==='稀有'?'#f1c40f':'#ecf0f1')),
                     quality,
-                    baseSpeed: (p1.baseSpeed + p2.baseSpeed)/2 * 1.05,
-                    stamina: 60, accel: 0.8, temper: 0.5,
+                    baseSpeed: Math.max(qs.baseSpeedMin, Math.min(qs.baseSpeedMax, Math.round(((p1.baseSpeed + p2.baseSpeed) / 2) * 1.03 + (qMid - 55) * 0.15))),
+                    stamina: qs.stamina,
+                    endurance: qs.endurance,
+                    accel: qs.accel,
+                    temper: 0.5,
                     lifespan: 50, maxLifespan: 50, genes, geneSlots,
                     spriteSet: quality === '神兽'
                         ? pickLegendarySpriteSet()
@@ -1527,7 +1905,9 @@
                 this.selectedHorseId = this.player.horses[0].id; // 默认选中第一匹
                 this.horses = [];
                 this.racing = false;
-                this.stableCap = 5;
+                this.stableCap = 8;
+                this.stablePageSize = 4;
+                this.stablePage = 0;
                 this.idleAnimTimer = null;
                 this.avatarDirPath = 'Test Friend Avatar';
                 this.avatarList = null;
@@ -1956,15 +2336,15 @@
                 return {
                     '疾风': '提高移动速度，持续加成（+8%），适合直线冲刺。',
                     '爆冲': '短时间爆发速度（+15%），用于关键时刻超车。',
-                    '坚韧': '提升耐力与长距离表现（+6%），后程稳定输出。',
+                    '坚韧': '耐力强化：体力消耗更慢，体力偏低时额外减耗与少量恢复。',
                     '稳健': '提升稳定与小幅速度（+5%），减少波动与失误。',
                     '灵活': '提升加速与灵敏（+5%），更快进入最佳速度区间。',
                     '神速': '显著提升最高速度，瞬间提速效果更强。',
                     '飞驰': '持续小幅速度提升，稳步拉开差距。',
-                    '持久': '耐力强化，长时间保持高效奔跑。',
-                    '回春': '赛中耐力恢复，缓解疲劳。',
+                    '持久': '耐力系数提升：体力下降更慢。',
+                    '回春': '体力恢复：赛中持续缓慢回复体力。',
                     '铁志': '意志加成，降低赛中抖动与速度波动。',
-                    '深息': '长距离优势，越跑越稳。',
+                    '深息': '深呼吸：跑得越久耐力越高，后程体力恢复更明显。',
                     '冷静': '抗干扰，减少外部因素造成的减速。',
                     '专注': '节奏掌控，在关键区段保持输出。',
                     '如山': '强稳定性，难以被扰动影响。',
@@ -2209,6 +2589,19 @@
             selectHorse(id) {
                 if (this.racing) return;
                 this.selectedHorseId = id;
+                const list = this.player && Array.isArray(this.player.horses) ? this.player.horses : [];
+                const pageSize = this.stablePageSize || 4;
+                const idx = list.findIndex(h => h && h.id === id);
+                if (idx >= 0) this.stablePage = Math.floor(idx / pageSize);
+                this.updateUI();
+            }
+
+            nextStablePage() {
+                if (this.racing) return;
+                const pageSize = this.stablePageSize || 4;
+                const totalPages = Math.max(1, Math.ceil((this.stableCap || 8) / pageSize));
+                const curr = Number(this.stablePage) || 0;
+                this.stablePage = (curr + 1) % totalPages;
                 this.updateUI();
             }
 
@@ -2243,6 +2636,14 @@
             
             scrollSelectedIntoView() {
                 const infoPanel = document.getElementById('info-panel');
+                const rosterPanel = document.getElementById('stable-roster-panel');
+                const grid = rosterPanel ? rosterPanel.querySelector('.roster-grid') : null;
+                if (grid) {
+                    const card = grid.querySelector('.roster-item.selected');
+                    if (!card) return;
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                    return;
+                }
                 const container = infoPanel.querySelector('.stable-container');
                 if (!container) return;
                 const card = infoPanel.querySelector('.horse-card.selected');
@@ -2315,6 +2716,7 @@
             updateUI() {
                 const p = this.player;
                 const infoPanel = document.getElementById('info-panel');
+                const rosterPanel = document.getElementById('stable-roster-panel');
                 
                 // 保留比赛中马厩滚动位置，防止刷新导致卡片跳动
                 let prevScrollLeft = null;
@@ -2380,52 +2782,40 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-blue" style="width:auto; height:28px; line-height:28px; font-size:12px; padding:0 12px; background:#c0392b; box-shadow:0 2px #922b21;" onclick="game.retireHorse()">退役当前马</button>
-                        </div>
-
-                        <div style="background:#34495e; padding:6px 10px; border-radius:8px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                                <span style="color:#f1c40f; font-weight:bold; font-size:12px;">🏆 S1 赛季</span>
-                                <span style="color:#ecf0f1; font-size:12px;">胜率: <span style="color:${rate>=40?'#2ecc71':'#e74c3c'}">${rate}%</span> <span style="color:#7f8c8d; margin-left:4px;">(已赛${races})</span></span>
-                            </div>
-                            <div style="height:6px; background:#2c3e50; border-radius:3px; overflow:hidden; border:1px solid #444;">
-                                <div style="width:${Math.min(100, (races/8)*100)}%; height:100%; background:linear-gradient(90deg, #f39c12, #f1c40f);"></div>
-                            </div>
-                            <div style="font-size:10px; color:#95a5a6; margin-top:3px; text-align:right;">
-                                ${races >= 8 ? '<span style="color:#2ecc71">✅ 已获选秀资格</span>' : `再赛 ${8-races} 场获选秀资格`}
+                            <div class="season-mini">
+                                <div class="row">
+                                    <span class="season">🏆 S${this.player.seasonNo || 1}</span>
+                                    <span>胜率 <span style="color:${rate>=40?'#2ecc71':'#e74c3c'}">${rate}%</span></span>
+                                </div>
+                                <div class="bar"><div style="width:${Math.min(100, (races/8)*100)}%"></div></div>
+                                <div class="hint">${races >= 8 ? '✅ 已获选秀资格' : `再赛 ${8-races} 场获选秀资格`}</div>
                             </div>
                         </div>
                         <div class="stable-hint" style="margin-top:6px;">
                             <div class="stable-hint-track" id="stable-hint-track">${this.renderHintsHtml()}</div>
                         </div>
                     </div>
-
-                    <div class="stable-panel">
-                        <div class="stable-container">
+                    <div id="horse-detail-wrap" class="stable-panel">
                 `;
 
-                // 更新大厅按钮：如果满足选秀条件，添加选秀按钮
                 const lobby = document.getElementById('lobby-panel');
                 if (lobby) {
-                    // 移除旧的选秀按钮避免重复
                     const oldBtn = document.getElementById('btn-open-draft');
                     if (oldBtn) oldBtn.remove();
-                    
-                    if (races >= 8) {
-                        const btn = document.createElement('button');
-                        btn.id = 'btn-open-draft';
-                        btn.className = 'btn btn-blue';
-                        btn.style.background = '#e67e22';
-                        btn.style.boxShadow = '0 4px #d35400';
-                        btn.innerHTML = '参加选秀';
-                        btn.onclick = () => this.openDraft();
-                        lobby.prepend(btn);
+                    const primary = document.getElementById('btn-primary-action');
+                    if (primary) {
+                        if (races >= 8) {
+                            primary.className = 'btn btn-orange lobby-btn';
+                            primary.innerHTML = '<div class="lobby-icon">🎲</div><div class="lobby-text">参加选秀</div>';
+                            primary.onclick = () => this.openDraft();
+                        } else {
+                            primary.className = 'btn btn-blue lobby-btn';
+                            primary.innerHTML = '<div class="lobby-icon">🏠</div><div class="lobby-text">开始比赛</div>';
+                            primary.onclick = () => this.startRace();
+                        }
                     }
                 }
 
-                // 2. 生成马匹卡片
-                // let html = ''; // 确保 html 变量被初始化 -- 修正：不能重置 html，应该追加到现有的 html 后面
-                // 上面的 html 变量已经在 "1. 生成资产行" 部分初始化过了，这里是追加
                 p.horses.forEach(h => {
                     this.ensureLockedStartGenes(h);
                     
@@ -2467,30 +2857,97 @@
                     
                     const isSelected = h.id === this.selectedHorseId;
                     const selectedClass = isSelected ? 'selected' : '';
-                    
-                    html += `
-                        <div class="horse-card ${selectedClass}" onclick="game.selectHorse('${h.id}')">
-                            <div class="card-skills">
-                                <input class="horse-name-input" maxlength="12" value="${this.escapeHtml(h.name)}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation(); if(event.key==='Enter'){ this.blur(); }" oninput="game.setHorseName('${h.id}', this.value)" />
-                                <div class="gene-tags" onclick="event.stopPropagation()">${genesHtml2}</div>
+
+                    if (isSelected) {
+                        const spriteSetKey = (h.spriteSet || SpriteSet.Horse);
+                        const codexStars = Number((this.player.spriteCodex && this.player.spriteCodex[spriteSetKey]) || 0) || 0;
+                        const codexBonusPct = codexStars * 3;
+                        const baseEndurance = Number(h.endurance) || 1.0;
+                        const activeTypes = new Set((previewActives || []).map(g => g && g.type).filter(Boolean));
+                        let enduranceBonus = 0;
+                        if (activeTypes.has('持久')) enduranceBonus += 0.25;
+                        if (activeTypes.has('坚韧')) enduranceBonus += 0.15;
+                        if (activeTypes.has('深息')) enduranceBonus += 0.10;
+                        const enduranceEff = baseEndurance * (1 + enduranceBonus);
+                        html += `
+                            <div class="horse-card selected">
+                                <div class="card-skills">
+                                    <input class="horse-name-input" maxlength="12" value="${this.escapeHtml(h.name)}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation(); if(event.key==='Enter'){ this.blur(); }" oninput="game.setHorseName('${h.id}', this.value)" />
+                                    <div class="gene-tags" onclick="event.stopPropagation()">${genesHtml2}</div>
+                                </div>
+                                <div class="card-side">
+                                    <div class="card-stats">
+                                        <div class="stat-line"><span>稀有</span><strong>${this.escapeHtml(h.quality)}</strong></div>
+                                        <div class="stat-line"><span>寿命</span><strong>${h.lifespan}/${h.maxLifespan}</strong></div>
+                                        <div class="stat-line"><span>体力</span><strong>${h.stamina ?? '-'}</strong></div>
+                                        <div class="stat-line"><span>耐力</span><strong>${enduranceEff.toFixed(2)}x</strong></div>
+                                        <div class="stat-line"><span>基速</span><strong>${(typeof h.baseSpeed === 'number') ? Math.round(h.baseSpeed) : '-'}</strong></div>
+                                        <div class="stat-line"><span>加速</span><strong>${h.accel ?? '-'}</strong></div>
+                                        <div class="stat-line"><span>图鉴</span><strong>${codexStars}★ (+${codexBonusPct}%)</strong></div>
+                                    </div>
+                                    <div class="card-portrait">
+                                        <div class="idle-horse" data-sprite-set="${this.escapeHtml(spriteSetKey)}" data-idle-horse="1"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-info">
-                                <div class="life">寿命: ${h.lifespan}/${h.maxLifespan}</div>
-                                <div class="blood">稀有等级: ${h.quality}</div>
-                            <div class="blood">速度: ${Math.round(this.computeSpeedWithGenes(h.baseSpeed, previewActives, h.genes, false, { spriteSet: (h.spriteSet || SpriteSet.Horse), applyCodex: true }))}</div>
-                            </div>
-                            <div class="card-image">
-                                <div class="idle-horse" data-sprite-set="${this.escapeHtml(h.spriteSet || SpriteSet.Horse)}" data-idle-horse="1"></div>
-                            </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 });
 
-                html += `</div></div>`;
+                html += `</div>`;
                 infoPanel.innerHTML = html;
                 this.startStableIdleAnim(infoPanel);
                 const hintTrack = infoPanel.querySelector('#stable-hint-track');
                 if (hintTrack) hintTrack.scrollLeft = hintTrack.scrollWidth;
+
+                const list = p && Array.isArray(p.horses) ? p.horses : [];
+                const pageSize = this.stablePageSize || 4;
+                const totalPages = Math.max(1, Math.ceil((this.stableCap || 8) / pageSize));
+                const currPage = Math.max(0, Math.min(totalPages - 1, Number(this.stablePage) || 0));
+                this.stablePage = currPage;
+                const start = currPage * pageSize;
+                const end = Math.min(start + pageSize, this.stableCap || 8);
+                let rosterHtml = '';
+                for (let i = start; i < end; i++) {
+                    const h = list[i];
+                    if (h) {
+                        const selectedClass = (h.id === this.selectedHorseId) ? 'selected' : '';
+                        rosterHtml += `
+                            <div class="roster-item ${selectedClass}" onclick="game.selectHorse('${h.id}')">
+                                <div class="idle-horse" data-sprite-set="${this.escapeHtml(h.spriteSet || SpriteSet.Horse)}" data-idle-horse="1"></div>
+                                <div class="roster-meta">
+                                    <div class="roster-name">${this.escapeHtml(h.name)}</div>
+                                    <div class="roster-sub">${this.escapeHtml(h.quality)}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        rosterHtml += `
+                            <div class="roster-item empty">
+                                <div class="roster-meta">
+                                    <div class="roster-name">空位</div>
+                                    <div class="roster-sub">可容纳新马</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                if (rosterPanel) {
+                    rosterPanel.style.display = this.racing ? 'none' : 'block';
+                    const count = list.length;
+                    rosterPanel.innerHTML = `
+                        <div class="roster-header">
+                            <div class="roster-cap">马厩 ${count}/${this.stableCap}</div>
+                        </div>
+                        <div class="roster-actions">
+                            <button class="btn btn-blue" style="background:#c0392b; box-shadow:0 4px #922b21;" onclick="game.retireHorse()">退役<span class="sub">当前马</span></button>
+                            <button class="btn btn-blue" onclick="game.nextStablePage()">翻页<span class="sub">${currPage + 1}/${totalPages}</span></button>
+                        </div>
+                        <div class="roster-grid">${rosterHtml}</div>
+                    `;
+                    this.startStableIdleAnim(rosterPanel);
+                }
                 
                 // 比赛中恢复滚动位置
                 const newContainer = infoPanel.querySelector('.stable-container');
@@ -2537,9 +2994,9 @@
 
             confirmBreed() {
                 // 马厩容量限制
-                const aliveCount = this.player.horses.filter(h => (h.lifespan == null ? true : h.lifespan > 0)).length;
-                if (aliveCount >= this.stableCap) {
-                    alert("马厩已满 (上限5匹)。请先清理寿命为0的马或弃置后再培育。");
+                const count = (this.player && Array.isArray(this.player.horses)) ? this.player.horses.length : 0;
+                if (count >= this.stableCap) {
+                    alert(`马厩已满 (${count}/${this.stableCap})，请先退役一匹马再培育。`);
                     return;
                 }
                 if (this.player.integral < 500) {
@@ -2568,6 +3025,9 @@
                 
                 // 自动选中新马
                 this.selectedHorseId = foal.id;
+                const pageSize = this.stablePageSize || 4;
+                const idx = this.player.horses.findIndex(h => h && h.id === foal.id);
+                if (idx >= 0) this.stablePage = Math.floor(idx / pageSize);
                 
                 document.getElementById('breed-result').innerText = `培育成功！获得新马：${foal.name}`;
                 this.pushHint(`🎉 获得新马：${foal.name}`);
@@ -2979,6 +3439,9 @@
                      const activeGenes = (data.lockedStartGenes || []).slice(0, slots);
                      data.activeGenes = activeGenes;
                      const isPlayerOwned = Array.isArray(this.player.horses) && this.player.horses.some(h => h && h.id === data.id);
+                     const baseSpeedEff = this.computeSpeedWithGenes(data.baseSpeed, activeGenes, data.genes, true, { spriteSet: (data.spriteSet || SpriteSet.Horse), applyCodex: isPlayerOwned });
+                     const staminaMax = Number(data.stamina) || 70;
+                     const enduranceBase = Number(data.endurance) || 1.0;
 
                      this.horses.push({ 
                          el, 
@@ -2986,8 +3449,13 @@
                          data, // 引用原始数据 (用于赛后保存)
                          activeGenes, // 当局生效的技能 (6个基础 + 1个领悟)
                          distance: 0, 
-                         // 使用 activeGenes 计算初始速度，传入完整技能池以计算稀有加成
-                        speed: this.computeSpeedWithGenes(data.baseSpeed, activeGenes, data.genes, true, { spriteSet: (data.spriteSet || SpriteSet.Horse), applyCodex: isPlayerOwned }), 
+                         baseSpeedEff,
+                        speed: baseSpeedEff,
+                        staminaMax,
+                        staminaNow: staminaMax,
+                        enduranceBase,
+                        boostCooldown: 0,
+                        boostMult: 0,
                          frameIndex: startFrame,
                         frameTimer: (i % 4),
                         baseTop: baseTop,
@@ -3169,6 +3637,51 @@
                             h.el.style.backgroundImage = this.horseRunFrameCss[key][nextFrame];
                         }
                         h.frameTimer = 0;
+                    }
+
+                    const activeTypes = new Set((h.activeGenes || []).map(g => g && g.type).filter(Boolean));
+                    const staminaMax = Number(h.staminaMax) || 70;
+                    const staminaNow = Number(h.staminaNow);
+                    const baseEndurance = Number(h.enduranceBase) || 1.0;
+                    const accelStat = Number(h.data && h.data.accel) || 0.8;
+                    let enduranceBonus = 0;
+                    if (activeTypes.has('持久')) enduranceBonus += 0.25;
+                    if (activeTypes.has('坚韧')) enduranceBonus += 0.15;
+                    if (activeTypes.has('深息')) enduranceBonus += 0.10 + 0.20 * Math.min(1, h.distance / 2000);
+                    const enduranceEff = baseEndurance * (1 + enduranceBonus);
+
+                    if (h.distance < 2000) {
+                        if (h.boostCooldown && h.boostCooldown > 0) h.boostCooldown--;
+
+                        const currStamina = Number.isFinite(staminaNow) ? staminaNow : staminaMax;
+                        const canAccel = currStamina >= 30;
+                        if ((h.boostTimer || 0) <= 0 && (!h.boostCooldown || h.boostCooldown <= 0) && canAccel) {
+                            const chance = 0.0018 + accelStat * 0.0018;
+                            if (Math.random() < chance) {
+                                const hasBurst = activeTypes.has('爆冲');
+                                h.boostMult = (0.10 + 0.10 * accelStat) + (hasBurst ? 0.10 : 0);
+                                h.boostTimer = Math.round(28 + 30 * accelStat + (hasBurst ? 20 : 0));
+                                h.boostCooldown = Math.round(120 + 60 * (1 - accelStat));
+                                const cost = 7 + (hasBurst ? 5 : 0);
+                                h.staminaNow = Math.max(0, currStamina - cost);
+                            }
+                        }
+
+                        const boostActive = (h.boostTimer || 0) > 0;
+                        h.speed = boostActive ? (h.baseSpeedEff * (1 + (h.boostMult || 0))) : h.baseSpeedEff;
+
+                        let drain = (0.035 + 0.00035 * h.speed);
+                        if (boostActive) drain *= 1.35;
+                        if (activeTypes.has('坚韧') && (Number(h.staminaNow) || 0) < 50) drain *= 0.75;
+                        drain = drain / Math.max(0.35, enduranceEff);
+                        let regen = 0;
+                        if (activeTypes.has('回春')) regen += 0.012;
+                        if (activeTypes.has('深息') && h.distance > 900) regen += 0.006;
+                        if (activeTypes.has('坚韧') && (Number(h.staminaNow) || 0) < 40) regen += 0.004;
+                        const nextStamina = Math.max(0, Math.min(staminaMax, (Number(h.staminaNow) || 0) - drain + regen));
+                        h.staminaNow = nextStamina;
+                    } else {
+                        h.speed = h.baseSpeedEff;
                     }
 
                     // 即使已经到达终点，也要继续播放动画，直到比赛彻底结束
@@ -3484,6 +3997,10 @@
                     alert("本赛季未结束（需完成 8 场比赛）才可进入选秀。");
                     return;
                 }
+                if (this.player && Array.isArray(this.player.horses) && this.player.horses.length >= this.stableCap) {
+                    alert(`马厩已满 (${this.player.horses.length}/${this.stableCap})，请先清理一个马厩空位才能进行选秀。`);
+                    return;
+                }
                 
                 // 确定种子顺位 (1-14)
                 if (!this.player.heldDraftPick || this.player.heldDraftPick.seasonNo !== this.player.seasonNo) {
@@ -3510,13 +4027,19 @@
                 }
                 
                 const seed = this.player.heldDraftPick.seed;
-                // 简单的胜率描述
-                const odds = seed <= 3 ? "14.0%" : (seed === 4 ? "12.5%" : "低");
+                const oddsMap = { 1: "14.0%", 2: "14.0%", 3: "14.0%", 4: "12.5%", 5: "10.5%", 6: "9.0%", 7: "7.5%", 8: "6.0%", 9: "4.5%", 10: "3.0%", 11: "2.0%", 12: "1.5%", 13: "1.0%", 14: "0.5%" };
+                const odds = oddsMap[seed] || "0%";
                 
                 const statusHtml = `
-                    <p>本赛季战绩: ${wins}胜 / ${races}场 (倒数排名: ${bottoms}次)</p>
-                    <p>获得乐透种子: <span style="color:#e74c3c; font-weight:bold; font-size:20px;">第 ${seed} 号</span> ${this.player.heldDraftPick.isTraded ? '(已交易)' : ''}</p>
-                    <p style="font-size:12px; color:#95a5a6;">(状元概率: ${odds}，将通过14球乒乓球摇号决定归属)</p>
+                    <div class="draft-seed-line">
+                        <div>本赛季战绩: ${wins}胜 / ${races}场 (倒数排名: ${bottoms}次)</div>
+                        <div style="font-size:11px; color:#95a5a6;">状元概率: ${odds}</div>
+                    </div>
+                    <div class="draft-seed-line">
+                        <div>乐透种子</div>
+                        <div class="seed">#${seed}</div>
+                    </div>
+                    <div style="font-size:11px; color:#95a5a6;">抽签决定前 4 顺位，其余按种子顺序递补</div>
                 `;
                 document.getElementById('draft-status').innerHTML = statusHtml;
                 document.getElementById('draft-result').style.display = 'none';
@@ -3664,44 +4187,35 @@
                 const playerSeed = this.currentDraftSeed;
                 const statusEl = document.getElementById('draft-status');
                 
-                // 14个球抽4个的乐透逻辑
-                statusEl.innerHTML = "🎲 正在抽取 4 个乒乓球组合...";
-                
-                // 定义各种子队的组合数 (总共1000)
+                statusEl.innerHTML = "🎲 正在进行乐透抽签 (模拟 NBA：抽前4顺位)...";
+
                 const seedCombos = {
                     1: 140, 2: 140, 3: 140,
                     4: 125, 5: 105, 6: 90, 7: 75,
                     8: 60, 9: 45, 10: 30,
                     11: 20, 12: 15, 13: 10, 14: 5
                 };
-                
-                // 模拟抽签过程
-                // 实际上我们不需要真的生成组合，只需要按概率抽取
-                // 抽 Top 4
-                const lotteryResults = [];
-                const remainingSeeds = new Set([1,2,3,4,5,6,7,8,9,10,11,12,13,14]);
-                
-                for (let pick = 1; pick <= 4; pick++) {
-                    let totalPool = 0;
-                    remainingSeeds.forEach(s => totalPool += seedCombos[s]);
-                    
-                    let rnd = Math.random() * totalPool;
-                    let winner = -1;
-                    
-                    for (let s of remainingSeeds) {
-                        if (rnd < seedCombos[s]) {
-                            winner = s;
-                            break;
-                        }
-                        rnd -= seedCombos[s];
-                    }
-                    
-                    lotteryResults.push(winner);
-                    remainingSeeds.delete(winner);
+
+                const pool = [];
+                for (let s = 1; s <= 14; s++) {
+                    const n = seedCombos[s] || 0;
+                    for (let i = 0; i < n; i++) pool.push(s);
                 }
-                
-                // 剩下的按种子顺位排序 (种子号小的排前面)
-                const rest = Array.from(remainingSeeds).sort((a,b) => a - b);
+
+                const lotteryResults = [];
+                for (let pick = 1; pick <= 4; pick++) {
+                    const idx = Math.floor(Math.random() * pool.length);
+                    const winner = pool[idx];
+                    lotteryResults.push(winner);
+                    for (let i = pool.length - 1; i >= 0; i--) {
+                        if (pool[i] === winner) pool.splice(i, 1);
+                    }
+                }
+
+                const rest = [];
+                for (let s = 1; s <= 14; s++) {
+                    if (!lotteryResults.includes(s)) rest.push(s);
+                }
                 const finalOrder = lotteryResults.concat(rest);
                 
                 // 找到玩家的最终顺位
@@ -3711,13 +4225,18 @@
                 this.currentPick = playerPick;
                 
                 setTimeout(() => {
+                    const seedToPick = {};
+                    finalOrder.forEach((s, idx) => { seedToPick[s] = idx + 1; });
                     const lotteryInfo = `
-                        <div style="font-size:12px; color:#bdc3c7; text-align:left; margin:10px auto; width:80%;">
-                            <div>第1顺位: 种子${lotteryResults[0]} (中签)</div>
-                            <div>第2顺位: 种子${lotteryResults[1]} (中签)</div>
-                            <div>第3顺位: 种子${lotteryResults[2]} (中签)</div>
-                            <div>第4顺位: 种子${lotteryResults[3]} (中签)</div>
+                        <div class="draft-pill-row">
+                            ${finalOrder.map((s, idx) => `<div class="draft-pill ${idx < 4 ? 'is-top4' : ''}">${idx + 1}: 种子${s}</div>`).join('')}
                         </div>
+                        <details class="draft-map">
+                            <summary>查看种子→顺位映射</summary>
+                            <div class="draft-map-grid">
+                                ${Array.from({length:14}, (_,i)=>i+1).map(s => `<div class="draft-pill">种子${s}→第${seedToPick[s]}顺位</div>`).join('')}
+                            </div>
+                        </details>
                     `;
                     
                     document.getElementById('draft-pick-no').innerText = `第 ${playerPick}`;
@@ -3891,9 +4410,10 @@
                     name: String(nameOverride || (quality + '新秀')),
                     color: quality==='神兽'?'#e74c3c':(quality==='史诗'?'#9b59b6':(quality==='稀有'?'#f1c40f':'#ecf0f1')),
                     quality: quality,
-                    baseSpeed: 60 + Math.random() * 10,
-                    stamina: 70,
-                    accel: 0.8,
+                    baseSpeed: rollInt(getQualityStats(quality).baseSpeedMin, getQualityStats(quality).baseSpeedMax),
+                    stamina: getQualityStats(quality).stamina,
+                    endurance: getQualityStats(quality).endurance,
+                    accel: getQualityStats(quality).accel,
                     temper: 0.5,
                     lifespan: lifespan,
                     maxLifespan: lifespan,
@@ -3930,6 +4450,10 @@
             
             selectDraftHorse(horseObj, el) {
                 if (this.hasDrafted) return;
+                if (this.player && Array.isArray(this.player.horses) && this.player.horses.length >= this.stableCap) {
+                    alert(`马厩已满 (${this.player.horses.length}/${this.stableCap})，请先退役一匹马再完成选秀。`);
+                    return;
+                }
                 
                 // 选中视觉反馈
                 const cards = document.querySelectorAll('.draft-card');
@@ -3955,6 +4479,9 @@
                     
                     // 自动选中新马
                     this.selectedHorseId = newHorse.id;
+                    const pageSize = this.stablePageSize || 4;
+                    const idx = this.player.horses.findIndex(h => h && h.id === newHorse.id);
+                    if (idx >= 0) this.stablePage = Math.floor(idx / pageSize);
                     this.pushHint(`🎉 签约新马：${newHorse.name}`);
                     this.updateUI();
                     
@@ -4358,7 +4885,7 @@
         Game.prototype.closeResultPanel = function() {
             const panel = document.getElementById('result-panel');
             panel.style.display = 'none';
-            document.getElementById('lobby-panel').style.display = 'block';
+            document.getElementById('lobby-panel').style.display = '';
             document.getElementById('status-label').style.display = 'none';
             
             // 退出比赛模式，恢复UI
