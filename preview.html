@@ -2158,6 +2158,7 @@
                 this.sceneBgColor = this.sceneDefs[this.sceneType].color;
                 this._sceneTileDataUrl = null;
                 this._sceneTilePromise = null;
+                this._preloadNextScenePromise = null;
                 this.idleAnimTimer = null;
                 this.avatarDirPath = 'Test Friend Avatar';
                 this.avatarList = null;
@@ -2199,6 +2200,7 @@
                 this.prepareSceneTile();
                 this.updateUI();
                 this.initAvatarFlow();
+                setTimeout(() => this.preloadNextScene(), 60);
                 
                 // 临时变量
                 this.tempReforgeGenes = null;
@@ -2262,6 +2264,30 @@
                 const track = document.getElementById('track-layer');
                 if (track) track.style.backgroundColor = this.sceneBgColor;
                 this.prepareSceneTile();
+            }
+
+            preloadNextScene() {
+                if (this.racing) return Promise.resolve(false);
+                if (this._preloadNextScenePromise) return this._preloadNextScenePromise;
+                const keys = Object.keys(this.sceneDefs || {});
+                if (keys.length === 0) return Promise.resolve(false);
+                const current = this.sceneType;
+                let next = current;
+                if (keys.length > 1) {
+                    for (let i = 0; i < 6; i++) {
+                        const cand = keys[Math.floor(Math.random() * keys.length)];
+                        if (cand && cand !== current) { next = cand; break; }
+                    }
+                } else {
+                    next = keys[0];
+                }
+                this._preloadNextScenePromise = Promise.resolve().then(async () => {
+                    this.setScene(next);
+                    return await this.prepareSceneTile();
+                }).catch(() => false).finally(() => {
+                    this._preloadNextScenePromise = null;
+                });
+                return this._preloadNextScenePromise;
             }
 
             prepareSceneTile() {
@@ -3795,9 +3821,15 @@
 
                 const btn = document.getElementById('btn-primary-action');
                 if (btn) btn.disabled = true;
-                this.openSceneTransition('加载地图', '正在准备赛道...');
-                this.selectRandomScene();
-                const sceneReady = this.prepareSceneTile();
+                const hasScene = !!this._sceneTileDataUrl;
+                const isPreloadingScene = !!this._preloadNextScenePromise;
+                const sceneReady = this._preloadNextScenePromise
+                    ? this._preloadNextScenePromise
+                    : (hasScene ? Promise.resolve(true) : Promise.resolve().then(() => {
+                        this.selectRandomScene();
+                        return this.prepareSceneTile();
+                    }));
+                this.openSceneTransition((hasScene || isPreloadingScene) ? '准备开赛' : '加载地图', (hasScene || isPreloadingScene) ? '正在进入赛道...' : '正在准备赛道...');
                 const assetsReady = Promise.all([
                     this.ensureHorseRunFramesReady(),
                     this.ensureBurstFramesReady(),
@@ -5425,6 +5457,7 @@
             
             // 退出比赛模式，恢复UI
             document.getElementById('game-container').classList.remove('racing-mode');
+            if (this && typeof this.preloadNextScene === 'function') this.preloadNextScene();
         };
     </script>
 </body>
