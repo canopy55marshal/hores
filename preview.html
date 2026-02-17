@@ -54,6 +54,21 @@
             font-weight: 700;
             margin-bottom: 4px;
         }
+        .season-mini .row.top {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 6px;
+            align-items: center;
+        }
+        .season-mini .row.top .mid {
+            text-align: center;
+        }
+        .season-mini .champ {
+            color: #f1c40f;
+            font-weight: 900;
+            font-size: 11px;
+            white-space: nowrap;
+        }
         .season-mini .row .season {
             color: #f1c40f;
             font-weight: 800;
@@ -73,6 +88,108 @@
             font-size: 10px;
             color: #95a5a6;
             margin-top: 4px;
+        }
+        .season-mini .trophy-row {
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #ecf0f1;
+            font-weight: 800;
+            padding: 4px 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(0,0,0,0.10);
+            cursor: pointer;
+            user-select: none;
+        }
+        .season-mini .trophy-row .value {
+            color: #f1c40f;
+            font-weight: 900;
+        }
+        #trophy-shop-modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.86);
+            z-index: 110;
+            align-items: center;
+            justify-content: center;
+        }
+        .trophy-shop-box {
+            width: min(520px, 92%);
+            background: #2c3e50;
+            border-radius: 12px;
+            border: 1px solid #f1c40f;
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.25);
+            padding: 14px;
+            box-sizing: border-box;
+        }
+        .trophy-shop-title {
+            color: #f1c40f;
+            font-weight: 900;
+            text-align: center;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+        .trophy-shop-balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #ecf0f1;
+            background: rgba(0,0,0,0.14);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .trophy-shop-balance .value {
+            color: #2ecc71;
+            font-weight: 900;
+            font-size: 14px;
+        }
+        .trophy-shop-items {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .trophy-item {
+            background: #34495e;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+        .trophy-item .left {
+            text-align: left;
+        }
+        .trophy-item .name {
+            color: #ecf0f1;
+            font-weight: 900;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        .trophy-item .desc {
+            color: #bdc3c7;
+            font-size: 11px;
+        }
+        .trophy-item .cost {
+            color: #f1c40f;
+            font-weight: 900;
+            font-size: 12px;
+            margin-bottom: 6px;
+            text-align: right;
         }
         
         /* 比赛模式下的样式折叠 */
@@ -129,17 +246,35 @@
             border: 1px solid rgba(255,255,255,0.1);
             background: rgba(0,0,0,0.18);
             overflow: hidden;
-        }
-        .stable-hint-track {
-            height: 100%;
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 0 8px;
-            overflow-x: auto;
-            scrollbar-width: none;
+            padding: 0 6px;
+            box-sizing: border-box;
         }
-        .stable-hint-track::-webkit-scrollbar { display: none; }
+        .stable-hint-text {
+            flex: 1;
+            min-width: 0;
+            font-size: 10px;
+            color: #ecf0f1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .shop-chip {
+            flex: 0 0 auto;
+            font-size: 10px;
+            line-height: 16px;
+            color: #0b0e11;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(241,196,15,0.55);
+            background: rgba(241,196,15,0.95);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 900;
+        }
         .hint-chip {
             flex: 0 0 auto;
             font-size: 10px;
@@ -428,20 +563,19 @@
             /* 跑道改为横向超长 */
             width: 10000px; 
             height: 100%; 
-            background-color: #5da629; 
-            background-image: 
-                /* 终点线 */
-                linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.8) 96%, transparent 97%),
-                /* 草地纹理改为横向 */
-                repeating-linear-gradient(
-                    90deg,
-                    transparent 0px,
-                    transparent 19px,
-                    rgba(0,0,0,0.05) 20px,
-                    rgba(0,0,0,0.05) 40px
-                );
-            background-size: 1000px 100%, 40px 100%;
+            background-color: #c6f98b;
+            background-image: none;
             overflow: hidden;
+        }
+        .finish-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 0 10px rgba(255,255,255,0.65);
+            z-index: 5;
+            pointer-events: none;
         }
 
         /* 跑道分隔线改为横向 */
@@ -1269,6 +1403,70 @@
             border-radius: 2px;
             line-height: 1.2;
         }
+        #scene-transition {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 95;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.92);
+            opacity: 0;
+            transition: opacity 650ms cubic-bezier(0.22, 1, 0.36, 1), background 300ms ease;
+            pointer-events: auto;
+        }
+        #scene-transition.fade-black {
+            background: rgba(0,0,0,1);
+        }
+        #scene-transition.show {
+            opacity: 1;
+        }
+        .scene-transition-box {
+            width: min(320px, 86%);
+            background: rgba(44, 62, 80, 0.95);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 14px 14px 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+            text-align: center;
+            transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1), transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #scene-transition.fade-black .scene-transition-box {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+        }
+        .scene-transition-title {
+            font-weight: 900;
+            color: #f1c40f;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        .scene-transition-sub {
+            font-size: 12px;
+            color: #bdc3c7;
+            margin-bottom: 10px;
+        }
+        .scene-transition-bar {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .scene-transition-bar > div {
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #2ecc71, #f1c40f);
+            border-radius: 999px;
+            animation: sceneLoad 900ms ease-in-out infinite;
+        }
+        @keyframes sceneLoad {
+            0% { transform: translateX(-120%); }
+            100% { transform: translateX(280%); }
+        }
     </style>
 </head>
 <body>
@@ -1299,6 +1497,13 @@
                 </button>
             </div>
             <div id="status-label" class="panel" style="top: 40%; display: none;"></div>
+            <div id="scene-transition">
+                <div class="scene-transition-box">
+                    <div class="scene-transition-title" id="scene-transition-title">加载地图</div>
+                    <div class="scene-transition-sub" id="scene-transition-sub">正在准备赛道...</div>
+                    <div class="scene-transition-bar"><div></div></div>
+                </div>
+            </div>
             <div id="result-panel">
                 <div class="result-box">
                     <div id="result-title" class="result-title"></div>
@@ -1468,6 +1673,18 @@
             </div>
         </div>
 
+        <div id="trophy-shop-modal">
+            <div class="trophy-shop-box">
+                <div class="trophy-shop-title">🏆 稀有马兑换商城</div>
+                <div class="trophy-shop-balance">
+                    <div>奖杯积分（赛季第一次数）</div>
+                    <div class="value" id="trophy-shop-balance">0</div>
+                </div>
+                <div class="trophy-shop-items" id="trophy-shop-items"></div>
+                <button class="btn btn-blue" style="background:#7f8c8d; width:100%; margin-top:12px;" onclick="game.closeTrophyShop()">关闭</button>
+            </div>
+        </div>
+
         <!-- 球员交易市场界面 -->
         <div id="market-panel" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:90; flex-direction:column; align-items:center;">
              <div style="width:100%; height:40px; background:#2c3e50; display:flex; align-items:center; padding:0 10px; box-sizing:border-box; justify-content:space-between;">
@@ -1541,9 +1758,9 @@
             // 耐力类
             Stamina: '坚韧', Endurance: '持久', Recover: '回春', IronWill: '铁志', DeepBreath: '深息',
             // 稳定性类
-            Stable: '稳健', Calm: '冷静', Focus: '专注', Steady: '如山', Balance: '平衡',
+            Stable: '稳健', Calm: '冷静', Focus: '专注', Steady: '草地', Balance: '平衡',
             // 特殊类
-            Hybrid: '混血', LateBoomer: '大器', EarlyBird: '先锋', CornerKing: '飘移', SlopeRider: '坡道',
+            Hybrid: '混血', LateBoomer: '大器', EarlyBird: '先锋', CornerKing: '雪地', SlopeRider: '沙地',
             // 稀有/神兽类
             Destiny: '天命', Miracle: '奇迹', Shadow: '残影', Meteor: '流星', Legend: '传说'
         };
@@ -1908,6 +2125,23 @@
                 this.stableCap = 8;
                 this.stablePageSize = 4;
                 this.stablePage = 0;
+                this.bgmEnabled = (localStorage.getItem('bgmEnabled') ?? '1') !== '0';
+                this.bgmVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('bgmVolume') ?? 0.35) || 0.35));
+                this.bgmTracks = ['bgm/bgm1.MP3'];
+                this.bgmIndex = 0;
+                this.bgm = null;
+                this._bgmUserGestureHandler = null;
+                this._bgmPlayPromise = null;
+                this.sceneDefs = {
+                    '草地': { bg: 'backround/export_1%20(9).jpg', color: '#c6f98b' },
+                    '雪地': { bg: 'backround/export_1%20(10).jpg', color: '#e7f4ff' },
+                    '沙地': { bg: 'backround/export_1%20(11).jpg', color: '#f1c58d' }
+                };
+                this.sceneType = '草地';
+                this.sceneBgSrc = this.sceneDefs[this.sceneType].bg;
+                this.sceneBgColor = this.sceneDefs[this.sceneType].color;
+                this._sceneTileDataUrl = null;
+                this._sceneTilePromise = null;
                 this.idleAnimTimer = null;
                 this.avatarDirPath = 'Test Friend Avatar';
                 this.avatarList = null;
@@ -1945,11 +2179,255 @@
                 this.jifengFramesReady = this.preloadJifengFrames();
                 this.lanyingFramesReady = this.preloadLanyingFrames();
                 this.lieyanFramesReady = this.preloadLieyanFrames();
+                this.initBgm();
+                this.prepareSceneTile();
                 this.updateUI();
                 this.initAvatarFlow();
                 
                 // 临时变量
                 this.tempReforgeGenes = null;
+            }
+
+            initBgm() {
+                if (!Array.isArray(this.bgmTracks) || this.bgmTracks.length === 0) return;
+                const src = this.bgmTracks[this.bgmIndex] || this.bgmTracks[0];
+                try {
+                    this.bgm = new Audio(src);
+                    this.bgm.loop = true;
+                    this.bgm.volume = this.bgmVolume;
+                    this.bgm.preload = 'auto';
+                } catch (e) {
+                    this.bgm = null;
+                    return;
+                }
+                this._bgmUserGestureHandler = () => this.tryStartBgm();
+                document.addEventListener('pointerdown', this._bgmUserGestureHandler, { passive: true });
+                document.addEventListener('keydown', this._bgmUserGestureHandler);
+            }
+
+            tryStartBgm() {
+                if (!this.bgmEnabled || !this.bgm) return;
+                if (this._bgmPlayPromise) return;
+                this._bgmPlayPromise = this.bgm.play().then(() => {
+                    this._bgmPlayPromise = null;
+                    if (this._bgmUserGestureHandler) {
+                        document.removeEventListener('pointerdown', this._bgmUserGestureHandler);
+                        document.removeEventListener('keydown', this._bgmUserGestureHandler);
+                        this._bgmUserGestureHandler = null;
+                    }
+                }).catch(() => {
+                    this._bgmPlayPromise = null;
+                });
+            }
+
+            toggleBgm() {
+                this.bgmEnabled = !this.bgmEnabled;
+                localStorage.setItem('bgmEnabled', this.bgmEnabled ? '1' : '0');
+                if (this.bgmEnabled) this.tryStartBgm();
+                else if (this.bgm) this.bgm.pause();
+                this.updateUI();
+            }
+
+            selectRandomScene() {
+                const keys = Object.keys(this.sceneDefs || {});
+                if (keys.length === 0) return;
+                const next = keys[Math.floor(Math.random() * keys.length)];
+                this.setScene(next);
+            }
+
+            setScene(sceneType) {
+                const t = String(sceneType || '').trim();
+                const def = this.sceneDefs && this.sceneDefs[t] ? this.sceneDefs[t] : null;
+                if (!def) return;
+                this.sceneType = t;
+                this.sceneBgSrc = def.bg;
+                this.sceneBgColor = def.color;
+                this._sceneTileDataUrl = null;
+                const track = document.getElementById('track-layer');
+                if (track) track.style.backgroundColor = this.sceneBgColor;
+                this.prepareSceneTile();
+            }
+
+            prepareSceneTile() {
+                if (this._sceneTileDataUrl) {
+                    this.applySceneBackground();
+                    return Promise.resolve(true);
+                }
+                if (this._sceneTilePromise) return this._sceneTilePromise;
+                const src = this.sceneBgSrc;
+                if (!src) return Promise.resolve(false);
+                const img = new Image();
+                this._sceneTilePromise = new Promise(resolve => {
+                    const done = (ok) => {
+                        this._sceneTilePromise = null;
+                        resolve(!!ok);
+                    };
+                    img.onload = () => {
+                        const w = img.naturalWidth || 0;
+                        const h = img.naturalHeight || 0;
+                        if (!w || !h) return done(false);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w * 2;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) return done(false);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        ctx.save();
+                        ctx.translate(canvas.width, 0);
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        ctx.restore();
+                        this._sceneTileDataUrl = canvas.toDataURL('image/png');
+                        this.applySceneBackground();
+                        done(true);
+                    };
+                    img.onerror = () => done(false);
+                });
+                img.src = src;
+                return this._sceneTilePromise;
+            }
+
+            applySceneBackground() {
+                const track = document.getElementById('track-layer');
+                if (!track) return;
+                const tile = this._sceneTileDataUrl;
+                if (!tile) return;
+                if (this.sceneBgColor) track.style.backgroundColor = this.sceneBgColor;
+                track.style.backgroundImage = `url('${tile}'), linear-gradient(0deg, rgba(0,0,0,0.10), rgba(0,0,0,0.00) 30%, rgba(0,0,0,0.00) 70%, rgba(0,0,0,0.12))`;
+                track.style.backgroundRepeat = 'repeat, no-repeat';
+                track.style.backgroundSize = 'auto 100%, 100% 100%';
+            }
+
+            openSceneTransition(title, sub) {
+                const el = document.getElementById('scene-transition');
+                if (!el) return;
+                el.classList.remove('fade-black');
+                const t = document.getElementById('scene-transition-title');
+                const s = document.getElementById('scene-transition-sub');
+                if (t) t.innerText = String(title ?? '加载地图');
+                if (s) s.innerText = String(sub ?? '正在准备赛道...');
+                el.style.display = 'flex';
+                requestAnimationFrame(() => el.classList.add('show'));
+            }
+
+            setSceneTransitionFadeMode(enabled) {
+                const el = document.getElementById('scene-transition');
+                if (!el) return;
+                if (enabled) el.classList.add('fade-black');
+                else el.classList.remove('fade-black');
+            }
+
+            waitFrames(count = 1) {
+                const n = Math.max(1, Number(count) || 1);
+                return new Promise(resolve => {
+                    let i = 0;
+                    const step = () => {
+                        i++;
+                        if (i >= n) resolve(true);
+                        else requestAnimationFrame(step);
+                    };
+                    requestAnimationFrame(step);
+                });
+            }
+
+            waitTransitionEnd(el, propertyName, timeoutMs = 800) {
+                const target = el;
+                const prop = String(propertyName || '').trim();
+                const timeout = Math.max(0, Number(timeoutMs) || 0);
+                if (!target || !prop) return Promise.resolve(false);
+                return new Promise(resolve => {
+                    let done = false;
+                    const finish = (ok) => {
+                        if (done) return;
+                        done = true;
+                        target.removeEventListener('transitionend', onEnd);
+                        resolve(!!ok);
+                    };
+                    const onEnd = (e) => {
+                        if (!e) return;
+                        if (e.target !== target) return;
+                        if (e.propertyName !== prop) return;
+                        finish(true);
+                    };
+                    target.addEventListener('transitionend', onEnd);
+                    if (timeout > 0) setTimeout(() => finish(false), timeout);
+                });
+            }
+
+            async closeSceneTransition() {
+                const el = document.getElementById('scene-transition');
+                if (!el) return;
+                el.classList.remove('show');
+                await new Promise(r => setTimeout(r, 650));
+                el.style.display = 'none';
+            }
+
+            openTrophyShop() {
+                const modal = document.getElementById('trophy-shop-modal');
+                if (modal) modal.style.display = 'flex';
+                this.renderTrophyShop();
+            }
+
+            closeTrophyShop() {
+                const modal = document.getElementById('trophy-shop-modal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            renderTrophyShop() {
+                const balEl = document.getElementById('trophy-shop-balance');
+                const itemsEl = document.getElementById('trophy-shop-items');
+                if (!balEl || !itemsEl) return;
+                const trophies = Number(this.player && this.player.trophies) || 0;
+                balEl.innerText = String(trophies);
+                const canAfford = (cost) => trophies >= cost;
+                const btn = (label, cost, quality, detail) => {
+                    const disabled = canAfford(cost) ? '' : 'disabled';
+                    const btnStyle = canAfford(cost) ? '' : 'background:#7f8c8d; box-shadow:0 4px #666; opacity:0.8;';
+                    return `
+                        <div class="trophy-item">
+                            <div class="left">
+                                <div class="name">${label}</div>
+                                <div class="desc">${detail}</div>
+                            </div>
+                            <div class="right">
+                                <div class="cost">消耗 ${cost} 点</div>
+                                <button class="btn btn-blue" style="width:110px; ${btnStyle}" ${disabled} onclick="game.redeemTrophyShop('${quality}')">兑换</button>
+                            </div>
+                        </div>
+                    `;
+                };
+                itemsEl.innerHTML =
+                    btn('稀有造型马', 1, '稀有', '兑换一匹稀有造型新马（随机稀有造型）') +
+                    btn('史诗造型马', 2, '史诗', '兑换一匹史诗造型新马') +
+                    btn('神兽造型马', 3, '神兽', '兑换一匹神兽造型新马（随机神兽造型）');
+            }
+
+            redeemTrophyShop(quality) {
+                const q = String(quality || '');
+                const costMap = { '稀有': 1, '史诗': 2, '神兽': 3 };
+                const cost = costMap[q] || 9999;
+                const trophies = Number(this.player && this.player.trophies) || 0;
+                if (trophies < cost) {
+                    alert(`奖杯积分不足（需要 ${cost} 点）。`);
+                    return;
+                }
+                if (this.player && Array.isArray(this.player.horses) && this.player.horses.length >= this.stableCap) {
+                    alert(`马厩已满 (${this.player.horses.length}/${this.stableCap})，请先清理一个马厩空位再兑换。`);
+                    return;
+                }
+                if (!confirm(`确认消耗 ${cost} 点奖杯积分，兑换【${q}】造型马吗？`)) return;
+                this.player.trophies = trophies - cost;
+                const name = `兑换·${q}造型`;
+                const horse = this.createDraftHorseData(q, name);
+                horse.id = 'shop_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+                this.player.horses.push(horse);
+                this.selectedHorseId = horse.id;
+                const pageSize = this.stablePageSize || 4;
+                const idx = this.player.horses.findIndex(h => h && h.id === horse.id);
+                if (idx >= 0) this.stablePage = Math.floor(idx / pageSize);
+                this.pushHint(`🏆 兑换成功：${horse.name}`);
+                this.updateUI();
+                this.renderTrophyShop();
             }
 
             escapeHtml(value) {
@@ -2201,6 +2679,13 @@
                 return list.map(t => `<div class="hint-chip">${this.escapeHtml(t)}</div>`).join('');
             }
 
+            getHintText() {
+                const list = Array.isArray(this.hints) && this.hints.length > 0
+                    ? this.hints
+                    : ['左右滑动查看马厩，点技能查看说明'];
+                return String(list[list.length - 1] ?? '').trim();
+            }
+
             getAvatarConsent() {
                 return localStorage.getItem('wechatAvatarConsent');
             }
@@ -2327,8 +2812,7 @@
                 const realFile = decodeURIComponent(String(encodedFile ?? ''));
                 await this.setAvatarByFile(realFile);
                 this.updateUI();
-                const hintTrack = document.getElementById('stable-hint-track');
-                if (hintTrack) hintTrack.scrollLeft = hintTrack.scrollWidth;
+                const hintText = document.getElementById('stable-hint-text');
                 this.closeAvatarPicker();
             }
             
@@ -2347,13 +2831,13 @@
                     '深息': '深呼吸：跑得越久耐力越高，后程体力恢复更明显。',
                     '冷静': '抗干扰，减少外部因素造成的减速。',
                     '专注': '节奏掌控，在关键区段保持输出。',
-                    '如山': '强稳定性，难以被扰动影响。',
+                    '草地': '草地场景专精：当场景为草地时，速度提高（+5%）。',
                     '平衡': '均衡型增益，速度与稳定小幅提升。',
                     '混血': '综合性加成，各项属性小幅提升。',
                     '大器': '后程爆发，最后阶段能力提升。',
                     '先锋': '开局强势，起步更快更稳。',
-                    '飘移': '弯道控制提升，过弯速度损耗更低。',
-                    '坡道': '坡道优势，坡段速度损耗降低。',
+                    '雪地': '雪地场景专精：当场景为雪地时，速度提高（+5%）。',
+                    '沙地': '沙地场景专精：当场景为沙地时，速度提高（+5%）。',
                     '天命': '神兽专属，全面强力增益。',
                     '奇迹': '绝境翻盘，落后时获得额外增益。',
                     '残影': '产生虚影，减少对手干扰判定。',
@@ -2475,7 +2959,7 @@
                         <div style="text-align:left; flex:1; min-width:0;">
                             <div style="font-size:12px; color:#ecf0f1; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${this.escapeHtml(spriteSet)}</div>
                             <div style="font-size:10px; color:#f1c40f;">星级: ${stars}</div>
-                            <div style="font-size:10px; color:#bdc3c7;">速度加成: +${bonus}%</div>
+                            <div style="font-size:10px; color:#bdc3c7;">全属性加成: +${bonus}%</div>
                         </div>
                     `;
                     listEl.appendChild(card);
@@ -2506,6 +2990,9 @@
                     else if (t === '坚韧') m += 0.06;
                     else if (t === '灵活') m += 0.05;
                     else if (t === '稳健') m += 0.05;
+                    else if (t === '草地') { if (this.sceneType === '草地') m += 0.05; }
+                    else if (t === '雪地') { if (this.sceneType === '雪地') m += 0.05; }
+                    else if (t === '沙地') { if (this.sceneType === '沙地') m += 0.05; }
                     else m += 0.03; // 其他技能也有微量加成
                 });
 
@@ -2745,14 +3232,7 @@
                 // 使用 hasSeasonChampion 标记，而不是实时计算
                 const isChampion = p.hasSeasonChampion;
                 
-                // 奖杯逻辑：每10个奖杯合并为一个高级奖杯
                 const trophyCount = p.trophies || 0;
-                const bigTrophies = Math.floor(trophyCount / 10);
-                const smallTrophies = trophyCount % 10;
-                let trophyHtml = '';
-                if (bigTrophies > 0) trophyHtml += `<span style="color:#f1c40f;">🏆x${bigTrophies}(大)</span> `;
-                if (smallTrophies > 0) trophyHtml += `<span style="color:#bdc3c7;">🏆x${smallTrophies}</span>`;
-                if (trophyCount === 0) trophyHtml = `<span style="color:#7f8c8d; font-size:10px;">暂无奖杯</span>`;
 
                 const avatarUrl = p.avatarUrl || '';
                 const avatarCls = avatarUrl ? 'avatar has-img' : 'avatar';
@@ -2777,14 +3257,15 @@
                                         <span>🎫 ${p.ticketsNormal} <button style="background:none; border:none; color:#2ecc71; font-weight:bold; cursor:pointer; font-size:14px; padding:0;" onclick="game.openTicketMenu()">➕</button></span>
                                     </div>
                                     <div style="font-size:10px; margin-top:2px; display:flex; gap:8px; align-items:center;">
-                                        <div>${trophyHtml}</div>
                                         <button class="avatar-action" onclick="game.openAvatarPicker()">更换头像</button>
+                                        <button class="avatar-action" onclick="game.toggleBgm()">${this.bgmEnabled ? '关闭音乐' : '开启音乐'}</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="season-mini">
-                                <div class="row">
+                                <div class="row top">
                                     <span class="season">🏆 S${this.player.seasonNo || 1}</span>
+                                    <div class="mid"><span class="champ">🏆×${trophyCount}</span></div>
                                     <span>胜率 <span style="color:${rate>=40?'#2ecc71':'#e74c3c'}">${rate}%</span></span>
                                 </div>
                                 <div class="bar"><div style="width:${Math.min(100, (races/8)*100)}%"></div></div>
@@ -2792,7 +3273,8 @@
                             </div>
                         </div>
                         <div class="stable-hint" style="margin-top:6px;">
-                            <div class="stable-hint-track" id="stable-hint-track">${this.renderHintsHtml()}</div>
+                            <span class="shop-chip" onclick="game.openTrophyShop()">🛒 名马商店</span>
+                            <div class="stable-hint-text" id="stable-hint-text">${this.escapeHtml(this.getHintText())}</div>
                         </div>
                     </div>
                     <div id="horse-detail-wrap" class="stable-panel">
@@ -2862,13 +3344,21 @@
                         const spriteSetKey = (h.spriteSet || SpriteSet.Horse);
                         const codexStars = Number((this.player.spriteCodex && this.player.spriteCodex[spriteSetKey]) || 0) || 0;
                         const codexBonusPct = codexStars * 3;
+                        const codexMult = 1 + codexStars * 0.03;
                         const baseEndurance = Number(h.endurance) || 1.0;
                         const activeTypes = new Set((previewActives || []).map(g => g && g.type).filter(Boolean));
                         let enduranceBonus = 0;
                         if (activeTypes.has('持久')) enduranceBonus += 0.25;
                         if (activeTypes.has('坚韧')) enduranceBonus += 0.15;
                         if (activeTypes.has('深息')) enduranceBonus += 0.10;
-                        const enduranceEff = baseEndurance * (1 + enduranceBonus);
+                        const enduranceEff = (baseEndurance * codexMult) * (1 + enduranceBonus);
+                        const rareSlots = (previewActives || []).reduce((n, g) => n + (g && g.quality === '稀有' ? 1 : 0), 0);
+                        const rarePct = rareSlots * 3;
+                        const baseSpeedWithRare = (typeof h.baseSpeed === 'number')
+                            ? Math.round(h.baseSpeed * codexMult * (1 + rareSlots * 0.03))
+                            : '-';
+                        const staminaEff = (typeof h.stamina === 'number') ? Math.round(h.stamina * codexMult) : (h.stamina ?? '-');
+                        const accelEff = (typeof h.accel === 'number') ? Number((h.accel * codexMult).toFixed(2)) : (h.accel ?? '-');
                         html += `
                             <div class="horse-card selected">
                                 <div class="card-skills">
@@ -2879,11 +3369,11 @@
                                     <div class="card-stats">
                                         <div class="stat-line"><span>稀有</span><strong>${this.escapeHtml(h.quality)}</strong></div>
                                         <div class="stat-line"><span>寿命</span><strong>${h.lifespan}/${h.maxLifespan}</strong></div>
-                                        <div class="stat-line"><span>体力</span><strong>${h.stamina ?? '-'}</strong></div>
+                                        <div class="stat-line"><span>体力</span><strong>${staminaEff}</strong></div>
                                         <div class="stat-line"><span>耐力</span><strong>${enduranceEff.toFixed(2)}x</strong></div>
-                                        <div class="stat-line"><span>基速</span><strong>${(typeof h.baseSpeed === 'number') ? Math.round(h.baseSpeed) : '-'}</strong></div>
-                                        <div class="stat-line"><span>加速</span><strong>${h.accel ?? '-'}</strong></div>
-                                        <div class="stat-line"><span>图鉴</span><strong>${codexStars}★ (+${codexBonusPct}%)</strong></div>
+                                        <div class="stat-line"><span>基速</span><strong>${baseSpeedWithRare}${rareSlots > 0 ? ` (+${rarePct}%)` : ''}</strong></div>
+                                        <div class="stat-line"><span>加速</span><strong>${accelEff}</strong></div>
+                                        <div class="stat-line"><span>图鉴</span><strong>${codexStars}★ (+${codexBonusPct}%全属性)</strong></div>
                                     </div>
                                     <div class="card-portrait">
                                         <div class="idle-horse" data-sprite-set="${this.escapeHtml(spriteSetKey)}" data-idle-horse="1"></div>
@@ -2897,8 +3387,7 @@
                 html += `</div>`;
                 infoPanel.innerHTML = html;
                 this.startStableIdleAnim(infoPanel);
-                const hintTrack = infoPanel.querySelector('#stable-hint-track');
-                if (hintTrack) hintTrack.scrollLeft = hintTrack.scrollWidth;
+                const hintText = infoPanel.querySelector('#stable-hint-text');
 
                 const list = p && Array.isArray(p.horses) ? p.horses : [];
                 const pageSize = this.stablePageSize || 4;
@@ -3269,6 +3758,7 @@
             }
 
             async startRace() {
+                this.tryStartBgm();
                 if (this.player.seasonRaces >= 8) {
                     alert("本赛季已结束（8场）！请点击上方【参加选秀】进入选秀大会开启新赛季。");
                     return;
@@ -3287,11 +3777,21 @@
                     return;
                 }
 
-                await this.ensureHorseRunFramesReady();
-                await this.ensureBurstFramesReady();
-                await this.ensureJifengFramesReady();
-                await this.ensureLanyingFramesReady();
-                await this.ensureLieyanFramesReady();
+                const btn = document.getElementById('btn-primary-action');
+                if (btn) btn.disabled = true;
+                this.openSceneTransition('加载地图', '正在准备赛道...');
+                this.selectRandomScene();
+                const sceneReady = this.prepareSceneTile();
+                const assetsReady = Promise.all([
+                    this.ensureHorseRunFramesReady(),
+                    this.ensureBurstFramesReady(),
+                    this.ensureJifengFramesReady(),
+                    this.ensureLanyingFramesReady(),
+                    this.ensureLieyanFramesReady()
+                ]);
+                await Promise.all([sceneReady, assetsReady, new Promise(r => setTimeout(r, 260))]);
+                this.setSceneTransitionFadeMode(true);
+                await this.waitFrames(1);
 
                 // 切换到比赛模式
                 document.getElementById('game-container').classList.add('racing-mode');
@@ -3304,6 +3804,7 @@
 
                 document.getElementById('lobby-panel').style.display = 'none';
                 document.getElementById('status-label').style.display = 'none';
+                if (btn) btn.disabled = false;
 
                 // 生成马匹：一共3组，每组6匹，共18匹
                 this.allGroups = [];
@@ -3354,6 +3855,10 @@
                 
                 // 添加跑道分隔线 (横向)
                 track.innerHTML = '';
+                const finishLine = document.createElement('div');
+                finishLine.className = 'finish-line';
+                finishLine.style.left = (50 + 2000) + 'px';
+                track.appendChild(finishLine);
                 // 跑道总高度约 667 - 250 = 417px
                 // 5条跑道，每条约 80px
                 
@@ -3440,8 +3945,16 @@
                      data.activeGenes = activeGenes;
                      const isPlayerOwned = Array.isArray(this.player.horses) && this.player.horses.some(h => h && h.id === data.id);
                      const baseSpeedEff = this.computeSpeedWithGenes(data.baseSpeed, activeGenes, data.genes, true, { spriteSet: (data.spriteSet || SpriteSet.Horse), applyCodex: isPlayerOwned });
-                     const staminaMax = Number(data.stamina) || 70;
-                     const enduranceBase = Number(data.endurance) || 1.0;
+                     let codexMult = 1;
+                     if (isPlayerOwned) {
+                        if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
+                        const key = (data.spriteSet || SpriteSet.Horse);
+                        const stars = Number(this.player.spriteCodex[key]) || 0;
+                        codexMult = 1 + stars * 0.03;
+                     }
+                     const staminaMax = (Number(data.stamina) || 70) * codexMult;
+                     const enduranceBase = (Number(data.endurance) || 1.0) * codexMult;
+                     const accelEff = (Number(data.accel) || 0.8) * codexMult;
 
                      this.horses.push({ 
                          el, 
@@ -3454,6 +3967,7 @@
                         staminaMax,
                         staminaNow: staminaMax,
                         enduranceBase,
+                        accelEff,
                         boostCooldown: 0,
                         boostMult: 0,
                          frameIndex: startFrame,
@@ -3488,6 +4002,11 @@
                 track.style.left = '0px'; // 横向重置
                 track.style.top = '0px';
 
+                await this.waitFrames(2);
+                const trackContainer = document.getElementById('track-container');
+                if (trackContainer) await this.waitTransitionEnd(trackContainer, 'top', 900);
+                await this.closeSceneTransition();
+                await this.waitFrames(1);
                 this.racing = true;
                 requestAnimationFrame(this.loop.bind(this));
             }
@@ -3643,7 +4162,7 @@
                     const staminaMax = Number(h.staminaMax) || 70;
                     const staminaNow = Number(h.staminaNow);
                     const baseEndurance = Number(h.enduranceBase) || 1.0;
-                    const accelStat = Number(h.data && h.data.accel) || 0.8;
+                    const accelStat = Number(h.accelEff) || (Number(h.data && h.data.accel) || 0.8);
                     let enduranceBonus = 0;
                     if (activeTypes.has('持久')) enduranceBonus += 0.25;
                     if (activeTypes.has('坚韧')) enduranceBonus += 0.15;
