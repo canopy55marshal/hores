@@ -454,6 +454,84 @@
             height: 78px;
             --idle-scale: 1.5;
         }
+        #market-target-preview,
+        #market-my-preview {
+            min-height: 124px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+        #market-target-preview {
+            transform: translateX(-12px);
+        }
+        #market-panel #market-target-preview .idle-horse {
+            --idle-scale: 1.22;
+        }
+        .market-side-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .market-side-name {
+            font-size: 12px;
+            font-weight: 900;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .market-side-sub {
+            font-size: 10px;
+            color: #bdc3c7;
+            margin-top: -4px;
+        }
+        .market-chip-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .market-chip-names {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 170px;
+        }
+        .market-chip-name {
+            font-size: 11px;
+            font-weight: 900;
+            color: #ecf0f1;
+            max-width: 90px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+        }
+        #market-my-preview .idle-horse {
+            width: 54px;
+            height: 54px;
+            --idle-scale: 1.2;
+        }
+        #market-my-preview .idle-horse + .idle-horse {
+            margin-left: -18px;
+        }
+        .market-chip-more {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: -12px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: #ecf0f1;
+            font-size: 11px;
+            font-weight: 900;
+            backdrop-filter: blur(2px);
+        }
         .idle-horse[data-sprite-set="horse"] {
             --idle-scale: 1.65;
         }
@@ -736,6 +814,45 @@
         /* UI 操作层 */
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
         #ui-layer * { pointer-events: auto; }
+
+        #trade-list .trade-team-item {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 160ms ease, box-shadow 160ms ease, border-color 160ms ease, transform 160ms ease;
+        }
+        #trade-list .trade-team-item:hover {
+            background: rgba(52, 152, 219, 0.10);
+        }
+        #trade-list .trade-team-item.selected {
+            background: rgba(46, 204, 113, 0.14);
+            border: 1px solid rgba(46, 204, 113, 0.65);
+            border-bottom: 1px solid rgba(46, 204, 113, 0.65);
+            border-radius: 8px;
+            margin: 6px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.35), 0 0 0 2px rgba(46, 204, 113, 0.16);
+            transform: translateY(-1px);
+        }
+        #trade-list .trade-team-item.selected + .trade-team-item {
+            border-top: 1px solid #333;
+        }
+        #trade-list .trade-select-indicator {
+            font-size: 11px;
+            color: #2ecc71;
+            font-weight: 900;
+            opacity: 0;
+            transform: translateX(6px);
+            transition: opacity 180ms ease, transform 180ms ease;
+            letter-spacing: 0.5px;
+        }
+        #trade-list .trade-team-item.selected .trade-select-indicator {
+            opacity: 1;
+            transform: translateX(0);
+        }
         
         /* 结算面板 */
         #result-panel {
@@ -1143,6 +1260,134 @@
             scrollbar-width: none;
         }
         .draft-map-grid::-webkit-scrollbar { display: none; }
+
+        .draft-info {
+            margin-top: 10px;
+            background: rgba(0,0,0,0.14);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .draft-info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            align-items: start;
+        }
+        .draft-kv {
+            display: grid;
+            gap: 6px;
+            align-content: start;
+        }
+        .draft-kv .label {
+            font-size: 11px;
+            color: #95a5a6;
+        }
+        .draft-kv .value {
+            font-size: 18px;
+            font-weight: 900;
+            color: #ecf0f1;
+        }
+        .draft-kv .value strong {
+            color: #f1c40f;
+        }
+        .draft-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        #draft-selected-preview {
+            width: 140px;
+            height: 86px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(0,0,0,0.10);
+            overflow: hidden;
+        }
+        #draft-selected-preview .idle-horse {
+            width: 86px;
+            height: 86px;
+            --idle-scale: 1.65;
+        }
+        .draft-selected .idle-horse {
+            width: 74px;
+            height: 74px;
+            --idle-scale: 1.4;
+        }
+        .draft-selected .quality {
+            font-size: 12px;
+            font-weight: 900;
+            color: #bdc3c7;
+        }
+        .draft-skill-title {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #95a5a6;
+            text-align: left;
+        }
+        .draft-skill-tags {
+            margin-top: 6px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-auto-rows: 18px;
+            gap: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 40px;
+        }
+        #draft-skill-pool:empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+        #draft-skill-pool:empty::before {
+            content: '技能池预留区域';
+        }
+
+        #codex-panel { z-index: 120; }
+        #draft-actions {
+            width: 100%;
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 0 12px 6px;
+            box-sizing: border-box;
+            margin-top: 6px;
+        }
+        #draft-actions .draft-action-btn {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border-radius: 14px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            line-height: 1.1;
+        }
+        #draft-actions .lobby-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        #draft-actions .lobby-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: #ecf0f1;
+        }
 
         .reforge-container {
             width: 90%;
@@ -1657,15 +1902,41 @@
 
                 <div id="draft-result" class="draft-result">
                     <div style="font-size:18px; color:#2ecc71; margin-bottom:10px;">🎉 获得 <span id="draft-pick-no" style="color:#f1c40f; font-weight:bold;"></span> 顺位选择权</div>
-                    <p style="font-size:12px; color:#bdc3c7;">请从下方待选新秀中选择一匹：</p>
-                    <div id="draft-pool-container" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div>
-                    
-                    <!-- 将操作按钮移动到展示区内部底部 -->
-                    <div style="margin-top: 20px; border-top: 1px solid #7f8c8d; padding-top: 15px;">
-                         <button id="btn-close-draft" class="btn btn-blue" style="display:none;" onclick="game.closeDraft()">开启新赛季</button>
-                         <button id="btn-trade-new-horse" class="btn btn-blue" style="display:none; background:#e67e22;" onclick="game.openHorseTrade()">💰 出售新马</button>
-                         <button id="btn-market-trade" class="btn btn-blue" style="display:none; background:#9b59b6;" onclick="game.openMarket()">🔄 球员交易市场</button>
+                    <div class="draft-info">
+                        <div class="draft-info-row">
+                            <div class="draft-kv">
+                                <div class="label">你的种子</div>
+                                <div class="value"><strong id="draft-my-seed-val">-</strong></div>
+                                <div class="label">最终获得的顺位</div>
+                                <div class="value"><strong id="draft-final-pick-val">-</strong></div>
+                            </div>
+                            <div class="draft-selected">
+                                <div id="draft-selected-preview"></div>
+                                <div class="quality">稀有等级：<span id="draft-selected-quality">未选择</span></div>
+                            </div>
+                        </div>
+                        <div class="draft-skill-title">对应技能池</div>
+                        <div id="draft-skill-pool" class="draft-skill-tags"></div>
                     </div>
+                    <div id="draft-pool-container" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:10px;"></div>
+                </div>
+                <div id="draft-actions">
+                    <button id="btn-close-draft" class="btn btn-blue draft-action-btn" style="display:none;" onclick="game.closeDraft()">
+                        <div class="lobby-icon">🏁</div>
+                        <div class="lobby-text">开启赛季</div>
+                    </button>
+                    <button id="btn-trade-new-horse" class="btn btn-blue draft-action-btn" style="display:none; background:#e67e22;" onclick="game.openHorseTrade()">
+                        <div class="lobby-icon">💰</div>
+                        <div class="lobby-text">出售新马</div>
+                    </button>
+                    <button id="btn-market-trade" class="btn btn-blue draft-action-btn" style="display:none; background:#9b59b6;" onclick="game.openMarket()">
+                        <div class="lobby-icon">🔄</div>
+                        <div class="lobby-text">交易市场</div>
+                    </button>
+                    <button id="btn-draft-codex" class="btn btn-blue draft-action-btn" style="display:none; background:#2980b9;" onclick="game.openCodex()">
+                        <div class="lobby-icon">➕</div>
+                        <div class="lobby-text">造型图鉴</div>
+                    </button>
                 </div>
                 <button id="btn-start-draft" class="btn btn-green" onclick="game.startDraft()">开始抽签</button>
             </div>
@@ -1723,14 +1994,15 @@
                  
                  <!-- 交易计算区 -->
                  <div style="background:#34495e; padding:15px; border-radius:8px; text-align:center;">
-                    <div id="market-target-preview" style="display:flex; justify-content:center; margin-bottom:10px;"></div>
                      <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
                          <div style="text-align:center;">
+                             <div id="market-target-preview"></div>
                              <div style="font-size:12px; color:#95a5a6;">对方价值</div>
                              <div id="market-target-val" style="font-size:24px; color:#e74c3c; font-weight:bold;">0</div>
                          </div>
                          <div style="font-size:20px; color:#bdc3c7;">VS</div>
                          <div style="text-align:center;">
+                             <div id="market-my-preview"></div>
                              <div style="font-size:12px; color:#95a5a6;">我方价值</div>
                              <div id="market-my-val" style="font-size:24px; color:#2ecc71; font-weight:bold;">0</div>
                          </div>
@@ -2976,6 +3248,13 @@
 
             openCodex() {
                 const panel = document.getElementById('codex-panel');
+                const draftPanel = document.getElementById('draft-panel');
+                const wasDraftOpen = !!(draftPanel && draftPanel.style && draftPanel.style.display === 'flex');
+                this._returnToDraftAfterCodex = wasDraftOpen;
+                if (wasDraftOpen) {
+                    draftPanel.style.display = 'none';
+                    this.stopDraftPreviewIdleAnim();
+                }
                 if (panel) panel.style.display = 'flex';
                 this.renderCodex();
             }
@@ -2983,6 +3262,13 @@
             closeCodex() {
                 const panel = document.getElementById('codex-panel');
                 if (panel) panel.style.display = 'none';
+                if (this._returnToDraftAfterCodex) {
+                    const draftPanel = document.getElementById('draft-panel');
+                    if (draftPanel) draftPanel.style.display = 'flex';
+                    const el = document.querySelector('#draft-selected-preview .idle-horse');
+                    if (el) this.startDraftPreviewIdleAnim(el.dataset ? el.dataset.spriteSet : null);
+                }
+                this._returnToDraftAfterCodex = false;
             }
 
             renderCodex() {
@@ -3241,6 +3527,42 @@
                     }, 80);
                 });
             }
+
+            stopDraftPreviewIdleAnim() {
+                if (this.draftPreviewAnimTimer) {
+                    clearInterval(this.draftPreviewAnimTimer);
+                    this.draftPreviewAnimTimer = null;
+                }
+                this.draftPreviewToken = (this.draftPreviewToken || 0) + 1;
+            }
+
+            startDraftPreviewIdleAnim(spriteSetKey) {
+                this.stopDraftPreviewIdleAnim();
+                if (this.racing) return;
+                const panel = document.getElementById('draft-panel');
+                if (!panel || !(panel.style && panel.style.display === 'flex')) return;
+                const el = document.querySelector('#draft-selected-preview .idle-horse');
+                if (!el) return;
+                const key = spriteSetKey || (el && el.dataset ? el.dataset.spriteSet : null) || SpriteSet.Horse;
+                const token = (this.draftPreviewToken || 0) + 1;
+                this.draftPreviewToken = token;
+                this.ensureHorseRunFramesReady().then(() => {
+                    if (token !== this.draftPreviewToken) return;
+                    if (this.racing) return;
+                    let frameIndex = 1;
+                    const applyFrame = () => {
+                        const node = document.querySelector('#draft-selected-preview .idle-horse');
+                        if (!node) return;
+                        node.style.backgroundImage = this.horseRunFrame(frameIndex, key);
+                    };
+                    applyFrame();
+                    this.draftPreviewAnimTimer = setInterval(() => {
+                        frameIndex++;
+                        if (frameIndex > 20) frameIndex = 1;
+                        applyFrame();
+                    }, 80);
+                });
+            }
             
             updateUI() {
                 const p = this.player;
@@ -3428,7 +3750,11 @@
 
                 html += `</div>`;
                 infoPanel.innerHTML = html;
-                this.startStableIdleAnim(infoPanel);
+                const codexPanel = document.getElementById('codex-panel');
+                const marketPanel = document.getElementById('market-panel');
+                if (codexPanel && codexPanel.style && codexPanel.style.display === 'flex') this.startStableIdleAnim(codexPanel);
+                else if (marketPanel && marketPanel.style && marketPanel.style.display === 'flex') this.startStableIdleAnim(marketPanel);
+                else this.startStableIdleAnim(infoPanel);
                 const hintText = infoPanel.querySelector('#stable-hint-text');
 
                 const list = p && Array.isArray(p.horses) ? p.horses : [];
@@ -3857,6 +4183,7 @@
                 // 生成马匹：一共3组，每组6匹，共18匹
                 this.allGroups = [];
                 this.horses = []; // 仅存储当前视觉展示组（玩家所在组）
+                this.finishCounter = 0;
                 
                 // 1. 准备所有参赛马匹 (1 Player + 17 AI)
                 const allParticipants = [myHorse];
@@ -4012,6 +4339,8 @@
                          distance: 0, 
                          baseSpeedEff,
                         speed: baseSpeedEff,
+                        finished: false,
+                        finishPlace: null,
                         staminaMax,
                         staminaNow: staminaMax,
                         enduranceBase,
@@ -4127,6 +4456,7 @@
                 let finishedCount = 0;
                 let playerHorse = this.horses[0];
                 const uiLayer = document.getElementById('ui-layer');
+                const finishDist = 2000;
                 
                 this.horses.forEach(h => {
                     const prevSpeed = h._prevSpeed ?? h.speed;
@@ -4217,7 +4547,7 @@
                     if (activeTypes.has('深息')) enduranceBonus += 0.10 + 0.20 * Math.min(1, h.distance / 2000);
                     const enduranceEff = baseEndurance * (1 + enduranceBonus);
 
-                    if (h.distance < 2000) {
+                    if (!h.finished && h.distance < finishDist) {
                         if (h.boostCooldown && h.boostCooldown > 0) h.boostCooldown--;
 
                         const currStamina = Number.isFinite(staminaNow) ? staminaNow : staminaMax;
@@ -4251,14 +4581,17 @@
                         h.speed = h.baseSpeedEff;
                     }
 
-                    // 即使已经到达终点，也要继续播放动画，直到比赛彻底结束
-                    if (h.distance < 2000) { 
-                        h.distance += h.speed * 0.05; 
-                        h.el.style.left = Math.round(50 + h.distance) + 'px'; // 横向移动
-                    } else {
-                        // 到达终点后，可以继续跑一段，或者保持原地跑动动画
-                        finishedCount++;
+                    if (!h.finished) {
+                        h.distance += h.speed * 0.05;
+                        if (h.distance >= finishDist) {
+                            h.distance = finishDist;
+                            h.finished = true;
+                            h.finishPlace = (Number(this.finishCounter) || 0) + 1;
+                            this.finishCounter = h.finishPlace;
+                        }
+                        h.el.style.left = Math.round(50 + h.distance) + 'px';
                     }
+                    if (h.finished) finishedCount++;
 
                     if (h.boostTimer && h.boostTimer > 0) {
                         h.boostTimer--;
@@ -4274,7 +4607,7 @@
                     if (h.burstCooldown && h.burstCooldown > 0) h.burstCooldown--;
                     const q = h.data && h.data.quality;
                     const isRarePlus = q === '稀有' || q === '史诗' || q === '神兽';
-                    if (isRarePlus && h.distance < 2000 && h.burstCooldown <= 0 && (h.boostTimer > 0 || accelUp)) {
+                    if (isRarePlus && !h.finished && h.distance < finishDist && h.burstCooldown <= 0 && (h.boostTimer > 0 || accelUp)) {
                         const intensity = 1 + (h.boostTimer ? Math.min(0.6, h.boostTimer / 100) : 0);
                         this.spawnBurst(h, intensity);
                         h.burstCooldown = 10;
@@ -4283,7 +4616,7 @@
                     if (h.afterimageTimer && h.afterimageTimer > 0) {
                         h.afterimageTimer--;
                         h.ghostCooldown = Math.max(0, (h.ghostCooldown || 0) - 1);
-                        if (h.ghostCooldown <= 0 && h.distance < 2000 && (h.distance - prevDist) > 0) {
+                        if (h.ghostCooldown <= 0 && !h.finished && h.distance < finishDist && (h.distance - prevDist) > 0) {
                             const intensity = Math.min(1.6, 0.8 + (h.afterimageTimer / 22));
                             this.spawnGhost(h, intensity);
                             h.ghostCooldown = 3;
@@ -4434,7 +4767,11 @@
 
                 });
 
-                const leader = this.horses.reduce((prev, curr) => (curr.distance > prev.distance) ? curr : prev, this.horses[0]);
+                const leader = this.horses.reduce((prev, curr) => {
+                    const prevKey = prev.finished ? (1000000 - (Number(prev.finishPlace) || 999999)) : (Number(prev.distance) || 0);
+                    const currKey = curr.finished ? (1000000 - (Number(curr.finishPlace) || 999999)) : (Number(curr.distance) || 0);
+                    return currKey > prevKey ? curr : prev;
+                }, this.horses[0]);
                 const cameraX = Math.max(0, 50 + leader.distance - 200);
                 const trackLayer = document.getElementById('track-layer');
                 trackLayer.style.transform = `translateX(${-cameraX}px)`;
@@ -4469,7 +4806,14 @@
 
             endRace() {
                 // 1. 结算当前视觉组 (Player Group)
-                this.horses.sort((a, b) => b.speed - a.speed);
+                this.horses.sort((a, b) => {
+                    const ap = Number(a.finishPlace) || 999999;
+                    const bp = Number(b.finishPlace) || 999999;
+                    if (ap !== bp) return ap - bp;
+                    const ad = Number(a.distance) || 0;
+                    const bd = Number(b.distance) || 0;
+                    return bd - ad;
+                });
                 const visualWinner = this.horses[0];
                 const raceHorseId = this.currentRaceHorseId || this.selectedHorseId;
                 const myHorseRankInGroup = this.horses.findIndex(h => h.data.id === raceHorseId) + 1;
@@ -4616,6 +4960,21 @@
                 document.getElementById('draft-panel').style.display = 'flex';
                 
                 this.currentDraftSeed = seed;
+                const seedEl = document.getElementById('draft-my-seed-val');
+                const pickEl = document.getElementById('draft-final-pick-val');
+                if (seedEl) seedEl.innerText = String(seed);
+                if (pickEl) pickEl.innerText = '-';
+                const selPrev = document.getElementById('draft-selected-preview');
+                const selQual = document.getElementById('draft-selected-quality');
+                const skillPool = document.getElementById('draft-skill-pool');
+                if (selPrev) selPrev.innerHTML = '<div style="color:#95a5a6; font-size:12px;">未选择</div>';
+                if (selQual) selQual.innerText = '未选择';
+                if (skillPool) skillPool.innerHTML = '';
+                const actions = document.getElementById('draft-actions');
+                if (actions) actions.style.display = 'none';
+                const codexBtn = document.getElementById('btn-draft-codex');
+                if (codexBtn) codexBtn.style.display = 'none';
+                this.stopDraftPreviewIdleAnim();
             }
 
             openTrade() {
@@ -4663,26 +5022,30 @@
                 
                 aiTeams.forEach((ai, idx) => {
                     const item = document.createElement('div');
-                    item.style.padding = '10px';
-                    item.style.borderBottom = '1px solid #333';
-                    item.style.display = 'flex';
-                    item.style.justifyContent = 'space-between';
-                    item.style.alignItems = 'center';
-                    item.style.cursor = 'pointer';
+                    item.className = 'trade-team-item';
+                    item.dataset.seed = String(ai.seed);
                     item.innerHTML = `
                         <div>
                             <div style="color:#ecf0f1; font-weight:bold;">${ai.name}</div>
                             <div style="font-size:10px; color:#7f8c8d;">${ai.desc}</div>
                         </div>
-                        <div style="color:#f1c40f; font-weight:bold;">种子 ${ai.seed}</div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                            <div style="color:#f1c40f; font-weight:bold;">种子 ${ai.seed}</div>
+                            <div class="trade-select-indicator">✓ 已选</div>
+                        </div>
                     `;
-                    item.onclick = () => this.selectTradeTarget(ai);
+                    item.onclick = () => this.selectTradeTarget(ai, item);
                     list.appendChild(item);
                 });
             }
 
-            selectTradeTarget(ai) {
+            selectTradeTarget(ai, el) {
                 this.selectedTradeTarget = ai;
+                const list = document.getElementById('trade-list');
+                if (list) {
+                    Array.from(list.children).forEach(node => node && node.classList && node.classList.remove('selected'));
+                    if (el && el.classList) el.classList.add('selected');
+                }
                 document.getElementById('trade-target-tier').innerText = `种子 ${ai.seed}`;
                 document.getElementById('trade-action-area').style.display = 'block';
                 document.getElementById('trade-slider').value = 0;
@@ -4798,20 +5161,14 @@
                         <div class="draft-pill-row">
                             ${finalOrder.map((s, idx) => `<div class="draft-pill ${idx < 4 ? 'is-top4' : ''}">${idx + 1}: 种子${s}</div>`).join('')}
                         </div>
-                        <details class="draft-map">
-                            <summary>查看种子→顺位映射</summary>
-                            <div class="draft-map-grid">
-                                ${Array.from({length:14}, (_,i)=>i+1).map(s => `<div class="draft-pill">种子${s}→第${seedToPick[s]}顺位</div>`).join('')}
-                            </div>
-                        </details>
                     `;
                     
                     document.getElementById('draft-pick-no').innerText = `第 ${playerPick}`;
-                    statusEl.innerHTML = `
-                        ${lotteryInfo}
-                        <div style="margin-top:10px;">你的种子: ${playerSeed}</div>
-                        <div style="color:#f1c40f; font-size:20px; font-weight:bold;">最终获得: 第 ${playerPick} 顺位</div>
-                    `;
+                    statusEl.innerHTML = `${lotteryInfo}`;
+                    const seedEl = document.getElementById('draft-my-seed-val');
+                    const pickEl = document.getElementById('draft-final-pick-val');
+                    if (seedEl) seedEl.innerText = String(playerSeed);
+                    if (pickEl) pickEl.innerText = `第 ${playerPick} 顺位`;
                     
                     this.generateDraftPool();
                     document.getElementById('draft-result').style.display = 'block';
@@ -4859,10 +5216,26 @@
                         name: name,
                         color: quality==='神兽'?'#e74c3c':(quality==='史诗'?'#9b59b6':(quality==='稀有'?'#f1c40f':'#ecf0f1')),
                         quality: quality,
-                        // 评级逻辑：基于排名区间
-                        rating: this.getRatingByRank(i, quality),
-                        data: this.createDraftHorseData(quality, name)
+                        data: this.createDraftHorseData(quality, name),
+                        rating: 'C'
                     };
+                    const genes = horse.data && Array.isArray(horse.data.genes) ? horse.data.genes : [];
+                    const totalSkills = genes.length;
+                    const rareSkills = genes.filter(g => g && g.quality === '稀有').length;
+                    const isRareOrAbove = (quality === '稀有' || quality === '史诗' || quality === '神兽');
+                    if (isRareOrAbove) {
+                        horse.rating = (rareSkills >= 2)
+                            ? 'S'
+                            : (rareSkills === 1)
+                                ? 'A'
+                                : (totalSkills >= 9 ? 'B' : 'C');
+                    } else {
+                        horse.rating = (rareSkills >= 3)
+                            ? 'S'
+                            : (rareSkills === 2)
+                                ? 'A'
+                                : (totalSkills >= 9 ? 'B' : 'C');
+                    }
                     this.draftPool.push(horse);
                 }
                 
@@ -4996,14 +5369,19 @@
                                 ? (Math.random() < 0.5 ? SpriteSet.Rare : SpriteSet.Rare2)
                                 : (Math.random() < 0.35 ? SpriteSet.Base : SpriteSet.Horse)))
                 };
-                // 随机给点技能 (选秀马至少激活5个技能)
-                const slots = horse.geneSlots;
-                const pool = Object.values(GeneType).map(t => ({type:t, quality:'普通'}));
-                // 确保激活数量不超槽位数，且至少5个(因为上面强制slots>=5了)
-                horse.genes = this.pickStartGenes(pool, Math.min(slots, Math.max(5, Math.floor(slots/2))));
-                if (quality === '神兽' || quality === '稀有') {
-                    if (horse.genes.length > 0) horse.genes[0].quality = '稀有';
+                const allTypes = Object.values(GeneType);
+                const totalCount = 5 + Math.floor(Math.random() * 6);
+                const isRareOrAbove = (quality === '稀有' || quality === '史诗' || quality === '神兽');
+                const minRare = isRareOrAbove ? 1 : 0;
+                const maxRare = Math.min(3, totalCount);
+                const rareCount = minRare + Math.floor(Math.random() * (maxRare - minRare + 1));
+                const picked = [...allTypes].sort(() => 0.5 - Math.random()).slice(0, Math.min(totalCount, allTypes.length));
+                const genes = picked.map(t => ({ type: t, quality: '普通' }));
+                if (rareCount > 0) {
+                    const idxs = Array.from({length: genes.length}, (_, i) => i).sort(() => 0.5 - Math.random()).slice(0, rareCount);
+                    idxs.forEach(i => { if (genes[i]) genes[i].quality = '稀有'; });
                 }
+                horse.genes = genes;
                 this.ensureLockedStartGenes(horse);
                 const speedSlots = this.slotCountForHorse(horse);
                 const active = (horse.lockedStartGenes || []).slice(0, speedSlots);
@@ -5026,6 +5404,25 @@
                 const cards = document.querySelectorAll('.draft-card');
                 cards.forEach(c => c.style.border = '1px solid #555');
                 el.style.border = '2px solid #2ecc71';
+                const selPrev = document.getElementById('draft-selected-preview');
+                const selQual = document.getElementById('draft-selected-quality');
+                const skillPool = document.getElementById('draft-skill-pool');
+                if (selPrev) {
+                    const spriteSet = (horseObj && horseObj.data && horseObj.data.spriteSet) ? horseObj.data.spriteSet : SpriteSet.Horse;
+                    selPrev.innerHTML = `<div class="idle-horse" data-sprite-set="${this.escapeHtml(spriteSet)}" data-idle-horse="1"></div>`;
+                    const idleEl = selPrev.querySelector('.idle-horse');
+                    if (idleEl) idleEl.style.backgroundImage = this.horseRunFrame(1, spriteSet);
+                    this.startDraftPreviewIdleAnim(spriteSet);
+                }
+                if (selQual) selQual.innerText = this.escapeHtml(horseObj.quality || '普通');
+                if (skillPool) {
+                    const genes = (horseObj && horseObj.data && Array.isArray(horseObj.data.genes)) ? horseObj.data.genes : [];
+                    skillPool.innerHTML = genes.map(g => {
+                        const q = (g && g.quality) ? g.quality : '普通';
+                        const cls = q === '稀有' || q === '神兽' || q === '史诗' ? 'gene-rare' : 'gene-normal';
+                        return `<div class="gene-tag ${cls}" title="${this.escapeHtml(q)}">${this.escapeHtml(g && g.type ? g.type : '')}</div>`;
+                    }).join('');
+                }
                 
                 if (confirm(`确定选择评级为【${horseObj.rating}】的马匹吗？\n(技能将在入队后揭晓)`)) {
                     this.hasDrafted = true;
@@ -5053,18 +5450,15 @@
                     this.updateUI();
                     
                     // 显示结果
-                    document.getElementById('draft-pool-container').innerHTML = `
-                        <div style="text-align:center;">
-                            <h3 style="color:#2ecc71">🎉 签约成功！</h3>
-                            <p>真实资质: <span style="color:#f1c40f; font-weight:bold;">${newHorse.quality}</span></p>
-                            <p>已加入马厩，可在大厅查看详细属性。</p>
-                        </div>
-                    `;
+                    document.getElementById('draft-pool-container').innerHTML = '';
                     
                     // 显示下一步按钮
-                    document.getElementById('btn-close-draft').style.display = 'inline-block';
-                    document.getElementById('btn-trade-new-horse').style.display = 'inline-block';
-                    document.getElementById('btn-market-trade').style.display = 'inline-block';
+                    document.getElementById('btn-close-draft').style.display = 'flex';
+                    document.getElementById('btn-trade-new-horse').style.display = 'flex';
+                    document.getElementById('btn-market-trade').style.display = 'flex';
+                    document.getElementById('btn-draft-codex').style.display = 'flex';
+                    const actions = document.getElementById('draft-actions');
+                    if (actions) actions.style.display = 'grid';
                     
                     // 将剩余的选秀马匹加入 AI 马厩，使其可交易
                     this.draftPool.forEach(poolHorse => {
@@ -5161,6 +5555,7 @@
             closeDraft() {
                 this.hasDrafted = false;
                 this.draftedHorse = null;
+                this.stopDraftPreviewIdleAnim();
                 document.getElementById('draft-panel').style.display = 'none';
                 document.getElementById('btn-trade-new-horse').style.display = 'none'; // 隐藏按钮
                 document.getElementById('btn-market-trade').style.display = 'none'; // 隐藏按钮
@@ -5208,6 +5603,7 @@
                 document.getElementById('market-panel').style.display = 'flex';
                 this.selectedMarketTarget = null;
                 this.selectedMarketChips = new Set();
+                this.selectedMarketChipFocus = null;
                 this.renderMarket();
                 this.updateMarketCalc();
             }
@@ -5262,9 +5658,18 @@
                         if (this.selectedMarketChips.has(h)) {
                             this.selectedMarketChips.delete(h);
                             card.style.border = '1px solid #7f8c8d';
+                            if (this.selectedMarketChipFocus === h) {
+                                this.selectedMarketChipFocus = Array.from(this.selectedMarketChips)[0] || null;
+                            }
                         } else {
+                            if (this.selectedMarketChips.size >= 3) {
+                                const msg = document.getElementById('market-msg');
+                                if (msg) msg.innerHTML = '<span style="color:#e74c3c">最多只能选择 3 匹筹码马</span>';
+                                return;
+                            }
                             this.selectedMarketChips.add(h);
                             card.style.border = '2px solid #2ecc71';
+                            this.selectedMarketChipFocus = h;
                         }
                         this.updateMarketCalc();
                     };
@@ -5300,20 +5705,52 @@
                 if (targetPreview) {
                     if (this.selectedMarketTarget) {
                         const spriteSet = this.selectedMarketTarget.spriteSet || SpriteSet.Horse;
+                        const q = this.selectedMarketTarget.quality;
+                        const nameColor = q==='神兽'?'#e74c3c':(q==='史诗'?'#9b59b6':(q==='稀有'?'#f1c40f':'#ecf0f1'));
                         targetPreview.innerHTML = `
-                            <div style="display:flex; align-items:center; gap:10px;">
+                            <div class="market-side-preview">
                                 <div class="idle-horse market-idle-horse" data-sprite-set="${this.escapeHtml(spriteSet)}" data-idle-horse="1"></div>
-                                <div style="text-align:left;">
-                                    <div style="font-size:12px; font-weight:bold; color:${this.selectedMarketTarget.quality==='神兽'?'#e74c3c':(this.selectedMarketTarget.quality==='史诗'?'#9b59b6':(this.selectedMarketTarget.quality==='稀有'?'#f1c40f':'#ecf0f1'))}">${this.escapeHtml(this.selectedMarketTarget.name)}</div>
-                                    <div style="font-size:10px; color:#bdc3c7;">${this.escapeHtml(this.selectedMarketTarget.quality)}</div>
-                                </div>
+                                <div class="market-side-name" style="color:${nameColor}">${this.escapeHtml(this.selectedMarketTarget.name)}</div>
+                                <div class="market-side-sub">${this.escapeHtml(q)}</div>
                             </div>
                         `;
-                        this.startStableIdleAnim(targetPreview);
                     } else {
                         targetPreview.innerHTML = '<div style="color:#95a5a6; font-size:12px;">未选择目标马</div>';
                     }
                 }
+
+                const myPreview = document.getElementById('market-my-preview');
+                if (myPreview) {
+                    const chips = Array.from(this.selectedMarketChips || []);
+                    if (chips.length > 0) {
+                        const maxShow = 3;
+                        const show = chips.slice(0, maxShow);
+                        const more = chips.length - show.length;
+                        const namesHtml = show.map(h => {
+                            const name = h && h.name ? String(h.name) : '';
+                            const color = h && h.color ? String(h.color) : '#ecf0f1';
+                            return `<div class="market-chip-name" style="color:${this.escapeHtml(color)}">${this.escapeHtml(name)}</div>`;
+                        }).join('');
+                        const horsesHtml = show.map(h => {
+                            const spriteSet = (h && h.spriteSet) ? h.spriteSet : SpriteSet.Horse;
+                            return `<div class="idle-horse" data-sprite-set="${this.escapeHtml(spriteSet)}" data-idle-horse="1"></div>`;
+                        }).join('');
+                        myPreview.innerHTML = `
+                            <div class="market-side-preview">
+                                <div class="market-chip-preview">
+                                    ${horsesHtml}
+                                    ${more > 0 ? `<div class="market-chip-more">+${more}</div>` : ``}
+                                </div>
+                                <div class="market-chip-names">${namesHtml}</div>
+                                <div class="market-side-sub">已选筹码：${chips.length}匹</div>
+                            </div>
+                        `;
+                    } else {
+                        myPreview.innerHTML = '<div style="color:#95a5a6; font-size:12px;">未选择筹码马</div>';
+                    }
+                }
+                const marketPanel = document.getElementById('market-panel');
+                if (marketPanel) this.startStableIdleAnim(marketPanel);
                 
                 let myVal = 0;
                 this.selectedMarketChips.forEach(h => {
