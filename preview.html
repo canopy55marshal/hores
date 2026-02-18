@@ -246,9 +246,9 @@
             border-radius: 12px;
             margin: 0;
             padding: 6px;
-            height: 170px;
+            height: 200px;
             border: 1px solid rgba(231, 76, 60, 0.45);
-            background: rgba(44, 62, 80, 0.9);
+            background: #2c3e50;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.35);
             overflow: hidden;
             display: flex;
@@ -333,6 +333,7 @@
             box-sizing: border-box;
             gap: 8px;
             overflow: hidden;
+            align-items: stretch;
         }
 
         .card-skills {
@@ -391,17 +392,23 @@
             grid-area: side;
             border-radius: 10px;
             border: 1px solid rgba(241, 196, 15, 0.4);
-            background: rgba(44, 62, 80, 0.92);
+            background: #2c3e50;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.35);
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
         }
         .card-stats {
             padding: 6px 7px 4px;
             display: flex;
             flex-direction: column;
             gap: 2px;
+            flex: 1;
+            background: transparent;
+            box-sizing: border-box;
         }
         .stat-line {
             display: flex;
@@ -423,6 +430,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            background: transparent;
         }
         .card-portrait .idle-horse {
             width: 64px;
@@ -444,6 +452,13 @@
             --idle-scale: 1.5;
             transform: translateZ(0) scaleX(-1) scale(var(--idle-scale));
             filter: drop-shadow(0 2px 2px rgba(0,0,0,0.35));
+            backface-visibility: hidden;
+            will-change: background-image, transform;
+            contain: paint;
+            isolation: isolate;
+        }
+        #codex-panel .idle-horse {
+            filter: none;
         }
         .market-idle-horse {
             width: 78px;
@@ -681,6 +696,42 @@
             border-top: 1px dashed rgba(255,255,255,0.5);
         }
 
+        .track-marks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 86;
+            overflow: hidden;
+        }
+        .track-mark {
+            position: absolute;
+            width: 11px;
+            height: 8px;
+            opacity: var(--op, 0.40);
+            background-image:
+                radial-gradient(circle at 34% 42%, rgba(0,0,0,0.42) 0 42%, rgba(0,0,0,0) 44%),
+                radial-gradient(circle at 66% 42%, rgba(0,0,0,0.42) 0 42%, rgba(0,0,0,0) 44%),
+                radial-gradient(circle at 50% 78%, rgba(0,0,0,0.26) 0 34%, rgba(0,0,0,0) 36%);
+            transform: translateZ(0) rotate(var(--rot, 0deg)) scale(var(--s, 1));
+            animation: trackMarkFade 2.2s ease-out forwards;
+            will-change: opacity, transform;
+            backface-visibility: hidden;
+        }
+        .track-mark.circle {
+            width: 5px;
+            height: 5px;
+            background: rgba(0,0,0,0.14);
+            border-radius: 999px;
+            background-image: none;
+        }
+        @keyframes trackMarkFade {
+            0% { opacity: var(--op, 0.40); }
+            100% { opacity: 0; }
+        }
+
         .horse { 
             position: absolute; 
             width: 120px; 
@@ -707,7 +758,9 @@
             
             /* 镜像翻转：让马头朝右 */
             --race-scale: 1;
-            transform: translateZ(0) scaleX(-1) scale(var(--race-scale)); 
+            --race-x: 0px;
+            --race-y: 0px;
+            transform: translate3d(var(--race-x), var(--race-y), 0) scaleX(-1) scale(var(--race-scale)); 
             transform-origin: center;
         }
         .horse-ghost {
@@ -793,6 +846,23 @@
             transform: translateZ(0) scaleX(-1) scale(var(--race-scale));
             transform-origin: center;
             will-change: transform, background-image;
+            backface-visibility: hidden;
+        }
+        .horse-dust {
+            position: absolute;
+            width: 110px;
+            height: 70px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            opacity: 0.9;
+            filter: brightness(1.02) saturate(1.05);
+            z-index: 85;
+            --race-scale: 1;
+            transform: translateZ(0) scaleX(1) scale(var(--race-scale));
+            transform-origin: center;
+            will-change: transform, opacity, background-image, left, top;
             backface-visibility: hidden;
         }
         
@@ -2053,6 +2123,14 @@
             Destiny: '天命', Miracle: '奇迹', Shadow: '残影', Meteor: '流星', Legend: '传说'
         };
 
+        const allowedGeneTypesForQuality = (quality) => {
+            const q = String(quality || '');
+            let types = Object.values(GeneType);
+            if (q !== '神兽') types = types.filter(t => t !== '天命');
+            if (q !== '史诗' && q !== '神兽') types = types.filter(t => t !== '传说');
+            return types;
+        };
+
         const SpriteSet = {
             Horse: 'horse',
             Base: 'g',
@@ -2110,6 +2188,10 @@
                 'battleAttack_60001.png', 'battleAttack_60002.png', 'battleAttack_60003.png',
                 'battleAttack_60004.png', 'battleAttack_60005.png', 'battleAttack_60006.png'
             ]
+        };
+        const RuneEffectsAssets = {
+            dir: 'assets/effects/runeffects',
+            frames: ['1.png','2.png','3.png','4.png','5.png','6.png','7.png','8.png','9.png','10.png','11.png','12.png','13.png']
         };
 
         const NewYearGreetings = [
@@ -2330,7 +2412,7 @@
                 const slotsMap = { '普通': 3, '中级': 4, '高级': 5, '稀有': 6 };
                 const geneSlots = slotsMap[quality] || 3;
                 
-                const allTypes = Object.values(GeneType);
+                const allTypes = allowedGeneTypesForQuality(quality);
                 const poolCount = Math.max(1, Math.min(6, Math.floor(Math.random() * 6) + 1));
                 const shuffled = [...allTypes].sort(() => 0.5 - Math.random());
                 const chosen = shuffled.slice(0, poolCount);
@@ -2389,7 +2471,7 @@
                 
                 const count = horse.genes.length;
                 const newGenes = [];
-                const allTypes = Object.values(GeneType);
+                const allTypes = allowedGeneTypesForQuality(horse.quality);
                 // 洗牌
                 const shuffled = [...allTypes].sort(() => 0.5 - Math.random());
                 
@@ -2432,11 +2514,17 @@
                 this._sceneTilePromise = null;
                 this._preloadNextScenePromise = null;
                 this.idleAnimTimer = null;
+                this.idleAnimRaf = 0;
+                this.idleAnimLastTs = 0;
+                this.idleAnimAcc = 0;
+                this.idleAnimFrame = 1;
                 this.avatarDirPath = 'Test Friend Avatar';
                 this.avatarList = null;
                 this.horseRunFrameCss = null;
                 this.horseRunFramesReady = null;
                 this.horseRunImages = null;
+                this.horseRunFrameCounts = null;
+                this.idleLastFrameBySet = {};
                 this.burstFrameCss = null;
                 this.burstFramesReady = null;
                 this.burstImages = null;
@@ -2449,13 +2537,25 @@
                 this.lieyanFrameCss = null;
                 this.lieyanFramesReady = null;
                 this.lieyanImages = null;
+                this.runeffectsFrameCss = null;
+                this.runeffectsFramesReady = null;
+                this.runeffectsImages = null;
                 this.stableIdleToken = 0;
+                this.draftPreviewAnimTimer = null;
+                this.draftPreviewAnimRaf = 0;
+                this.draftPreviewLastTs = 0;
+                this.draftPreviewAcc = 0;
+                this.draftPreviewFrame = 1;
+                this.draftPreviewToken = 0;
+                this.codexToken = 0;
+                this.trackMarksEl = null;
+                this.trackMarksMax = 420;
 
                 if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
 
                 const baseHorse = this.player.horses.find(h => h && h.id === 'g1');
                 if (baseHorse && (!Array.isArray(baseHorse.genes) || baseHorse.genes.length === 0)) {
-                    const allTypes = Object.values(GeneType);
+                    const allTypes = allowedGeneTypesForQuality(baseHorse.quality);
                     const type = allTypes[Math.floor(Math.random() * allTypes.length)];
                     baseHorse.genes = [{ type, quality: '普通' }];
                 }
@@ -2468,6 +2568,7 @@
                 this.jifengFramesReady = this.preloadJifengFrames();
                 this.lanyingFramesReady = this.preloadLanyingFrames();
                 this.lieyanFramesReady = this.preloadLieyanFrames();
+                this.runeffectsFramesReady = this.preloadRuneEffectsFrames();
                 this.initBgm();
                 this.prepareSceneTile();
                 this.updateUI();
@@ -2811,7 +2912,24 @@
 
                 this.horseRunFrameCss = sets;
                 this.horseRunImages = images;
-                this.horseRunFramesReady = Promise.all(decodes).then(() => true);
+                this.horseRunFramesReady = Promise.all(decodes).then(() => {
+                    const counts = {};
+                    for (const [key, imgList] of Object.entries(images)) {
+                        let maxOk = 0;
+                        if (Array.isArray(imgList)) {
+                            for (let i = imgList.length - 1; i >= 1; i--) {
+                                const img = imgList[i];
+                                if (img && img.complete && img.naturalWidth > 0) {
+                                    maxOk = i;
+                                    break;
+                                }
+                            }
+                        }
+                        counts[key] = Math.max(1, maxOk || 0);
+                    }
+                    this.horseRunFrameCounts = counts;
+                    return true;
+                });
                 return this.horseRunFramesReady;
             }
 
@@ -2865,6 +2983,32 @@
                 this.jifengImages = { jifeng: imgList };
                 this.jifengFramesReady = Promise.all(decodes).then(() => true);
                 return this.jifengFramesReady;
+            }
+
+            preloadRuneEffectsFrames() {
+                if (this.runeffectsFrameCss && typeof this.runeffectsFrameCss === 'object') return this.runeffectsFramesReady || Promise.resolve(true);
+                const frameCount = RuneEffectsAssets.frames.length;
+                const list = new Array(frameCount + 1);
+                const imgList = new Array(frameCount + 1);
+                const decodes = [];
+                for (let i = 1; i <= frameCount; i++) {
+                    const url = `${RuneEffectsAssets.dir}/${RuneEffectsAssets.frames[i - 1]}`;
+                    list[i] = `url('${url}')`;
+                    const img = new Image();
+                    img.decoding = 'async';
+                    img.loading = 'eager';
+                    const ready = new Promise(resolve => {
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                    });
+                    img.src = url;
+                    imgList[i] = img;
+                    decodes.push(typeof img.decode === 'function' ? img.decode().then(() => true).catch(() => ready) : ready);
+                }
+                this.runeffectsFrameCss = { dust: list };
+                this.runeffectsImages = { dust: imgList };
+                this.runeffectsFramesReady = Promise.all(decodes).then(() => true);
+                return this.runeffectsFramesReady;
             }
 
             preloadLanyingFrames() {
@@ -2928,6 +3072,65 @@
                 return `url('${def.dir}/${def.file(idx)}')`;
             }
 
+            horseRunFrameCount(spriteSetKey) {
+                const key = (spriteSetKey && this.horseRunFrameCss && this.horseRunFrameCss[spriteSetKey]) ? spriteSetKey : SpriteSet.Horse;
+                const counts = this.horseRunFrameCounts;
+                const n = counts && counts[key];
+                return Number.isFinite(n) && n > 0 ? n : 20;
+            }
+
+            horseRunFrameReady(i, spriteSetKey) {
+                const idx = Number(i) || 1;
+                const key = (spriteSetKey && this.horseRunFrameCss && this.horseRunFrameCss[spriteSetKey]) ? spriteSetKey : SpriteSet.Horse;
+                const imgs = this.horseRunImages && this.horseRunImages[key];
+                const img = imgs && imgs[idx];
+                if (!img) return true;
+                return !!(img.complete && img.naturalWidth > 0);
+            }
+
+            waitImageReady(img, timeoutMs = 1800) {
+                const node = img;
+                if (!node) return Promise.resolve(false);
+                if (node.complete && node.naturalWidth > 0) return Promise.resolve(true);
+                return new Promise(resolve => {
+                    let done = false;
+                    let t = 0;
+                    const finish = (ok) => {
+                        if (done) return;
+                        done = true;
+                        if (t) clearTimeout(t);
+                        resolve(!!ok);
+                    };
+                    const onLoad = () => finish(true);
+                    const onErr = () => finish(false);
+                    try {
+                        node.addEventListener('load', onLoad, { once: true });
+                        node.addEventListener('error', onErr, { once: true });
+                    } catch (_) {}
+                    t = setTimeout(() => finish(false), Math.max(0, Number(timeoutMs) || 0));
+                });
+            }
+
+            async prewarmHorseRunFrames(spriteSets, frames = [1, 2]) {
+                if (!Array.isArray(spriteSets) || spriteSets.length === 0) return;
+                if (!this.horseRunFrameCss || !this.horseRunImages) {
+                    try { if (!this.horseRunFramesReady) this.horseRunFramesReady = this.preloadHorseRunFrames(); } catch (_) {}
+                }
+                const tasks = [];
+                for (const setKey of spriteSets) {
+                    const key = (setKey && this.horseRunFrameCss && this.horseRunFrameCss[setKey]) ? setKey : SpriteSet.Horse;
+                    const imgs = this.horseRunImages && this.horseRunImages[key];
+                    if (!imgs) continue;
+                    for (const f of frames) {
+                        const idx = Number(f) || 1;
+                        const img = imgs[idx];
+                        if (!img) continue;
+                        tasks.push(this.waitImageReady(img, 1800));
+                    }
+                }
+                await Promise.allSettled(tasks);
+            }
+
             async ensureHorseRunFramesReady() {
                 try {
                     if (!this.horseRunFramesReady) this.horseRunFramesReady = this.preloadHorseRunFrames();
@@ -2960,6 +3163,13 @@
                 try {
                     if (!this.lieyanFramesReady) this.lieyanFramesReady = this.preloadLieyanFrames();
                     await this.lieyanFramesReady;
+                } catch (_) {}
+            }
+
+            async ensureRuneEffectsFramesReady() {
+                try {
+                    if (!this.runeffectsFramesReady) this.runeffectsFramesReady = this.preloadRuneEffectsFrames();
+                    await this.runeffectsFramesReady;
                 } catch (_) {}
             }
 
@@ -3144,19 +3354,20 @@
                     '铁志': '意志加成，降低赛中抖动与速度波动。',
                     '深息': '深呼吸：跑得越久耐力越高，后程体力恢复更明显。',
                     '冷静': '抗干扰，减少外部因素造成的减速。',
-                    '专注': '节奏掌控，在关键区段保持输出。',
-                    '草地': '草地场景专精：当场景为草地时，速度提高（+5%）。',
+                    '专注': '全程加速触发概率提升：普通+3%，稀有+5%。',
+                    '草地': '草地场景专精：当场景为草地时，基础速度提高（+5%）。',
                     '平衡': '均衡型增益，速度与稳定小幅提升。',
                     '混血': '综合性加成，各项属性小幅提升。',
                     '大器': '后程爆发，最后阶段能力提升。',
-                    '先锋': '开局强势，起步更快更稳。',
-                    '雪地': '雪地场景专精：当场景为雪地时，速度提高（+5%）。',
-                    '沙地': '沙地场景专精：当场景为沙地时，速度提高（+5%）。',
-                    '天命': '神兽专属，全面强力增益。',
-                    '奇迹': '绝境翻盘，落后时获得额外增益。',
+                    '先锋': '前半程加速触发概率提升：普通+10%，稀有+15%。',
+                    '雪地': '雪地场景专精：当场景为雪地时，基础速度提高（+5%）。',
+                    '沙地': '沙地场景专精：当场景为沙地时，基础速度提高（+5%）。',
+                    '天命': '神兽专属：仅神兽可激活。普通全属性+3%，稀有全属性+5%。',
+                    '奇迹': '后半程加速触发概率提升：普通+10%，稀有+15%。',
                     '残影': '产生虚影，减少对手干扰判定。',
                     '流星': '终盘极速，冲线前最后加速。',
-                    '传说': '全属性提升，大幅增强综合能力。'
+                    '传说': '史诗必带：史诗及以上可激活。普通全属性+2%，稀有全属性+4%。',
+                    '混血': '普通全属性+1%，稀有全属性+3%。'
                 };
             }
 
@@ -3256,12 +3467,26 @@
                     this.stopDraftPreviewIdleAnim();
                 }
                 if (panel) panel.style.display = 'flex';
-                this.renderCodex();
+                const listEl = document.getElementById('codex-list');
+                if (listEl) {
+                    listEl.style.opacity = '0.35';
+                    listEl.innerHTML = `<div style="color:#bdc3c7; font-size:12px; padding:8px 0; text-align:center; width:100%;">造型加载中...</div>`;
+                }
+                const token = (this.codexToken || 0) + 1;
+                this.codexToken = token;
+                const sets = Object.values(SpriteSet);
+                this.prewarmHorseRunFrames(sets, [1, 2, 3]).then(() => {
+                    const p = document.getElementById('codex-panel');
+                    if (token !== this.codexToken) return;
+                    if (!p || !(p.style && p.style.display === 'flex')) return;
+                    this.renderCodex();
+                });
             }
 
             closeCodex() {
                 const panel = document.getElementById('codex-panel');
                 if (panel) panel.style.display = 'none';
+                this.codexToken = (this.codexToken || 0) + 1;
                 if (this._returnToDraftAfterCodex) {
                     const draftPanel = document.getElementById('draft-panel');
                     if (draftPanel) draftPanel.style.display = 'flex';
@@ -3291,8 +3516,24 @@
                         </div>
                     `;
                     listEl.appendChild(card);
+                    const idle = card.querySelector('.idle-horse');
+                    if (idle) {
+                        const preferred = Number((this.idleLastFrameBySet && this.idleLastFrameBySet[spriteSet]) || 1) || 1;
+                        let idx = preferred;
+                        const count = this.horseRunFrameCount(spriteSet);
+                        if (!this.horseRunFrameReady(idx, spriteSet)) {
+                            let found = 0;
+                            for (let t = 0; t < Math.min(6, count); t++) {
+                                const cand = ((idx + t - 1) % count) + 1;
+                                if (this.horseRunFrameReady(cand, spriteSet)) { found = cand; break; }
+                            }
+                            if (found) idx = found;
+                        }
+                        if (this.horseRunFrameReady(idx, spriteSet)) idle.style.backgroundImage = this.horseRunFrame(idx, spriteSet);
+                    }
                 });
                 const panel = document.getElementById('codex-panel');
+                if (listEl) listEl.style.opacity = '1';
                 if (panel) this.startStableIdleAnim(panel);
             }
             
@@ -3310,6 +3551,9 @@
                     if (stars > 0) base *= (1 + stars * 0.03);
                  }
 
+                 const hasTerrainBoost = active.some(g => g && g.type === this.sceneType && (g.type === '草地' || g.type === '雪地' || g.type === '沙地'));
+                 if (hasTerrainBoost) base *= 1.05;
+
                  let m = 1.0;
                  active.forEach(g => {
                      const t = g.type;
@@ -3318,9 +3562,8 @@
                     else if (t === '坚韧') m += 0.06;
                     else if (t === '灵活') m += 0.05;
                     else if (t === '稳健') m += 0.05;
-                    else if (t === '草地') { if (this.sceneType === '草地') m += 0.05; }
-                    else if (t === '雪地') { if (this.sceneType === '雪地') m += 0.05; }
-                    else if (t === '沙地') { if (this.sceneType === '沙地') m += 0.05; }
+                    else if (t === '草地' || t === '雪地' || t === '沙地') {}
+                    else if (t === '混血' || t === '天命' || t === '传说') {}
                     else m += 0.03; // 其他技能也有微量加成
                 });
 
@@ -3328,6 +3571,21 @@
                 const rareSlots = active.reduce((n, g) => n + (g && g.quality === '稀有' ? 1 : 0), 0);
                 const rareSlotMult = 1 + rareSlots * 0.03;
                 return base * m * rareSlotMult;
+             }
+
+             computeAllAttrBoostPct(horseData, activeGenes) {
+                const data = horseData || {};
+                const q = data.quality || '普通';
+                const list = Array.isArray(activeGenes) ? activeGenes : [];
+                let sum = 0;
+                const findGene = (type) => list.find(g => g && g.type === type) || null;
+                const hybrid = findGene('混血');
+                if (hybrid) sum += (hybrid.quality === '稀有') ? 0.03 : 0.01;
+                const destiny = findGene('天命');
+                if (destiny && q === '神兽') sum += (destiny.quality === '稀有') ? 0.05 : 0.03;
+                const legend = findGene('传说');
+                if (legend && (q === '史诗' || q === '神兽')) sum += (legend.quality === '稀有') ? 0.04 : 0.02;
+                return Math.max(0, sum);
              }
             
             slotCountForHorse(h) {
@@ -3499,39 +3757,84 @@
                     clearInterval(this.idleAnimTimer);
                     this.idleAnimTimer = null;
                 }
+                if (this.idleAnimRaf) {
+                    cancelAnimationFrame(this.idleAnimRaf);
+                    this.idleAnimRaf = 0;
+                }
                 if (this.racing) return;
 
-                const horses = Array.from((rootEl || document).querySelectorAll('.idle-horse'));
-                if (horses.length === 0) return;
+                const root = rootEl || document;
+                const hasAny = (root && root.querySelector && root.querySelector('.idle-horse'));
+                if (!hasAny) return;
                 this.stableIdleToken = (this.stableIdleToken || 0) + 1;
                 const token = this.stableIdleToken;
 
-                this.ensureHorseRunFramesReady().then(() => {
+                this.ensureHorseRunFramesReady();
+
+                this.idleAnimLastTs = 0;
+                this.idleAnimAcc = 0;
+                this.idleAnimFrame = 1;
+
+                const applyFrame = (frameIndex) => {
+                    const horses = Array.from(root.querySelectorAll('.idle-horse'));
+                    if (horses.length === 0) return;
+                    for (const el of horses) {
+                        const spriteSet = el && el.dataset ? el.dataset.spriteSet : null;
+                        const count = this.horseRunFrameCount(spriteSet);
+                        let idx = ((frameIndex - 1) % count) + 1;
+                        if (!this.horseRunFrameReady(idx, spriteSet)) {
+                            if (!el.style.backgroundImage) {
+                                let found = 0;
+                                for (let t = 0; t < count; t++) {
+                                    const cand = ((idx + t - 1) % count) + 1;
+                                    if (this.horseRunFrameReady(cand, spriteSet)) {
+                                        found = cand;
+                                        break;
+                                    }
+                                }
+                                if (found) idx = found;
+                                else continue;
+                            } else {
+                                continue;
+                            }
+                        }
+                        el.style.backgroundImage = this.horseRunFrame(idx, spriteSet);
+                        if (spriteSet) this.idleLastFrameBySet[spriteSet] = idx;
+                    }
+                };
+
+                const tick = (ts) => {
                     if (token !== this.stableIdleToken) return;
                     if (this.racing) return;
-                    if (this.idleAnimTimer) return;
+                    if (root !== document && root && root.isConnected === false) return;
+                    if (!this.idleAnimLastTs) this.idleAnimLastTs = ts;
+                    const dt = Math.min(200, Math.max(0, ts - this.idleAnimLastTs));
+                    this.idleAnimLastTs = ts;
+                    this.idleAnimAcc += dt;
+                    const step = 80;
+                    let advanced = false;
+                    while (this.idleAnimAcc >= step) {
+                        this.idleAnimAcc -= step;
+                        this.idleAnimFrame++;
+                        if (this.idleAnimFrame > 20) this.idleAnimFrame = 1;
+                        advanced = true;
+                    }
+                    if (advanced || !this.idleAnimRaf) applyFrame(this.idleAnimFrame);
+                    this.idleAnimRaf = requestAnimationFrame(tick);
+                };
 
-                    let frameIndex = 1;
-                    const applyFrame = () => {
-                        for (const el of horses) {
-                            const spriteSet = el && el.dataset ? el.dataset.spriteSet : null;
-                            el.style.backgroundImage = this.horseRunFrame(frameIndex, spriteSet);
-                        }
-                    };
-
-                    applyFrame();
-                    this.idleAnimTimer = setInterval(() => {
-                        frameIndex++;
-                        if (frameIndex > 20) frameIndex = 1;
-                        applyFrame();
-                    }, 80);
-                });
+                applyFrame(this.idleAnimFrame);
+                this.idleAnimRaf = requestAnimationFrame(tick);
             }
 
             stopDraftPreviewIdleAnim() {
                 if (this.draftPreviewAnimTimer) {
                     clearInterval(this.draftPreviewAnimTimer);
                     this.draftPreviewAnimTimer = null;
+                }
+                if (this.draftPreviewAnimRaf) {
+                    cancelAnimationFrame(this.draftPreviewAnimRaf);
+                    this.draftPreviewAnimRaf = 0;
                 }
                 this.draftPreviewToken = (this.draftPreviewToken || 0) + 1;
             }
@@ -3546,22 +3849,59 @@
                 const key = spriteSetKey || (el && el.dataset ? el.dataset.spriteSet : null) || SpriteSet.Horse;
                 const token = (this.draftPreviewToken || 0) + 1;
                 this.draftPreviewToken = token;
-                this.ensureHorseRunFramesReady().then(() => {
+                this.ensureHorseRunFramesReady();
+
+                this.draftPreviewLastTs = 0;
+                this.draftPreviewAcc = 0;
+                this.draftPreviewFrame = 1;
+
+                const applyFrame = (frameIndex) => {
+                    const node = document.querySelector('#draft-selected-preview .idle-horse');
+                    if (!node) return;
+                    const count = this.horseRunFrameCount(key);
+                    let idx = ((frameIndex - 1) % count) + 1;
+                    if (!this.horseRunFrameReady(idx, key)) {
+                        if (!node.style.backgroundImage) {
+                            let found = 0;
+                            for (let t = 0; t < count; t++) {
+                                const cand = ((idx + t - 1) % count) + 1;
+                                if (this.horseRunFrameReady(cand, key)) {
+                                    found = cand;
+                                    break;
+                                }
+                            }
+                            if (found) idx = found;
+                            else return;
+                        } else {
+                            return;
+                        }
+                    }
+                    node.style.backgroundImage = this.horseRunFrame(idx, key);
+                    if (key) this.idleLastFrameBySet[key] = idx;
+                };
+
+                const tick = (ts) => {
                     if (token !== this.draftPreviewToken) return;
                     if (this.racing) return;
-                    let frameIndex = 1;
-                    const applyFrame = () => {
-                        const node = document.querySelector('#draft-selected-preview .idle-horse');
-                        if (!node) return;
-                        node.style.backgroundImage = this.horseRunFrame(frameIndex, key);
-                    };
-                    applyFrame();
-                    this.draftPreviewAnimTimer = setInterval(() => {
-                        frameIndex++;
-                        if (frameIndex > 20) frameIndex = 1;
-                        applyFrame();
-                    }, 80);
-                });
+                    if (!panel.isConnected) return;
+                    if (!this.draftPreviewLastTs) this.draftPreviewLastTs = ts;
+                    const dt = Math.min(200, Math.max(0, ts - this.draftPreviewLastTs));
+                    this.draftPreviewLastTs = ts;
+                    this.draftPreviewAcc += dt;
+                    const step = 80;
+                    let advanced = false;
+                    while (this.draftPreviewAcc >= step) {
+                        this.draftPreviewAcc -= step;
+                        this.draftPreviewFrame++;
+                        if (this.draftPreviewFrame > 20) this.draftPreviewFrame = 1;
+                        advanced = true;
+                    }
+                    if (advanced || !this.draftPreviewAnimRaf) applyFrame(this.draftPreviewFrame);
+                    this.draftPreviewAnimRaf = requestAnimationFrame(tick);
+                };
+
+                applyFrame(this.draftPreviewFrame);
+                this.draftPreviewAnimRaf = requestAnimationFrame(tick);
             }
             
             updateUI() {
@@ -3709,20 +4049,22 @@
                         const codexStars = Number((this.player.spriteCodex && this.player.spriteCodex[spriteSetKey]) || 0) || 0;
                         const codexBonusPct = codexStars * 3;
                         const codexMult = 1 + codexStars * 0.03;
+                        const allAttrBoost = this.computeAllAttrBoostPct(h, previewActives);
+                        const attrMult = codexMult * (1 + allAttrBoost);
                         const baseEndurance = Number(h.endurance) || 1.0;
                         const activeTypes = new Set((previewActives || []).map(g => g && g.type).filter(Boolean));
                         let enduranceBonus = 0;
                         if (activeTypes.has('持久')) enduranceBonus += 0.25;
                         if (activeTypes.has('坚韧')) enduranceBonus += 0.15;
                         if (activeTypes.has('深息')) enduranceBonus += 0.10;
-                        const enduranceEff = (baseEndurance * codexMult) * (1 + enduranceBonus);
+                        const enduranceEff = (baseEndurance * attrMult) * (1 + enduranceBonus);
                         const rareSlots = (previewActives || []).reduce((n, g) => n + (g && g.quality === '稀有' ? 1 : 0), 0);
                         const rarePct = rareSlots * 3;
                         const baseSpeedWithRare = (typeof h.baseSpeed === 'number')
-                            ? Math.round(h.baseSpeed * codexMult * (1 + rareSlots * 0.03))
+                            ? Math.round(h.baseSpeed * attrMult * (1 + rareSlots * 0.03))
                             : '-';
-                        const staminaEff = (typeof h.stamina === 'number') ? Math.round(h.stamina * codexMult) : (h.stamina ?? '-');
-                        const accelEff = (typeof h.accel === 'number') ? Number((h.accel * codexMult).toFixed(2)) : (h.accel ?? '-');
+                        const staminaEff = (typeof h.stamina === 'number') ? Math.round(h.stamina * attrMult) : (h.stamina ?? '-');
+                        const accelEff = (typeof h.accel === 'number') ? Number((h.accel * attrMult).toFixed(2)) : (h.accel ?? '-');
                         html += `
                             <div class="horse-card selected">
                                 <div class="card-skills">
@@ -3738,9 +4080,6 @@
                                         <div class="stat-line"><span>基速</span><strong>${baseSpeedWithRare}${rareSlots > 0 ? ` (+${rarePct}%)` : ''}</strong></div>
                                         <div class="stat-line"><span>加速</span><strong>${accelEff}</strong></div>
                                         <div class="stat-line"><span>图鉴</span><strong>${codexStars}★ (+${codexBonusPct}%全属性)</strong></div>
-                                    </div>
-                                    <div class="card-portrait">
-                                        <div class="idle-horse" data-sprite-set="${this.escapeHtml(spriteSetKey)}" data-idle-horse="1"></div>
                                     </div>
                                 </div>
                             </div>
@@ -4161,7 +4500,8 @@
                     this.ensureBurstFramesReady(),
                     this.ensureJifengFramesReady(),
                     this.ensureLanyingFramesReady(),
-                    this.ensureLieyanFramesReady()
+                    this.ensureLieyanFramesReady(),
+                    this.ensureRuneEffectsFramesReady()
                 ]);
                 await Promise.all([sceneReady, assetsReady, new Promise(r => setTimeout(r, 260))]);
                 this.setSceneTransitionFadeMode(true);
@@ -4230,6 +4570,10 @@
                 
                 // 添加跑道分隔线 (横向)
                 track.innerHTML = '';
+                const marks = document.createElement('div');
+                marks.className = 'track-marks';
+                track.appendChild(marks);
+                this.trackMarksEl = marks;
                 const finishLine = document.createElement('div');
                 finishLine.className = 'finish-line';
                 finishLine.style.left = (50 + 2000) + 'px';
@@ -4248,10 +4592,19 @@
                         const playerSkillCount = myHorse.genes ? myHorse.genes.length : 0;
                         
                         if (!data.genes || data.genes.length === 0) {
-                            const pool = Object.values(GeneType).map(t => ({type:t, quality:'普通'}));
                             // 限制 AI 技能数：直接对齐玩家技能数，且不能超过自身槽位
                             let count = Math.min(playerSkillCount, slots);
-                            data.genes = this.pickStartGenes(pool, count);
+                            const baseTypes = allowedGeneTypesForQuality(data.quality);
+                            const filteredPool = baseTypes.map(t => ({ type: t, quality: '普通' }));
+                            data.genes = this.pickStartGenes(filteredPool, count);
+                            if (data.quality === '神兽' && !data.genes.some(g => g && g.type === '天命')) {
+                                if (data.genes.length > 0) data.genes[Math.floor(Math.random() * data.genes.length)].type = '天命';
+                                else data.genes = [{ type: '天命', quality: '普通' }];
+                            }
+                            if (data.quality === '史诗' && !data.genes.some(g => g && g.type === '传说')) {
+                                if (data.genes.length > 0) data.genes[Math.floor(Math.random() * data.genes.length)].type = '传说';
+                                else data.genes = [{ type: '传说', quality: '普通' }];
+                            }
                         }
                     }
 
@@ -4318,8 +4671,22 @@
                      const slots = this.slotCountForHorse(data);
                      const activeGenes = (data.lockedStartGenes || []).slice(0, slots);
                      data.activeGenes = activeGenes;
+                     const hasTerrainBoost = activeGenes.some(g => g && g.type === this.sceneType);
+                     let dustEl = null;
+                     if (hasTerrainBoost) {
+                        const fx = document.createElement('div');
+                        fx.className = 'horse-dust';
+                        fx.style.top = '-9999px';
+                        fx.style.left = '-9999px';
+                        fx.style.setProperty('--race-scale', String(raceScale));
+                        const list = this.runeffectsFrameCss && this.runeffectsFrameCss.dust;
+                        if (Array.isArray(list) && list[1]) fx.style.backgroundImage = list[1];
+                        track.appendChild(fx);
+                        dustEl = fx;
+                     }
                      const isPlayerOwned = Array.isArray(this.player.horses) && this.player.horses.some(h => h && h.id === data.id);
-                     const baseSpeedEff = this.computeSpeedWithGenes(data.baseSpeed, activeGenes, data.genes, true, { spriteSet: (data.spriteSet || SpriteSet.Horse), applyCodex: isPlayerOwned });
+                     const allAttrBoost = this.computeAllAttrBoostPct(data, activeGenes);
+                     const baseSpeedEff = this.computeSpeedWithGenes((Number(data.baseSpeed) || 0) * (1 + allAttrBoost), activeGenes, data.genes, true, { spriteSet: (data.spriteSet || SpriteSet.Horse), applyCodex: isPlayerOwned });
                      let codexMult = 1;
                      if (isPlayerOwned) {
                         if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
@@ -4327,9 +4694,10 @@
                         const stars = Number(this.player.spriteCodex[key]) || 0;
                         codexMult = 1 + stars * 0.03;
                      }
-                     const staminaMax = (Number(data.stamina) || 70) * codexMult;
-                     const enduranceBase = (Number(data.endurance) || 1.0) * codexMult;
-                     const accelEff = (Number(data.accel) || 0.8) * codexMult;
+                     const attrMult = codexMult * (1 + allAttrBoost);
+                     const staminaMax = (Number(data.stamina) || 70) * attrMult;
+                     const enduranceBase = (Number(data.endurance) || 1.0) * attrMult;
+                     const accelEff = (Number(data.accel) || 0.8) * attrMult;
 
                      this.horses.push({ 
                          el, 
@@ -4347,6 +4715,8 @@
                         accelEff,
                         boostCooldown: 0,
                         boostMult: 0,
+                        markNextAt: 28 + Math.random() * 22,
+                        markKind: 'hoof',
                          frameIndex: startFrame,
                         frameTimer: (i % 4),
                         baseTop: baseTop,
@@ -4366,7 +4736,11 @@
                         ghostCooldown: 0,
                         _prevSpeed: null,
                         debuffTimer: 0,
-                        raceScale
+                        raceScale,
+                        dustEl,
+                        dustFrameIndex: 1,
+                        dustFrameTimer: (i % 3),
+                        dustLife: hasTerrainBoost ? -1 : 0
                      });
                  });
 
@@ -4450,6 +4824,45 @@
                 requestAnimationFrame(anim);
             }
 
+            spawnTrackMark(h, x, y) {
+                const layer = this.trackMarksEl || document.querySelector('#track-layer .track-marks');
+                if (!layer) return;
+                const isCircle = h && h.markKind === 'circle';
+                const alt = !!(h && (h._markAlt = !h._markAlt));
+                const makeOne = (dx, dy, rotMul) => {
+                    const mark = document.createElement('div');
+                    mark.className = isCircle ? 'track-mark circle' : 'track-mark';
+                    mark.style.left = Math.round(x + dx) + 'px';
+                    mark.style.top = Math.round(y + dy) + 'px';
+                    const rot = (-16 + Math.random() * 32) * (rotMul || 1);
+                    const s = 0.95 + Math.random() * 0.35;
+                    const op = 0.34 + Math.random() * 0.14;
+                    mark.style.setProperty('--rot', rot + 'deg');
+                    mark.style.setProperty('--s', String(s));
+                    mark.style.setProperty('--op', String(op));
+                    layer.appendChild(mark);
+                    const rm = () => { if (mark.parentNode) mark.parentNode.removeChild(mark); };
+                    mark.addEventListener('animationend', rm, { once: true });
+                    setTimeout(rm, 2600);
+                };
+                if (isCircle) {
+                    makeOne(0, 0, 1);
+                } else {
+                    const sway = alt ? -1 : 1;
+                    makeOne(-3, sway * 1, 1);
+                    makeOne(3, -sway * 1, -1);
+                }
+                const max = Number(this.trackMarksMax) || 420;
+                if (layer.childElementCount > max) {
+                    const overflow = layer.childElementCount - max;
+                    for (let i = 0; i < overflow; i++) {
+                        const n = layer.firstElementChild;
+                        if (!n) break;
+                        layer.removeChild(n);
+                    }
+                }
+            }
+
             loop() {
                 if (!this.racing) return;
 
@@ -4461,6 +4874,40 @@
                 this.horses.forEach(h => {
                     const prevSpeed = h._prevSpeed ?? h.speed;
                     const prevDist = h.distance;
+                    const enableBurstFx = true;
+                    const enableGhostFx = true;
+
+                    if (h.dustEl) {
+                        const fxLife = Number(h.dustLife) || 0;
+                        if (fxLife === 0) {
+                            if (h.dustEl.parentNode) h.dustEl.parentNode.removeChild(h.dustEl);
+                            h.dustEl = null;
+                        } else {
+                            const dustW = 110;
+                            const dustH = 70;
+                            const baseLeft = Math.round(50 + h.distance);
+                            const left = Math.round(baseLeft - 34);
+                            const top = Math.round(h.baseTop + 120 - dustH - 8);
+                            h.dustEl.style.left = left + 'px';
+                            h.dustEl.style.top = top + 'px';
+                            const alpha = fxLife < 0 ? 0.9 : Math.max(0, Math.min(0.9, fxLife / 120 * 0.9));
+                            h.dustEl.style.opacity = String(alpha);
+                            h.dustFrameTimer++;
+                            if (h.dustFrameTimer > 1) {
+                                const list = this.runeffectsFrameCss && this.runeffectsFrameCss.dust;
+                                const imgs = this.runeffectsImages && this.runeffectsImages.dust;
+                                const frameCount = Math.max(1, (list ? (list.length - 1) : 1));
+                                const next = (h.dustFrameIndex >= frameCount ? 1 : (h.dustFrameIndex + 1));
+                                const img = imgs && imgs[next];
+                                if (img && img.complete && img.naturalWidth > 0 && list && list[next]) {
+                                    h.dustFrameIndex = next;
+                                    h.dustEl.style.backgroundImage = list[next];
+                                }
+                                h.dustFrameTimer = 0;
+                            }
+                            if (fxLife > 0) h.dustLife = fxLife - 1;
+                        }
+                    }
 
                     if (h.jifengEl) {
                         const anchorX = 50 + h.distance + 60;
@@ -4553,7 +5000,16 @@
                         const currStamina = Number.isFinite(staminaNow) ? staminaNow : staminaMax;
                         const canAccel = currStamina >= 30;
                         if ((h.boostTimer || 0) <= 0 && (!h.boostCooldown || h.boostCooldown <= 0) && canAccel) {
-                            const chance = 0.0018 + accelStat * 0.0018;
+                            const startHalf = (Number(h.distance) || 0) <= (finishDist * 0.5);
+                            const endHalf = (Number(h.distance) || 0) >= (finishDist * 0.5);
+                            let bonusChance = 0;
+                            const earlyBird = (h.activeGenes || []).find(g => g && g.type === '先锋') || null;
+                            if (earlyBird && startHalf) bonusChance += (earlyBird.quality === '稀有') ? 0.15 : 0.10;
+                            const focusGene = (h.activeGenes || []).find(g => g && g.type === '专注') || null;
+                            if (focusGene) bonusChance += (focusGene.quality === '稀有') ? 0.05 : 0.03;
+                            const miracle = (h.activeGenes || []).find(g => g && g.type === '奇迹') || null;
+                            if (miracle && endHalf) bonusChance += (miracle.quality === '稀有') ? 0.15 : 0.10;
+                            const chance = (0.0018 + accelStat * 0.0018) * (1 + bonusChance);
                             if (Math.random() < chance) {
                                 const hasBurst = activeTypes.has('爆冲');
                                 h.boostMult = (0.10 + 0.10 * accelStat) + (hasBurst ? 0.10 : 0);
@@ -4589,18 +5045,26 @@
                             h.finishPlace = (Number(this.finishCounter) || 0) + 1;
                             this.finishCounter = h.finishPlace;
                         }
-                        h.el.style.left = Math.round(50 + h.distance) + 'px';
+                        const nextAt = Number(h.markNextAt) || 0;
+                        if (nextAt > 0 && h.distance >= nextAt) {
+                            const baseLeft = 50 + h.distance;
+                            const markX = baseLeft + 32 + (Math.random() * 10 - 5);
+                            const markY = (Number(h.baseTop) || 0) + 92 + (Math.random() * 6 - 3);
+                            this.spawnTrackMark(h, markX, markY);
+                            h.markNextAt = nextAt + 30 + Math.random() * 26;
+                        }
+                        h.el.style.setProperty('--race-x', Math.round(h.distance) + 'px');
                     }
                     if (h.finished) finishedCount++;
 
                     if (h.boostTimer && h.boostTimer > 0) {
                         h.boostTimer--;
-                        h.afterimageTimer = Math.max(h.afterimageTimer || 0, 18);
+                        if (enableGhostFx) h.afterimageTimer = Math.max(h.afterimageTimer || 0, 18);
                     }
 
                     const accelUp = h.speed > prevSpeed * 1.015;
                     if (accelUp) {
-                        h.afterimageTimer = Math.max(h.afterimageTimer || 0, 22);
+                        if (enableGhostFx) h.afterimageTimer = Math.max(h.afterimageTimer || 0, 22);
                     }
                     h._prevSpeed = h.speed;
 
@@ -4609,14 +5073,14 @@
                     const isRarePlus = q === '稀有' || q === '史诗' || q === '神兽';
                     if (isRarePlus && !h.finished && h.distance < finishDist && h.burstCooldown <= 0 && (h.boostTimer > 0 || accelUp)) {
                         const intensity = 1 + (h.boostTimer ? Math.min(0.6, h.boostTimer / 100) : 0);
-                        this.spawnBurst(h, intensity);
+                        if (enableBurstFx) this.spawnBurst(h, intensity);
                         h.burstCooldown = 10;
                     }
 
                     if (h.afterimageTimer && h.afterimageTimer > 0) {
                         h.afterimageTimer--;
                         h.ghostCooldown = Math.max(0, (h.ghostCooldown || 0) - 1);
-                        if (h.ghostCooldown <= 0 && !h.finished && h.distance < finishDist && (h.distance - prevDist) > 0) {
+                        if (enableGhostFx && h.ghostCooldown <= 0 && !h.finished && h.distance < finishDist && (h.distance - prevDist) > 0) {
                             const intensity = Math.min(1.6, 0.8 + (h.afterimageTimer / 22));
                             this.spawnGhost(h, intensity);
                             h.ghostCooldown = 3;
@@ -4636,7 +5100,7 @@
                         if (shouldTrigger) {
                              // 计算可领悟的非重复技能 OR 可升级的稀有技能
                             const existing = Array.isArray(h.data.genes) ? h.data.genes : [];
-                            const allTypes = Object.values(GeneType);
+                            const allTypes = allowedGeneTypesForQuality(h.data && h.data.quality);
                             
                             // 动态概率：稀有度越高，领悟稀有技能概率越高
                             let rareProb = 0.1; // 默认普通马 10%
@@ -4772,9 +5236,9 @@
                     const currKey = curr.finished ? (1000000 - (Number(curr.finishPlace) || 999999)) : (Number(curr.distance) || 0);
                     return currKey > prevKey ? curr : prev;
                 }, this.horses[0]);
-                const cameraX = Math.max(0, 50 + leader.distance - 200);
+                const cameraX = Math.max(0, Math.round(50 + (Number(leader.distance) || 0) - 200));
                 const trackLayer = document.getElementById('track-layer');
-                trackLayer.style.transform = `translateX(${-cameraX}px)`;
+                trackLayer.style.transform = `translate3d(${-cameraX}px,0,0)`;
 
                 const trackContainer = document.getElementById('track-container');
                 const trackContainerTop = trackContainer ? trackContainer.offsetTop : 0;
@@ -4950,7 +5414,6 @@
                         <div>乐透种子</div>
                         <div class="seed">#${seed}</div>
                     </div>
-                    <div style="font-size:11px; color:#95a5a6;">抽签决定前 4 顺位，其余按种子顺序递补</div>
                 `;
                 document.getElementById('draft-status').innerHTML = statusHtml;
                 document.getElementById('draft-result').style.display = 'none';
@@ -5117,7 +5580,7 @@
                 const playerSeed = this.currentDraftSeed;
                 const statusEl = document.getElementById('draft-status');
                 
-                statusEl.innerHTML = "🎲 正在进行乐透抽签 (模拟 NBA：抽前4顺位)...";
+                statusEl.innerHTML = "🎲 正在进行乐透抽签...";
 
                 const seedCombos = {
                     1: 140, 2: 140, 3: 140,
@@ -5369,14 +5832,29 @@
                                 ? (Math.random() < 0.5 ? SpriteSet.Rare : SpriteSet.Rare2)
                                 : (Math.random() < 0.35 ? SpriteSet.Base : SpriteSet.Horse)))
                 };
-                const allTypes = Object.values(GeneType);
+                const allTypes = allowedGeneTypesForQuality(quality);
                 const totalCount = 5 + Math.floor(Math.random() * 6);
                 const isRareOrAbove = (quality === '稀有' || quality === '史诗' || quality === '神兽');
                 const minRare = isRareOrAbove ? 1 : 0;
                 const maxRare = Math.min(3, totalCount);
                 const rareCount = minRare + Math.floor(Math.random() * (maxRare - minRare + 1));
                 const picked = [...allTypes].sort(() => 0.5 - Math.random()).slice(0, Math.min(totalCount, allTypes.length));
-                const genes = picked.map(t => ({ type: t, quality: '普通' }));
+                if (quality === '神兽' && !picked.includes('天命')) {
+                    const idx = Math.floor(Math.random() * picked.length);
+                    picked[idx] = '天命';
+                }
+                if (quality === '史诗' && !picked.includes('传说')) {
+                    const idx = Math.floor(Math.random() * picked.length);
+                    picked[idx] = '传说';
+                }
+                const uniq = new Map();
+                picked.forEach(t => { if (!uniq.has(t)) uniq.set(t, t); });
+                const pickedUniq = Array.from(uniq.values());
+                while (pickedUniq.length < Math.min(totalCount, allTypes.length)) {
+                    const t = allTypes[Math.floor(Math.random() * allTypes.length)];
+                    if (!pickedUniq.includes(t)) pickedUniq.push(t);
+                }
+                const genes = pickedUniq.slice(0, Math.min(totalCount, allTypes.length)).map(t => ({ type: t, quality: '普通' }));
                 if (rareCount > 0) {
                     const idxs = Array.from({length: genes.length}, (_, i) => i).sort(() => 0.5 - Math.random()).slice(0, rareCount);
                     idxs.forEach(i => { if (genes[i]) genes[i].quality = '稀有'; });
@@ -5385,7 +5863,8 @@
                 this.ensureLockedStartGenes(horse);
                 const speedSlots = this.slotCountForHorse(horse);
                 const active = (horse.lockedStartGenes || []).slice(0, speedSlots);
-                const actual = Math.round(this.computeSpeedWithGenes(horse.baseSpeed, active, horse.genes, false));
+                const allAttrBoost = this.computeAllAttrBoostPct(horse, active);
+                const actual = Math.round(this.computeSpeedWithGenes((Number(horse.baseSpeed) || 0) * (1 + allAttrBoost), active, horse.genes, false));
                 const down = 3 + Math.floor(Math.random() * 3);
                 const up = 3 + Math.floor(Math.random() * 3);
                 horse.speedRangeMin = Math.max(1, actual - down);
@@ -5478,12 +5957,15 @@
                         // 这里需要把之前的 AI 入队逻辑搬过来，并应用到 clone 的对象上
                          if (!this.player.aiStable) this.player.aiStable = [];
                          
-                         if (aiHorse.quality === '神兽') {
+                        const nowAiId = () => 'ai_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+                        const aiUsed = new Set((this.player.aiStable || []).map(h => h && h.id).filter(Boolean));
+                        aiHorse.id = aiHorse.id || nowAiId();
+                        while (aiUsed.has(aiHorse.id)) aiHorse.id = nowAiId();
+
+                        if (aiHorse.quality === '神兽') {
                              const suffixes = ['天命', '传奇', '无双', '至尊', '幻影', '霸主', '星辰'];
                              const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
                              aiHorse.name = "AI-神兽·" + suffix;
-                             // AI 神兽再次刷新 ID
-                             aiHorse.id = 'ai_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
                          } else {
                              aiHorse.name = 'AI-' + aiHorse.name;
                          }
@@ -5491,7 +5973,8 @@
                          // 赋予随机技能 (模拟 AI 领悟)
                         if (!aiHorse.genes || aiHorse.genes.length === 0) {
                             const slots = this.slotCountForHorse(aiHorse);
-                            const pool = Object.values(GeneType).map(t => ({type:t, quality:'普通'}));
+                            const baseTypes = allowedGeneTypesForQuality(aiHorse.quality);
+                            const pool = baseTypes.map(t => ({type:t, quality:'普通'}));
                             aiHorse.genes = this.pickStartGenes(pool, Math.floor(Math.random() * slots));
                         }
                          
@@ -5833,9 +6316,14 @@
                     const aiIdx = this.player.aiStable.indexOf(target);
                     if (aiIdx !== -1) this.player.aiStable.splice(aiIdx, 1);
                     
-                    // 改个名归我
-                    if (target.name.startsWith('AI-')) target.name = target.name.replace('AI-', '');
-                    this.player.horses.push(target);
+                    const acquired = JSON.parse(JSON.stringify(target || {}));
+                    const nowId = () => 'h_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+                    const used = new Set((this.player.horses || []).map(h => h && h.id).filter(Boolean));
+                    acquired.id = acquired.id || nowId();
+                    while (used.has(acquired.id)) acquired.id = nowId();
+                    if (typeof acquired.name === 'string' && acquired.name.startsWith('AI-')) acquired.name = acquired.name.replace('AI-', '');
+                    this.player.horses.push(acquired);
+                    this.selectedHorseId = acquired.id;
                     
                     // 筹码马匹给 AI (可选，这里直接移除也就是退役/流放)
                     
