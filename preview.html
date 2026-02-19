@@ -1797,6 +1797,112 @@
             0% { transform: translateX(-120%); }
             100% { transform: translateX(280%); }
         }
+
+        #cps-modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.86);
+            z-index: 110;
+            align-items: center;
+            justify-content: center;
+        }
+        .cps-box {
+            width: min(360px, 90%);
+            background: rgba(23, 32, 42, 0.96);
+            border-radius: 18px;
+            border: 1px solid rgba(241, 196, 15, 0.55);
+            box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+            padding: 16px 14px 14px;
+        }
+        .cps-title {
+            text-align: center;
+            font-weight: 900;
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: #f1c40f;
+            margin: 2px 0 4px;
+        }
+        .cps-subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #bdc3c7;
+            margin: 0 0 10px;
+        }
+        .cps-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 10px;
+            background: linear-gradient(180deg, rgba(155, 89, 182, 0.65), rgba(155, 89, 182, 0.25));
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 16px;
+        }
+        .cps-card {
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: linear-gradient(180deg, rgba(236, 240, 241, 0.92), rgba(241, 196, 15, 0.55));
+            padding: 12px 10px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+        .cps-card:active {
+            transform: translateY(1px);
+        }
+        .cps-card .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.22);
+        }
+        .cps-card .name {
+            font-size: 13px;
+            font-weight: 900;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .cps-card .desc {
+            font-size: 11px;
+            color: rgba(44, 62, 80, 0.85);
+            text-align: center;
+        }
+        .cps-card .reward {
+            font-size: 14px;
+            font-weight: 900;
+            color: #2ecc71;
+        }
+        .cps-footer {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .cps-close {
+            width: 100%;
+            border-radius: 14px;
+            padding: 12px 10px;
+            font-size: 16px;
+            font-weight: 900;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(149, 165, 166, 0.9);
+            color: #0b0e11;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -2012,21 +2118,14 @@
             </div>
         </div>
         
-        <!-- Ticket Menu Modal -->
-        <div id="ticket-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center;">
-            <div style="background:#2c3e50; padding:20px; border-radius:10px; width:80%; max-width:300px; text-align:center; border:2px solid #f39c12; box-shadow: 0 0 20px rgba(0,0,0,0.8);">
-                <h3 style="color:#f1c40f; margin-top:0; border-bottom:1px solid #7f8c8d; padding-bottom:10px;">🎫 获取门票</h3>
-                <p style="color:#bdc3c7; font-size:14px; margin:20px 0;">当前拥有: <span id="ticket-modal-count" style="color:#2ecc71; font-weight:bold; font-size:18px;">0</span> 张</p>
-                
-                <button class="btn btn-blue" onclick="game.buyTicketWithPoints()">
-                    💰 消耗积分 (200分/张)
-                </button>
-                
-                <button id="btn-watch-ad-modal" class="btn btn-green" onclick="game.watchAdForTicket()" style="margin-top:10px;">
-                    📺 观看广告 (免费+5)
-                </button>
-                
-                <button class="btn" style="margin-top:20px; background:#95a5a6; padding:10px; font-size:14px;" onclick="game.closeTicketMenu()">关闭</button>
+        <div id="cps-modal">
+            <div class="cps-box">
+                <div class="cps-title">游戏福利商城</div>
+                <div class="cps-subtitle">选择你感兴趣的券，领取后自动获得门票</div>
+                <div id="cps-grid" class="cps-grid"></div>
+                <div class="cps-footer">
+                    <button class="cps-close" onclick="game.closeCpsModal()">关闭</button>
+                </div>
             </div>
         </div>
 
@@ -2550,6 +2649,12 @@
                 this.codexToken = 0;
                 this.trackMarksEl = null;
                 this.trackMarksMax = 420;
+                this.cpsOffers = [
+                    { id: 'haidl', icon: '🍲', name: '海底捞代金券', desc: '450元代金券(限1张)', reward: 5, url: 'http://dpurl.cn/7WdfmnPz' },
+                    { id: 'milk-tea', icon: '🧋', name: '奶茶券', desc: '立减优惠', reward: 5, url: 'https://example.com/cps/milktea' },
+                    { id: 'movie', icon: '🎬', name: '电影票', desc: '立减优惠', reward: 8, url: 'https://example.com/cps/movie' },
+                    { id: 'daily', icon: '🧴', name: '日用品券', desc: '生活消耗品', reward: 5, url: 'https://example.com/cps/daily' }
+                ];
 
                 if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
 
@@ -2574,6 +2679,10 @@
                 this.updateUI();
                 this.initAvatarFlow();
                 setTimeout(() => this.preloadNextScene(), 60);
+                window.addEventListener('focus', () => this.checkPendingCpsReward());
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) this.checkPendingCpsReward();
+                });
                 
                 // 临时变量
                 this.tempReforgeGenes = null;
@@ -3958,7 +4067,7 @@
                                     </div>
                                     <div style="display:flex; gap:10px; font-size:12px; color:#bdc3c7; margin-top:3px;">
                                         <span>💰 ${p.integral}</span>
-                                        <span>🎫 ${p.ticketsNormal} <button style="background:none; border:none; color:#2ecc71; font-weight:bold; cursor:pointer; font-size:14px; padding:0;" onclick="game.openTicketMenu()">➕</button></span>
+                                        <span>🎫 ${p.ticketsNormal} <button style="background:none; border:none; color:#2ecc71; font-weight:bold; cursor:pointer; font-size:14px; padding:0;" onclick="game.openCpsModal()">➕</button></span>
                                     </div>
                                     <div style="font-size:10px; margin-top:2px; display:flex; gap:8px; align-items:center;">
                                         <button class="avatar-action" onclick="game.openAvatarPicker()">更换头像</button>
@@ -4397,28 +4506,11 @@
                 if (discardBtn) discardBtn.style.display = 'none';
             }
 
-            openTicketMenu() {
-                const modal = document.getElementById('ticket-modal');
-                const count = document.getElementById('ticket-modal-count');
-                if (modal && count) {
-                    count.innerText = this.player.ticketsNormal;
-                    modal.style.display = 'flex';
-                }
-            }
-
-            closeTicketMenu() {
-                const modal = document.getElementById('ticket-modal');
-                if (modal) modal.style.display = 'none';
-            }
-
             buyTicketWithPoints() {
                 if (this.player.integral >= 200) {
                     this.player.integral -= 200;
                     this.player.ticketsNormal += 1;
                     this.updateUI();
-                    // 更新弹窗内的数量
-                    const count = document.getElementById('ticket-modal-count');
-                    if (count) count.innerText = this.player.ticketsNormal;
                     alert("购买成功！门票 +1 (消耗200积分)");
                 } else {
                     alert("积分不足！需要 200 积分。");
@@ -4426,26 +4518,77 @@
             }
             
             watchAdForTicket() {
-                 // 模拟看广告 3秒 (Modal版)
-                const btn = document.getElementById('btn-watch-ad-modal');
-                if (!btn) return;
-                
-                const originalText = "📺 观看广告 (免费+5)";
-                btn.disabled = true;
-                btn.innerText = "📺 观看中 (3s)...";
-                
-                setTimeout(() => {
-                    this.player.ticketsNormal += 5;
+                this.openCpsModal();
+            }
+
+            openCpsModal() {
+                const modal = document.getElementById('cps-modal');
+                if (!modal) return;
+                modal.style.display = 'flex';
+                this.renderCpsOffers();
+            }
+
+            closeCpsModal() {
+                const modal = document.getElementById('cps-modal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            renderCpsOffers() {
+                const grid = document.getElementById('cps-grid');
+                if (!grid) return;
+                const offers = Array.isArray(this.cpsOffers) ? this.cpsOffers : [];
+                grid.innerHTML = offers.map(o => {
+                    const id = encodeURIComponent(String(o.id || ''));
+                    const reward = Number(o.reward) || 0;
+                    const name = this.escapeHtml(String(o.name || ''));
+                    const desc = this.escapeHtml(String(o.desc || ''));
+                    const icon = this.escapeHtml(String(o.icon || '🎁'));
+                    const href = this.escapeHtml(String(o.url || ''));
+                    return `
+                        <a class="cps-card" href="${href}" target="_blank" rel="noopener noreferrer" onclick="game.startCpsOfferEncoded('${id}')">
+                            <div class="icon">${icon}</div>
+                            <div class="name">${name}</div>
+                            <div class="desc">${desc}</div>
+                            <div class="reward">+${reward}</div>
+                        </a>
+                    `;
+                }).join('');
+            }
+
+            startCpsOfferEncoded(encodedId) {
+                const id = decodeURIComponent(String(encodedId || ''));
+                this.startCpsOffer(id);
+            }
+
+            startCpsOffer(offerId) {
+                const offers = Array.isArray(this.cpsOffers) ? this.cpsOffers : [];
+                const offer = offers.find(o => o && o.id === offerId) || null;
+                if (!offer) return;
+                const reward = Number(offer.reward) || 0;
+                const payload = { offerId: String(offer.id || ''), reward, startedAt: Date.now() };
+                try { localStorage.setItem('pendingCpsReward', JSON.stringify(payload)); } catch (_) {}
+                this.closeCpsModal();
+            }
+
+            checkPendingCpsReward() {
+                let raw = null;
+                try { raw = localStorage.getItem('pendingCpsReward'); } catch (_) {}
+                if (!raw) return;
+                let data = null;
+                try { data = JSON.parse(raw); } catch (_) { data = null; }
+                if (!data || !data.offerId) {
+                    try { localStorage.removeItem('pendingCpsReward'); } catch (_) {}
+                    return;
+                }
+                const startedAt = Number(data.startedAt) || 0;
+                if (startedAt && (Date.now() - startedAt) < 1200) return;
+                const reward = Number(data.reward) || 0;
+                if (reward > 0) {
+                    this.player.ticketsNormal += reward;
                     this.updateUI();
-                    
-                    // 更新弹窗内的数量
-                    const count = document.getElementById('ticket-modal-count');
-                    if (count) count.innerText = this.player.ticketsNormal;
-                    
-                    alert("观看完毕！门票 +5");
-                    btn.disabled = false;
-                    btn.innerText = originalText;
-                }, 3000);
+                    this.pushHint(`🎫 领券成功：门票 +${reward}`);
+                }
+                try { localStorage.removeItem('pendingCpsReward'); } catch (_) {}
             }
 
             watchAd() {
@@ -4472,7 +4615,7 @@
                 }
 
                 if (this.player.ticketsNormal < 1) {
-                    alert("门票不足！请观看广告获取。");
+                    alert("门票不足！请领取优惠券获取。");
                     return;
                 }
                 
