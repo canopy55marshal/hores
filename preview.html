@@ -8,6 +8,225 @@
     <style>
         body { background: #1a1a1a; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; height: 100vh; justify-content: center; }
         /* 竖屏容器：375x667 (iPhone SE) 或 360x800 (常见安卓) */
+
+        #leaderboard-content .leaderboard-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border-bottom: 1px solid #555;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            margin-bottom: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #leaderboard-content .leaderboard-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        #leaderboard-content .leaderboard-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        #leaderboard-content .rank {
+            font-size: 1.5em;
+            font-weight: bold;
+            width: 50px;
+            text-align: center;
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-top: 10px;
+        }
+        #leaderboard-content .rank.rank-1 { color: #e74c3c; }
+        #leaderboard-content .rank.rank-2 { color: #f39c12; }
+        #leaderboard-content .rank.rank-3 { color: #3498db; }
+        #leaderboard-content .horse-sprite-container {
+            margin: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #leaderboard-content .horse-details {
+            flex-grow: 1;
+            padding: 0 10px;
+            min-width: 0;
+        }
+        #leaderboard-content .horse-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #leaderboard-content .horse-name.player-horse {
+            color: #f1c40f;
+            text-shadow: 0 0 5px rgba(241, 196, 15, 0.5);
+        }
+        #leaderboard-content .horse-owner {
+            font-size: 0.85em;
+            color: #bdc3c7;
+            margin-bottom: 3px;
+        }
+        #leaderboard-content .horse-score {
+            font-size: 1em;
+            color: #f1c40f;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        #leaderboard-content .horse-stats {
+            font-size: 0.75em;
+            color: #ecf0f1;
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        #leaderboard-content .horse-stats div {
+            margin-bottom: 2px;
+        }
+        #leaderboard-content .skills-pool {
+            font-size: 0.75em;
+        }
+        #leaderboard-content .skills-pool div:first-child {
+            color: #bdc3c7;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        #leaderboard-content .skills-pool div:last-child {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        #leaderboard-content .rank-change {
+            margin-top: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #leaderboard-content .rank-up {
+            color: #2ecc71;
+            text-shadow: 0 0 3px rgba(46, 204, 113, 0.5);
+        }
+        #leaderboard-content .rank-down {
+            color: #e74c3c;
+            text-shadow: 0 0 3px rgba(231, 76, 60, 0.5);
+        }
+        #leaderboard-content .skill-item {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        }
+        #leaderboard-content .skill-item:hover {
+            transform: scale(1.05);
+        }
+        #leaderboard-content .skill-common {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: #ecf0f1;
+            border: 1px solid #4a5f7a;
+        }
+        #leaderboard-content .skill-rare {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: #fff;
+            border: 1px solid #d68910;
+            box-shadow: 0 1px 3px rgba(243, 156, 18, 0.3);
+        }
+        @keyframes horse-gallop {
+            0% { transform: translateY(0px) scaleX(1); }
+            100% { transform: translateY(-3px) scaleX(0.95); }
+        }
+        @keyframes leg-move {
+            0% { transform: rotate(-15deg); }
+            100% { transform: rotate(15deg); }
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        .horse-sprite {
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .horse-sprite::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            border-radius: inherit;
+            animation: sparkle 2s infinite;
+        }
+        @media (max-width: 480px) {
+            #leaderboard-content .leaderboard-item {
+                padding: 12px;
+                margin-bottom: 6px;
+            }
+            #leaderboard-content .rank {
+                font-size: 1.3em;
+                width: 40px;
+            }
+            #leaderboard-content .horse-sprite-container {
+                margin: 0 10px;
+            }
+            #leaderboard-content .horse-name {
+                font-size: 1em;
+            }
+            #leaderboard-content .horse-stats {
+                padding: 6px;
+                font-size: 0.7em;
+            }
+            .horse-sprite {
+                width: 50px !important;
+                height: 35px !important;
+            }
+        }
+        @media (max-width: 360px) {
+            #leaderboard-content .leaderboard-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            #leaderboard-content .rank {
+                margin-top: 0;
+                margin-bottom: 10px;
+            }
+            #leaderboard-content .horse-sprite-container {
+                margin: 10px 0;
+            }
+            #leaderboard-content .horse-details {
+                padding: 0;
+                width: 100%;
+            }
+            #leaderboard-content .rank-change {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                margin-top: 0;
+            }
+        }
+        }
+        #leaderboard-content .horse-name {
+            font-weight: bold;
+        }
+        #leaderboard-content .horse-score {
+            color: #f1c40f;
+        }
+        #leaderboard-content .rank-change {
+            width: 30px;
+            text-align: center;
+        }
+        #leaderboard-content .rank-up {
+            color: #2ecc71;
+        }
+        #leaderboard-content .rank-down {
+            color: #e74c3c;
+        }
+
         #game-container { 
             width: 375px; 
             height: 667px; 
@@ -2141,6 +2360,20 @@
             </div>
         </div>
 
+        <!-- 排行榜界面 -->
+        <div id="leaderboard-panel" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:90; flex-direction:column; align-items:center;">
+            <div style="width:100%; height:40px; background:#2c3e50; display:flex; align-items:center; padding:0 10px; box-sizing:border-box; justify-content:space-between;">
+                <span style="color:#f1c40f; font-weight:bold;">🏆 排行榜</span>
+                <button class="btn btn-blue btn-small" style="background:#e74c3c; width:auto; padding:5px 10px;" onclick="game.closeLeaderboard()">关闭</button>
+            </div>
+            <div id="leaderboard-content" style="width:100%; flex-grow:1; overflow-y:auto; padding:10px; box-sizing:border-box;">
+                <!-- 排行榜条目将在这里动态生成 -->
+            </div>
+            <div style="width:100%; padding:10px; box-sizing:border-box; background:#2c3e50;">
+                <button class="btn btn-blue" style="width:100%;" onclick="game.shareLeaderboard()">分享我的排名</button>
+            </div>
+        </div>
+
         <!-- 球员交易市场界面 -->
         <div id="market-panel" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:90; flex-direction:column; align-items:center;">
              <div style="width:100%; height:40px; background:#2c3e50; display:flex; align-items:center; padding:0 10px; box-sizing:border-box; justify-content:space-between;">
@@ -2655,6 +2888,22 @@
                     { id: 'movie', icon: '🎬', name: '电影票', desc: '立减优惠', reward: 8, url: 'http://dpurl.cn/hBJU93lz' },
                     { id: 'daily', icon: '🧴', name: '外卖优惠券', desc: '尊宝披萨', reward: 5, url: 'http://dpurl.cn/VUoH3nez' }
                 ];
+
+                this.leaderboardData = [
+                    { rank: 1, name: '闪电', score: 9850, owner: '马场主A', change: 'up' },
+                    { rank: 2, name: '赤兔', score: 9700, owner: '我', change: 'same' },
+                    { rank: 3, name: '的卢', score: 9600, owner: '马场主C', change: 'down' },
+                    { rank: 4, name: '绝影', score: 9550, owner: '马场主D', change: 'up' },
+                    { rank: 5, name: '惊帆', score: 9400, owner: '马场主E', change: 'same' },
+                    { rank: 6, name: '奔雷', score: 9320, owner: '马场主F', change: 'down' },
+                    { rank: 7, name: '飞雪', score: 9200, owner: '马场主G', change: 'same' },
+                    { rank: 8, name: '追风', score: 9150, owner: '马场主H', change: 'up' },
+                    { rank: 9, name: '白龙', score: 9080, owner: '马场主I', change: 'same' },
+                    { rank: 10, name: '紫电', score: 8900, owner: '马场主J', change: 'down' },
+                ];
+
+                this.updateLeaderboardData();
+
 
                 if (!this.player.spriteCodex || typeof this.player.spriteCodex !== 'object') this.player.spriteCodex = {};
 
@@ -4248,6 +4497,7 @@
                         <div class="roster-actions">
                             <button class="btn btn-blue" style="background:#c0392b; box-shadow:0 4px #922b21;" onclick="game.retireHorse()">退役<span class="sub">当前马</span></button>
                             <button class="btn btn-blue" onclick="game.nextStablePage()">翻页<span class="sub">${currPage + 1}/${totalPages}</span></button>
+                            <button class="btn btn-blue" onclick="game.openLeaderboard()">排行榜</button>
                         </div>
                         <div class="roster-grid">${rosterHtml}</div>
                     `;
@@ -4533,6 +4783,19 @@
                 if (modal) modal.style.display = 'none';
             }
 
+            openLeaderboard() {
+                this.updateLeaderboardData();
+                const panel = document.getElementById('leaderboard-panel');
+                if (panel) panel.style.display = 'flex';
+                this.renderLeaderboard();
+            }
+
+            closeLeaderboard() {
+                const panel = document.getElementById('leaderboard-panel');
+                if (panel) panel.style.display = 'none';
+            }
+
+
             renderCpsOffers() {
                 const grid = document.getElementById('cps-grid');
                 if (!grid) return;
@@ -4569,6 +4832,206 @@
                 try { localStorage.setItem('pendingCpsReward', JSON.stringify(payload)); } catch (_) {}
                 this.closeCpsModal();
             }
+
+            renderLeaderboard() {
+                const content = document.getElementById('leaderboard-content');
+                if (!content) return;
+                const data = this.leaderboardData || [];
+                content.innerHTML = data.map(item => {
+                    let changeIcon = '';
+                    if (item.change === 'up') {
+                        changeIcon = '<span class="rank-up">▲</span>';
+                    } else if (item.change === 'down') {
+                        changeIcon = '<span class="rank-down">▼</span>';
+                    }
+                    
+                    // 获取马的数据
+                    const horse = item.horseData;
+                    let horseAnimation = '';
+                    let statsPanel = '';
+                    let skillsPool = '';
+                    
+                    if (horse) {
+                        // 马的造型动画
+                        const spriteSet = horse.spriteSet || 'horse';
+                        const initialFrame = this.horseRunFrame(1, spriteSet);
+                        horseAnimation = `<div class="idle-horse" style="width:54px; height:54px; --idle-scale:1.2; background-image: ${initialFrame};" data-sprite-set="${this.escapeHtml(spriteSet)}" data-idle-horse="1"></div>`;
+                        
+                        // 启动动画
+                        setTimeout(() => {
+                            const idleHorse = document.querySelector(`.leaderboard-item[data-horse-id="${horse.id}"] .idle-horse`);
+                            if (idleHorse) {
+                                this.startIdleAnimation(idleHorse);
+                            }
+                        }, 0);
+                        
+                        // 数值面板
+                        const baseSpeed = Number(horse.baseSpeed) || 0;
+                        const stamina = Number(horse.stamina) || 0;
+                        const accel = Number(horse.accel) || 0;
+                        const temper = Number(horse.temper) || 0;
+                        const endurance = Number(horse.endurance) || 0;
+                        const totalRaces = Number(horse.totalRaces) || 0;
+                        const winRate = Number(horse.winRate) || 0;
+                        
+                        statsPanel = `
+                            <div class="horse-stats" style="font-size: 0.8em; color: #ccc; margin-top: 5px;">
+                                <div>速度: ${baseSpeed} | 耐力: ${stamina} | 加速: ${Math.round(accel * 100)}</div>
+                                <div>性情: ${Math.round(temper * 100)} | 持久: ${Math.round(endurance * 100)} | 胜率: ${Math.round(winRate * 100)}%</div>
+                                <div>比赛: ${totalRaces}场 | 品质: ${horse.quality || '普通'}</div>
+                            </div>
+                        `;
+                        
+                        // 技能池
+                        if (Array.isArray(horse.genes) && horse.genes.length > 0) {
+                            const skills = horse.genes.map(gene => {
+                                if (gene) {
+                                    const qualityClass = gene.quality === '稀有' ? 'skill-rare' : 'skill-common';
+                                    return `<span class="skill-item ${qualityClass}">${this.escapeHtml(gene.type || '未知')}</span>`;
+                                }
+                                return '';
+                            }).filter(Boolean).join('');
+                            
+                            skillsPool = `
+                                <div class="skills-pool" style="margin-top: 5px; font-size: 0.8em;">
+                                    <div style="color: #999; margin-bottom: 2px;">技能池:</div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 3px;">${skills}</div>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    return `
+                        <div class="leaderboard-item" data-horse-id="${horse.id}" style="display: flex; align-items: flex-start; padding: 10px; border-bottom: 1px solid #444;">
+                            <div class="rank" style="font-size: 1.2em; font-weight: bold; width: 40px; text-align: center; margin-top: 15px;">${item.rank}</div>
+                            <div class="horse-sprite-container" style="margin: 0 10px;">${horseAnimation}</div>
+                            <div class="horse-details" style="flex-grow: 1;">
+                                <div class="horse-name" style="font-weight: bold; color: ${item.isPlayer ? '#f1c40f' : '#fff'};" class="${item.isPlayer ? 'player-horse' : ''}">${this.escapeHtml(item.name)}</div>
+                                <div class="horse-owner" style="font-size: 0.9em; color: #999;">主人: ${this.escapeHtml(item.owner)}</div>
+                                <div class="horse-score" style="font-size: 0.9em; color: #f1c40f; margin-top: 2px;">分数: ${item.score}</div>
+                                ${statsPanel}
+                                ${skillsPool}
+                            </div>
+                            <div class="rank-change" style="margin-top: 15px;">${changeIcon}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // 添加CSS动画
+                const style = document.createElement('style');
+                style.textContent = `
+                    .skill-item {
+                        padding: 2px 6px;
+                        border-radius: 3px;
+                        font-size: 0.7em;
+                        margin: 1px;
+                    }
+                    .skill-common {
+                        background: #34495e;
+                        color: #ecf0f1;
+                    }
+                    .skill-rare {
+                        background: #f39c12;
+                        color: #fff;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            updateLeaderboardData() {
+                const horses = this.player.horses || [];
+                const aiStable = this.aiStable || [];
+                
+                // 计算所有马匹的分数
+                const allHorses = [];
+                
+                // 找到玩家分数最高的马
+                let playerBestHorse = null;
+                let maxScore = -1;
+                
+                horses.forEach(horse => {
+                    if (horse) {
+                        const score = this.calculateHorseScore(horse);
+                        if (score > maxScore) {
+                            maxScore = score;
+                            playerBestHorse = {
+                                rank: 0,
+                                name: horse.name,
+                                score: score,
+                                owner: '我',
+                                change: 'same',
+                                horseData: horse,
+                                isPlayer: true
+                            };
+                        }
+                    }
+                });
+                
+                if (playerBestHorse) {
+                    allHorses.push(playerBestHorse);
+                }
+                
+                // 添加AI的马
+                aiStable.forEach(horse => {
+                    if (horse) {
+                        const score = this.calculateHorseScore(horse);
+                        allHorses.push({
+                            rank: 0,
+                            name: horse.name,
+                            score: score,
+                            owner: horse.owner || 'AI马场主',
+                            change: 'same',
+                            horseData: horse,
+                            isPlayer: false
+                        });
+                    }
+                });
+                
+                // 按分数排序
+                allHorses.sort((a, b) => b.score - a.score);
+                
+                // 分配排名
+                allHorses.forEach((horse, index) => {
+                    horse.rank = index + 1;
+                });
+                
+                // 只保留前10名
+                this.leaderboardData = allHorses.slice(0, 10);
+            }
+
+            calculateHorseScore(horse) {
+                // 基于马匹属性计算分数
+                const baseSpeed = Number(horse.baseSpeed) || 0;
+                const stamina = Number(horse.stamina) || 0;
+                const accel = Number(horse.accel) || 0;
+                const temper = Number(horse.temper) || 0;
+                const endurance = Number(horse.endurance) || 0;
+                const totalRaces = Number(horse.totalRaces) || 0;
+                const winRate = Number(horse.winRate) || 0;
+                
+                // 基础属性分数
+                let score = (baseSpeed + stamina + accel * 100 + temper * 100 + endurance * 100) * 10;
+                
+                // 基因加成
+                if (Array.isArray(horse.genes)) {
+                    horse.genes.forEach(gene => {
+                        if (gene) {
+                            score += gene.quality === '稀有' ? 200 : 100;
+                        }
+                    });
+                }
+                
+                // 比赛经验加成
+                score += totalRaces * 50;
+                
+                // 胜率加成
+                score += winRate * 1000;
+                
+                return Math.round(score);
+            }
+
+
+
 
             checkPendingCpsReward() {
                 let raw = null;
